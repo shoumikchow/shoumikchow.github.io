@@ -4,8 +4,9 @@ title: About
 permalink: /about/
 ---
 
-Hi! This is Shoumik!
+Hi! Welcome to my blog
+I'll put up things that I'm interested in here. Enjoy!
 
-Software engineer :computer:
-Machine learning/network science geek :bulb:
-Wannabe globetrotter :earth_africa::earth_asia::earth_americas:
+### Contact me
+
+shoumikchow [at] gmail [dot] com
