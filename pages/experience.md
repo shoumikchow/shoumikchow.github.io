@@ -5,24 +5,26 @@ layout: default
 ## Experience
 
 ### Education
-* BRAC University  
-BS in Computer Science, 2016
-
 * University of Houston  
 MS in Computer Science, 2021
+
+* BRAC University  
+BS in Computer Science, 2016
 
 
 ### Work
 
-I first started working straight out of high school as an English Language  teacher at [Mastermind](https://www.mastermindschool.org/), the same high school I graduated from. I taught English to sixth grade students.
+I first started working straight out of high school as an English Language teacher at [Mastermind](https://www.mastermindschool.org/), the same high school I graduated from. I taught English to sixth grade students.
 
-After graduating from BRAC University, I started working at KolpoKoushol, detailed in the [Research](../pages/research) page.
+I was an intern at [G&R](https://www.green-red.com/) from January 2016 to April 2016 where I was in the Android development team.
 
-While at KolpoKoushol, I got a job at [Panacea Live](https://www.panacea.live/) for 1.5 years as a backend developer where I worked on technology to protect consumers from counterfeit products in the market.
+In April 2016, I got a job at [Panacea Live](https://www.panacea.live/) where I worked on technology to protect consumers from counterfeit products.
 
-I quit Panacea Live to concentrate on research work with KolpoKoushol.
+I worked from February 2016 to January 2019 at KolpoKoushol, detailed in the [Research](../pages/research) page.
 
-After KolpoKoushol, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint, working with the smartest people in the country to solve difficult computer vision problems.
+In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint, working with the smartest people in the country to solve difficult computer vision problems.
+
+Currently, I work at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston where I work with graph structures and vidoes.
 
 
 [back](https://shoumikchow.com))

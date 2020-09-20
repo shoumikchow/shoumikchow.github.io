@@ -15,8 +15,8 @@ pagelist:
       title: Experience
       url: pages/experience.html
     -
-      title: Misc
-      url: pages/misc.html
+      title: About me
+      url: pages/about-me.html
 plugins:
     - jekyll-sitemap
 exclude:
