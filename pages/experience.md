@@ -25,4 +25,4 @@ I quit Panacea Live to concentrate on research work with KolpoKoushol.
 After KolpoKoushol, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint, working with the smartest people in the country to solve difficult computer vision problems.
 
 
-[back](../../)
+[back](https://shoumikchow.com))

@@ -20,4 +20,4 @@ Muhammad S. A. Khan, **Shoumik Sharar Chowdhury**, Nafis Niloy, Fatema Tuz Zohra
 Advances in Neural Information Processing Systems (NeurIPS 2018)  
   [[link]](https://arxiv.org/abs/1812.03632)
 
-[back](../../)
+[back](https://shoumikchow.com))
