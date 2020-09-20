@@ -9,11 +9,11 @@ twitter: https://twitter.com/shoumikchow
 theme: jekyll-theme-minimal
 pagelist:
     -
-      title: Research
-      url: pages/research.html
-    -
       title: Experience
       url: pages/experience.html
+    -
+      title: Research
+      url: pages/research.html
     -
       title: About me
       url: pages/about-me.html

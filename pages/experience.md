@@ -5,10 +5,10 @@ layout: default
 ## Experience
 
 ### Education
-* University of Houston  
+* University of Houston (Houston, Texas, USA)  
 MS in Computer Science, 2021
 
-* BRAC University  
+* BRAC University (Dhaka, Bangladesh)  
 BS in Computer Science, 2016
 
 
