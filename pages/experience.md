@@ -27,4 +27,4 @@ In February 2019, I started working at [Gaze](https://gaze.ai) where I had a sho
 Currently, I work at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston where I work with graph structures and vidoes.
 
 
-[back](https://shoumikchow.com))
+[back](https://shoumikchow.com)
