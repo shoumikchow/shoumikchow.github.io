@@ -1,0 +1,11 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+@media print, screen and (max-width: 720px) {
+    center{
+        background-color: yellow;
+        font-size: large;
+    }
+}
