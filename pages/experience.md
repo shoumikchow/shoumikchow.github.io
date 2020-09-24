@@ -14,7 +14,7 @@ BS in Computer Science, 2016
 
 ### Work
 
-I first started working straight out of high school as an English Language teacher at [Mastermind](https://www.mastermindschool.org/), the same high school I graduated from. I taught English to sixth grade students.
+I first started working straight out of high school as an English Language teacher at [Mastermind School](https://www.mastermindschool.org/), the same high school I graduated from. I taught English to sixth grade students.
 
 I was an intern at [G&R](https://www.green-red.com/) from January 2016 to April 2016 where I was in the Android development team.
 
