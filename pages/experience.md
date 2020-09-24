@@ -27,4 +27,19 @@ In February 2019, I started working at [Gaze](https://gaze.ai) where I had a sho
 Currently, I work at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston where I work with graph structures and vidoes.
 
 
+### Certifications
+
+* [Deep Learning Specialization](https://coursera.org/share/4de30d50ef6f9603b2e860295db80036)
+  * [Neural Networks and Deep Learning](https://coursera.org/share/1b8a7b4ba5b5e4176e96064a621139c9)
+  * [Structuring Machine Learning Projects](https://coursera.org/share/79710555678a302f425c7b57bf0f2f94)
+  * [Convolutional Neural Networks](https://coursera.org/share/0bffa1d84583438f27c89eefeff265f3)
+  * [Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization](https://coursera.org/share/f715f6e22870729e0fca12624100b88c)
+  * [Sequence Models](https://coursera.org/share/947bc60d4f0338f5a0fcc4e745c18324)
+
+* [AI for Medicine Specialization](https://coursera.org/share/5043c1edcf059d48b607ab31181352d5)
+  * [AI for Medical Diagnosis](https://coursera.org/share/84fa4d1cab9a835dae01b482871fc418)
+  * [AI for Medical Prognosis](https://coursera.org/share/9ddf30045fa315a18aac83eac51970a2)
+  * [AI For Medical Treatment   ](https://coursera.org/share/7d3f62953bad75587c1fc472dc25c5af)
+
+
 [back](https://shoumikchow.com)
