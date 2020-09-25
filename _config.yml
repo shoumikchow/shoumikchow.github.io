@@ -15,8 +15,12 @@ pagelist:
       title: Research
       url: pages/research.html
     -
+      title: Projects
+      url: pages/projects.html
+    -
       title: About me
       url: pages/about-me.html
+
 plugins:
     - jekyll-sitemap
 exclude:
