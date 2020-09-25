@@ -22,7 +22,7 @@ In April 2016, I got a job at [Panacea Live](https://www.panacea.live/) where I 
 
 I worked from February 2016 to January 2019 at KolpoKoushol, detailed in the [Research](../pages/research) page.
 
-In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint, working with the smartest people in the country to solve difficult computer vision problems.
+In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint, working with the smartest people in Bangladesh to solve difficult computer vision problems.
 
 Currently, I work at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston where I work with graph structures and vidoes.
 
