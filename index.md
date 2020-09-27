@@ -14,3 +14,5 @@ My current research focuses on understanding how graph structures change over ti
 * * *
 
 I love meeting new people, collaborating and having interesting conversations! You can email me at: **hello [at] shoumikchow [dot] com**
+
+**_I am in the job market for a deep learning/computer vision position that starts in the summer of 2021_**
