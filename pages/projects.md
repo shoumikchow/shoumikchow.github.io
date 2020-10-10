@@ -9,4 +9,6 @@ layout: default
   This library helps make that very easy. You just use the bounding box locations and their corresponding labels and the library takes care of everything. Additionally, there are some other cool visualizations that you can use other than the standard label on top of the boxes.  
   [[Documentation]](https://bbox-visualizer.rtfd.io)
 
+  The library reached the [front page of Hacker News](https://news.ycombinator.com/item?id=24608662) and was featured on the [Python Bytes](https://pythonbytes.fm/episodes/show/202/jupyter-is-back-in-black) podcast.
+
 * Other projects can be found on my [Github](https://github.com/shoumikchow)
