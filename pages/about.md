@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## About me
+## About
 
 I am originally from Dhaka, Bangladesh.
 

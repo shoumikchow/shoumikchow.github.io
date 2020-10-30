@@ -18,8 +18,8 @@ pagelist:
       title: Projects
       url: pages/projects.html
     -
-      title: About me
-      url: pages/about-me.html
+      title: About
+      url: pages/about.html
 
 plugins:
     - jekyll-sitemap
