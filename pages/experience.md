@@ -42,5 +42,6 @@ Currently, I work at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/
   * [AI For Medical Treatment   ](https://coursera.org/share/7d3f62953bad75587c1fc472dc25c5af)
 * Generative Adversarial Networks (GANs) Specialization
   * [Build Basic Generative Adversarial Networks (GANs)](https://coursera.org/share/7748d9e5fc6eddf00a2882778d8e6783)
+  * [Build Better Generative Adversarial Networks (GANs)](https://coursera.org/share/4e4e5b67e02cf43e037f4c90200c9dfb)
 
 [back](https://shoumikchow.com)
