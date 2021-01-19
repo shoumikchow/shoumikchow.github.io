@@ -4,8 +4,9 @@ description: CS Masters student and Research Assistant at the University of Hous
 show_downloads: true
 google_analytics: UA-109993855-1
 email: mailto:hello@shoumikchow.com
-linkedin: https://linkedin.com/in/shoumikchow
-twitter: https://twitter.com/shoumikchow
+linkedin: /linkedin
+twitter: /twitter
+github: /github
 theme: jekyll-theme-minimal
 pagelist:
     -
@@ -23,6 +24,7 @@ pagelist:
 
 plugins:
     - jekyll-sitemap
+    - jekyll-redirect-from
 exclude:
     - Gemfile
     - Gemfile.lock

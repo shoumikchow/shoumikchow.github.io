@@ -1,5 +1,7 @@
 ---
 layout: default
+redirect_from:
+  - /projects
 ---
 
 ## Projects
@@ -18,7 +20,7 @@ layout: default
 
   The bot was, unfortunately, flagged as spammy by Twitter which, one could argue, it is because it finds relevant tweets very often. But I think a bot that has the potential to save lives should not be tagged as spammy. If there's anyone at Twitter (or a Twitter Developer Advocate) reading this, I'd love to talk to you about it. Please reach out!
 
-* Other projects can be found on my [Github](https://github.com/shoumikchow)
+* Other projects can be found on my [Github](/github)
 
 
 [back](https://shoumikchow.com)
