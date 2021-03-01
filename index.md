@@ -16,3 +16,10 @@ My current research focuses on understanding how graph structures change over ti
 I love meeting new people, collaborating and having interesting conversations! You can email me at: **hello [at] shoumikchow [dot] com**
 
 **_I am in the job market for a deep learning/computer vision position that starts in the summer of 2021_**
+
+
+***
+
+### Recent News
+
+* **[March 1 2021]** I was recently interviewed about my experience in computer vision, how I got into the field and my expectations of the future. Read it on the [2D3D.ai blog](https://2d3d.ai/index.php/2021/02/28/meet-the-community-member-shoumik-sharar-chowdhury/).
