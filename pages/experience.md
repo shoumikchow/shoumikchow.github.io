@@ -24,11 +24,11 @@ In April 2016, I got a job at [Panacea Live](https://www.panacea.live/) where I 
 
 From February 2016 to January 2019 at KolpoKoushol (initially part-time and then full-time), detailed in the [Research](../pages/research) page.
 
-In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint working with the smartest people in Bangladesh to solve difficult computer vision problems.
+In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint working with some of the smartest people in Bangladesh to solve difficult computer vision problems.
 
-Currently, I work at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston where I work with graph structures and vidoes.
+I worked at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston during my Masters where I worked with graph structures and vidoes.
 
-
+I am now at [Andium](https://andium.com) where I work with ML Ops and computer vision.
 ### Certifications
 
 * [Deep Learning Specialization](https://coursera.org/share/4de30d50ef6f9603b2e860295db80036)

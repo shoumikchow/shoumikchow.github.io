@@ -25,6 +25,7 @@ pagelist:
 plugins:
     - jekyll-sitemap
     - jekyll-redirect-from
+    - jemoji
 exclude:
     - Gemfile
     - Gemfile.lock
