@@ -49,6 +49,6 @@ I am now at [Andium](https://andium.com) where I work with ML Ops and computer v
   * [Apply Generative Adversarial Networks (GANs)](https://coursera.org/share/0831e2aeb4cf908f87727d70028d2999)
 
 * Machine Learning Engineering for Production (MLOps) Specialization
-  * [Introduction to Machine Learning in Production](https://coursera.org/share/8136cfc2375799da32aa99cac2568ca6)
+  * [Introduction to Machine Learning in Production](https://coursera.org/share/24504df0c55713115643b554d1589973)
 
 [back](https://shoumikchow.com)
