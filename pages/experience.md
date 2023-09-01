@@ -51,5 +51,6 @@ I am now at [Andium](https://andium.com) where I work with ML Ops and computer v
 * Machine Learning Engineering for Production (MLOps) Specialization
   * [Introduction to Machine Learning in Production](https://coursera.org/share/24504df0c55713115643b554d1589973)
   * [Machine Learning Data Lifecycle in Production](https://coursera.org/share/3276995de218a831cb6d7cff4d872cdb)
+  * [Machine Learning Modeling Pipelines in Production](https://coursera.org/share/36c3abf515a6700a15a71456ecaf6a28)
 
 [back](https://shoumikchow.com)
