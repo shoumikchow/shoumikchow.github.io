@@ -1,4 +1,4 @@
 ---
 layout: default
-redirect_to: https://drive.google.com/file/d/1vCRKfel1pbj_KaaKaW8g1bEJIaj6uJEC/view
+redirect_to: https://drive.google.com/file/d/1vQ7dKsXP5-iiw7KpzdJ5K1fAlPgbgOs-/view?usp=sharing
 ---
