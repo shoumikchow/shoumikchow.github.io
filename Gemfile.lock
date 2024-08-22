@@ -97,7 +97,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     regexp_parser (1.7.1)
-    rexml (3.3.3)
+    rexml (3.3.6)
       strscan
     rouge (3.23.0)
     rubocop (0.91.0)
