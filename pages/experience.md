@@ -35,5 +35,6 @@ I am now at [Andium](https://andium.com) where I work with ML Ops and computer v
 * [AI for Medicine Specialization](https://coursera.org/share/5043c1edcf059d48b607ab31181352d5)
 * [Generative Adversarial Networks (GANs) Specialization](https://coursera.org/share/886d61ee6c28afda145edd4218b1a869)
 * [Machine Learning Engineering for Production (MLOps) Specialization](https://coursera.org/share/dacea6c7eae4a9897f8379a0ecb5db48)
+* [Generative AI with Large Language Models](https://coursera.org/share/371fa8c1f588dcb6640be7b76f31428e)
   
 [back](https://shoumikchow.com)
