@@ -22,6 +22,9 @@
 </head>
 
 <body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
   <div class="wrapper">
     <header>
       <h1><a href="{{ "/" | absolute_url }}">{{ site.title }}</a></h1>
@@ -69,6 +72,8 @@
   </div>
   <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/dark-mode.js" | relative_url }}"></script>
+  <script src="{{ "/assets/js/back-to-top.js" | relative_url }}"></script>
+  <script src="{{ "/assets/js/loading.js" | relative_url }}"></script>
   {% if site.google_analytics %}
    <!-- Global site tag (gtag.js) - Google Analytics -->
    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
