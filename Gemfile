@@ -2,7 +2,8 @@
 
 source 'https://rubygems.org'
 
-gemspec
+gem 'github-pages', group: :jekyll_plugins
 gem 'jekyll-sitemap', group: :jekyll_plugins
 gem 'jekyll-redirect-from'
 gem 'jemoji'
+gem 'webrick', '~> 1.7'  # Required for Ruby 3+
