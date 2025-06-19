@@ -5,7 +5,38 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <meta name="keywords" content="{{ page.keywords | default: site.keywords }}">
+  <meta name="author" content="{{ site.author }}">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="{{ page.title | default: site.title }}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:type" content="{{ page.og_type | default: site.og_type }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ page.og_image | default: site.og_image | absolute_url }}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="{{ page.twitter_card | default: site.twitter_card }}">
+  <meta name="twitter:site" content="{{ site.twitter_username }}">
+  <meta name="twitter:creator" content="{{ site.twitter_username }}">
+  <meta name="twitter:title" content="{{ page.title | default: site.title }}">
+  <meta name="twitter:description" content="{{ page.description | default: site.description }}">
+  <meta name="twitter:image" content="{{ page.og_image | default: site.og_image | absolute_url }}">
+  
+  <!-- Additional Meta Tags -->
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#267CB9">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="{{ "/assets/css/style.css" | relative_url }}" as="style">
+  <link rel="preload" href="{{ site.logo | relative_url }}" as="image">
+  
   <!-- Prevent flash of unstyled content for dark mode -->
   <script>
     (function() {
@@ -16,6 +47,29 @@
 
   {% seo %}
   <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ site.author }}",
+    "jobTitle": "{{ site.structured_data.person.jobTitle }}",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "{{ site.structured_data.person.worksFor }}"
+    },
+    "url": "{{ site.url }}",
+    "sameAs": [
+      "https://github.com/{{ site.github_username }}",
+      "https://linkedin.com/in/{{ site.linkedin_username }}",
+      "https://twitter.com/{{ site.twitter_username }}"
+    ],
+    "image": "{{ site.logo | absolute_url }}",
+    "description": "{{ site.description }}"
+  }
+  </script>
+  
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -30,29 +84,24 @@
       <h1><a href="{{ "/" | absolute_url }}">{{ site.title }}</a></h1>
 
       {% if site.logo %}
-      <img src="{{site.logo | relative_url}}" alt="Logo" />
+      <img src="{{site.logo | relative_url}}" alt="{{ site.author }} - {{ site.description }}" loading="lazy" class="site-logo" />
       {% endif %}
 
-      <p>{{ site.description | default: site.github.project_tagline }}</p>
-
-      <!-- {% if site.github.is_user_page %}
-      <p class="view"><a href="{{ site.github.owner_url }}">View My GitHub Profile</a></p>
-      {% endif %} -->
+      <p class="site-description">{{ site.description | default: site.github.project_tagline }}</p>
 
       {% if site.show_downloads %}
-
-      {% for page in site.pagelist %}
-      <p class="view">
-      <h3><a href={{ page.url | relative_url}}>{{ page.title }}</a></h3>
-      </p>
-      {% endfor %}
-      <!-- <p style="color: red;">centerrr</p> -->
-      <!-- <p class="center">yo?</p>  -->
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+        {% for page in site.pagelist %}
+          <li><a href="{{ page.url | relative_url }}">{{ page.title }}</a></li>
+        {% endfor %}
+        </ul>
+      </nav>
 
       <ul class="downloads">
-        <li><a href="{{ site.twitter }}">Follow<strong>Twitter</strong></a></li>
-        <li><a href="{{ site.linkedin }}">Connect<strong>Linkedin</strong></a></li>
-        <li><a href="{{ site.github }}">Fork<strong>GitHub</strong></a></li>
+        <li><a href="{{ site.twitter }}" aria-label="Follow on Twitter">Follow<strong>Twitter</strong></a></li>
+        <li><a href="{{ site.linkedin }}" aria-label="Connect on LinkedIn">Connect<strong>Linkedin</strong></a></li>
+        <li><a href="{{ site.github }}" aria-label="View GitHub Profile">Fork<strong>GitHub</strong></a></li>
       </ul>
       {% endif %}
     </header>
@@ -61,19 +110,14 @@
       {{ content }}
 
     </section>
-    <footer>
-<!--       {% if site.github.is_project_page %}
-      <p>This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
-      {% endif %}
-      <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small>
-      </p> -->
-<!--       Sorry, the credit line wasn't responsive so I had to remove :( -->
-    </footer>
   </div>
   <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/dark-mode.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/back-to-top.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/loading.js" | relative_url }}"></script>
+  <script src="{{ "/assets/js/performance.js" | relative_url }}"></script>
+  <script src="{{ "/assets/js/analytics.js" | relative_url }}"></script>
+  <script src="{{ "/assets/js/accessibility.js" | relative_url }}"></script>
   {% if site.google_analytics %}
    <!-- Global site tag (gtag.js) - Google Analytics -->
    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
@@ -81,7 +125,10 @@
      window.dataLayer = window.dataLayer || [];
      function gtag(){dataLayer.push(arguments);}
      gtag('js', new Date());
-     gtag('config', '{{ site.google_analytics }}');
+     gtag('config', '{{ site.google_analytics }}', {
+       'page_title': '{{ page.title | default: site.title }}',
+       'page_location': '{{ page.url | absolute_url }}'
+     });
    </script>
   {% endif %}
 </body>

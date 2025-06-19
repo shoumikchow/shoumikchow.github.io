@@ -1,6 +1,6 @@
 title: Shoumik Sharar Chowdhury
 logo: /assets/img/img.jpg
-description: ML Engineer
+description: ML Engineer specializing in computer vision and MLOps at Andium. Passionate about data for good and solving complex machine learning problems.
 url: "https://shoumikchow.com"
 show_downloads: true
 google_analytics: G-5CSP643828
@@ -9,6 +9,33 @@ linkedin: /linkedin
 twitter: /twitter
 github: /github
 theme: jekyll-theme-minimal
+
+# SEO and Social Media
+author: Shoumik Sharar Chowdhury
+author_bio: ML Engineer at Andium working on computer vision and MLOps
+keywords: "machine learning, computer vision, MLOps, data science, AI, Andium, ML Engineer"
+twitter_username: "@shoumikchow"
+linkedin_username: "shoumikchow"
+github_username: "shoumikchow"
+
+# Open Graph and Social Media
+og_image: /assets/img/img.jpg
+og_type: website
+twitter_card: summary_large_image
+
+# Structured Data
+structured_data:
+  person:
+    "@type": Person
+    name: "Shoumik Sharar Chowdhury"
+    jobTitle: "ML Engineer"
+    worksFor: "Andium"
+    url: "https://shoumikchow.com"
+    sameAs:
+      - "https://github.com/shoumikchow"
+      - "https://linkedin.com/in/shoumikchow"
+      - "https://twitter.com/shoumikchow"
+
 pagelist:
     -
       title: Experience
@@ -27,9 +54,14 @@ plugins:
     - jekyll-sitemap
     - jekyll-redirect-from
     - jemoji
+    - jekyll-seo-tag
+
 exclude:
     - Gemfile
     - Gemfile.lock
     - LICENSE
     - README.md
     - CNAME
+    - sw.js
+    - manifest.json
+    - robots.txt
