@@ -1,0 +1,90 @@
+# Shoumik Sharar Chowdhury - Personal Website
+
+## Website Overview
+This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Engineer currently working at Andium. The website is built using Jekyll with the Minimal theme and is hosted on GitHub Pages.
+
+## Website Structure
+- **Homepage**: Personal introduction and recent news updates
+- **About**: Personal background, interests, and hobbies
+- **Experience**: Educational background, work history, and certifications
+- **Research**: Academic research and published papers
+- **Projects**: Notable software projects and contributions
+
+## Personal Information
+- **Name**: Shoumik Sharar Chowdhury
+- **Current Role**: Machine Learning Engineer at Andium
+- **Location**: New York City (moved in February 2024)
+- **Email**: hello@shoumikchow.com
+- **Website**: https://shoumikchow.com
+
+## Professional Background
+- **Education**: 
+  - MS in Computer Science, University of Houston (2021)
+  - BS in Computer Science, BRAC University (2016)
+- **Work Experience**:
+  - Andium (2021-present): ML Ops and computer vision
+  - University of Houston Quantitative Imaging Lab: Graph structures and videos
+  - Gaze.ai: Computer vision problems
+  - KolpoKoushol: Research and development
+  - Panacea Live: Anti-counterfeit technology
+  - G&R: Android development intern
+  - Mastermind School: English teacher
+
+## Technical Expertise
+- **Primary Focus**: Machine Learning, Computer Vision, MLOps
+- **Interests**: Data for good, computer vision, MLOps
+- **Certifications**:
+  - Deep Learning Specialization
+  - AI for Medicine Specialization
+  - Generative Adversarial Networks (GANs) Specialization
+  - Machine Learning Engineering for Production (MLOps) Specialization
+  - Generative AI with Large Language Models Specialization
+
+## Research Publications
+1. **Statement networks: a power structure narrative as depicted by newspapers** (NeurIPS 2018 ML4D workshop)
+   - Analyzed political discourse patterns in Bangladeshi newspapers
+   - Used network analysis to identify power structures
+
+2. **Sonar-based SLAM Using Occupancy Grid Mapping and Dead Reckoning** (TENCON 2018)
+   - Developed inexpensive robot for interior mapping
+   - Used sonar-based SLAM technology
+
+## Notable Projects
+1. **bbox-visualizer**: Python library for drawing bounding boxes and labels
+   - Featured on Hacker News front page
+   - Featured on Python Bytes podcast
+   - Solves positioning and visualization challenges in computer vision
+
+2. **Suicide Prevention Bot**: Twitter bot for mental health support
+   - Automatically responds to potentially suicidal tweets
+   - Provides crisis hotline information
+   - Uses sentiment analysis to reduce false positives
+
+## Personal Interests
+- **Travel and Outdoor Activities**: Hiking, photography
+- **Entertainment**: Reading books, watching movies, listening to podcasts and music
+- **Games**: Chess, board games
+- **Sports**: Chelsea Football Club supporter
+- **Social Media**: Active on Instagram, Twitter, LinkedIn, GitHub
+
+## Website Technical Details
+- **Platform**: Jekyll static site generator
+- **Theme**: Minimal theme for GitHub Pages
+- **Hosting**: GitHub Pages
+- **Domain**: shoumikchow.com
+- **Analytics**: Google Analytics (G-5CSP643828)
+- **Plugins**: jekyll-sitemap, jekyll-redirect-from, jemoji
+
+## Recent Updates
+- February 2024: Moved to NYC
+- February 2023: Moved to Austin
+- July 2021: Joined Andium
+- March 2021: Interviewed by 2D3D.ai about computer vision experience
+
+## Contact Information
+- **Email**: hello@shoumikchow.com
+- **LinkedIn**: Available through website navigation
+- **Twitter**: Available through website navigation
+- **GitHub**: Available through website navigation
+
+This website serves as a comprehensive portfolio showcasing Shoumik's professional experience in machine learning and computer vision, his academic research contributions, and his personal interests and projects. 
