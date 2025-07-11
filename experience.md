@@ -22,7 +22,7 @@ Then came [Panacea Live](https://www.panacea.live/) in April 2016, where I helpe
 
 From February 2016 to January 2019, I worked at KolpoKoushol—first part-time, then full-time—doing a bunch of cool things that you can read more about on the [Research](../research) page.
 
-In February 2019, I joined [Gaze](https://gaze.ai), the first computer cision company in Bangladesh, for a short (but sweet!) 6-month stint, tackling tough computer vision problems with some of the brightest minds in Bangladesh.
+In February 2019, I joined [Gaze](https://gaze.ai), the first computer vision company in Bangladesh, for a short (but sweet!) 6-month stint, tackling tough problems with some of the brightest minds in Bangladesh.
 
 During my Master’s, I worked at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston, diving deep into graph structures and video analysis. 
 
