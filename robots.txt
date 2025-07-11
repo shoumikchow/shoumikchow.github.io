@@ -1,8 +1,58 @@
+# robots.txt for shoumikchow.com
+# This file tells search engine crawlers which pages/directories they can and cannot access
+
+# Allow all crawlers by default
 User-agent: *
 Allow: /
 
-# Sitemap
+# Specific directives for Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Specific directives for Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Specific directives for DuckDuckBot
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 2
+
+# Block access to sensitive directories and files
+Disallow: /_layouts/
+Disallow: /_sass/
+Disallow: /script/
+Disallow: /Gemfile
+Disallow: /Gemfile.lock
+Disallow: /jekyll-theme-minimal.gemspec
+Disallow: /.git/
+Disallow: /.gitignore
+Disallow: /_config.yml
+Disallow: /sw.js
+
+# Block access to development and build files
+Disallow: /_site/
+Disallow: /node_modules/
+Disallow: /vendor/
+
+# Block access to temporary and cache files
+Disallow: /tmp/
+Disallow: /cache/
+Disallow: /*.log
+Disallow: /*.tmp
+
+# Allow access to important content
+Allow: /files/
+Allow: /assets/
+Allow: /pages/
+Allow: /favicon.ico
+Allow: /manifest.json
+
+# Sitemap location
 Sitemap: https://shoumikchow.com/sitemap.xml
 
-# Crawl-delay for respectful crawling
-Crawl-delay: 1 
+
+# Host directive (optional but recommended)
+Host: https://shoumikchow.com 
