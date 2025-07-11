@@ -12,7 +12,7 @@ My research experience spans both robotics and computational social science, foc
 As part of my undergraduate thesis under [Dr. Tarem Ahmed](http://www.cse.iub.edu.bd/faculties/41), I developed a low-cost robot capable of interior mapping using sonar-based SLAM (Simultaneous Localization and Mapping). This work was presented at **TENCON 2018**, one of IEEE Region 10’s leading technical conferences.
 
 #### **Computational Social Science**
-At [KolpoKoushol](https://www.facebook.com/KKoushol/), a knowledge initiative led by [Dr. Nazmus Saquib](https://nsaquib.org), I worked on a project analyzing how political discourse is represented in Bangladeshi news media. Our research uncovered patterns of elite-centered narratives, and was published at **NeurIPS 2018** in the ML4D workshop.
+At [KolpoKoushol](https://www.facebook.com/KKoushol/), a knowledge initiative led by [Dr. Nazmus Saquib](https://nsaquib.org), I worked on a project analyzing political discourse patterns in Bangladeshi news media over a decade. Our research revealed how cohesive groups of powerful political leaders form through news coverage, and how these elite networks evolve as news cycles change over time. This work was published at **NeurIPS 2018** in the ML4D workshop.
 
 ---
 
