@@ -6,9 +6,9 @@ redirect_from:
 
 ## About
 
-I am originally from Dhaka, Bangladesh.
+I am originally from Dhaka, Bangladesh. 🇧🇩
 
-When I am not working, I like travelling, hiking, reading [books](https://app.thestorygraph.com/profile/shoumikchow) and watching [movies](https://letterboxd.com/shoumikchow/)
+When I am not working, I like travelling, reading [books](https://app.thestorygraph.com/profile/shoumikchow) and watching [movies](https://letterboxd.com/shoumikchow/).
 
 I enjoy listening to podcasts and music ([Spotify](https://open.spotify.com/user/shoumikchow)) and can never make up my mind which one to listen to so I switch back and forth frequently. I like taking photos. You can find a carefully curated gallery on my [Instagram](https://www.instagram.com/shoumikchow/).
 

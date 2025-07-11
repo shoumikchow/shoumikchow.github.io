@@ -8,10 +8,10 @@ const urlsToCache = [
   '/assets/js/loading.js',
   '/assets/js/performance.js',
   '/assets/img/img.jpg',
-  '/pages/experience.html',
-  '/pages/research.html',
-  '/pages/projects.html',
-  '/pages/about.html'
+  '/experience.html',
+'/research.html',
+'/projects.html',
+'/about.html'
 ];
 
 // Install event

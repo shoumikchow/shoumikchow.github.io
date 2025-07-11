@@ -28,25 +28,25 @@
       // Alt + 2: Go to experience
       if (e.altKey && e.key === '2') {
         e.preventDefault();
-        window.location.href = '/pages/experience.html';
+        window.location.href = '/experience.html';
       }
       
       // Alt + 3: Go to research
       if (e.altKey && e.key === '3') {
         e.preventDefault();
-        window.location.href = '/pages/research.html';
+        window.location.href = '/research.html';
       }
       
       // Alt + 4: Go to projects
       if (e.altKey && e.key === '4') {
         e.preventDefault();
-        window.location.href = '/pages/projects.html';
+        window.location.href = '/projects.html';
       }
       
       // Alt + 5: Go to about
       if (e.altKey && e.key === '5') {
         e.preventDefault();
-        window.location.href = '/pages/about.html';
+        window.location.href = '/about.html';
       }
       
       // Alt + T: Toggle theme

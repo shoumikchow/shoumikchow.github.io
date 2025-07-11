@@ -46,7 +46,7 @@ Disallow: /*.tmp
 # Allow access to important content
 Allow: /files/
 Allow: /assets/
-Allow: /pages/
+Allow: /
 Allow: /favicon.ico
 Allow: /manifest.json
 

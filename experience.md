@@ -22,7 +22,7 @@ I was an intern at [G&R](https://www.green-red.com/) from January 2016 to April 
 
 In April 2016, I got a job at [Panacea Live](https://www.panacea.live/) where I worked on technology to protect consumers from counterfeit products.
 
-From February 2016 to January 2019 at KolpoKoushol (initially part-time and then full-time), detailed in the [Research](../pages/research) page.
+From February 2016 to January 2019 at KolpoKoushol (initially part-time and then full-time), detailed in the [Research](../research) page.
 
 In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint working with some of the smartest people in Bangladesh to solve difficult computer vision problems.
 

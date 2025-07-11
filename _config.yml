@@ -39,16 +39,16 @@ structured_data:
 pagelist:
     -
       title: Experience
-      url: pages/experience.html
+      url: experience.html
     -
       title: Research
-      url: pages/research.html
+      url: research.html
     -
       title: Projects
-      url: pages/projects.html
+      url: projects.html
     -
       title: About
-      url: pages/about.html
+      url: about.html
 
 plugins:
     - jekyll-sitemap
