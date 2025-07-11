@@ -3,22 +3,28 @@ title: Home
 layout: default
 ---
 
-# Hi!
+# Hi! I'm Shoumik 👋
 
-I am a Machine Learning Engineer at [Andium](https://andium.com) working on all stages of the machine learning pipeline. I am interested in computer vision and MLOps. I am also interested in data for good, and am constantly working towards marrying my two interests.
+I'm a **Machine Learning Engineer** at [Andium](https://andium.com) where I work across the entire machine learning pipeline. My passion lies at the intersection of **computer vision** and **ML infrastructure**, and I'm deeply committed to leveraging data for social good.
 
-I like dabbling in different fields to gain knowledge from a diverse range of domains to go beyond traditional ways for solving problems.
+### What I Do
+I specialize in building robust ML systems that can scale from research to production. My work spans everything from developing computer vision models to designing efficient ML infrastructure that enables teams to deploy AI solutions effectively.
 
-* * *
+### Beyond the Code
+I'm passionate about using technology to create positive social impact. Whether it's through "data for good" initiatives or mentoring others in the ML community, I'm always looking for ways to make a difference.
 
-I love meeting new people, collaborating and having interesting conversations! You can email me at: **hello [at] shoumikchow [dot] com**
+---
 
+### Let's Connect! 🤝
+I love meeting new people, collaborating on interesting projects, and having meaningful conversations about technology, innovation, and the future of AI. 
 
-* * *
+**Get in touch:** **hello [at] shoumikchow [dot] com**
 
-### Recent News
+---
 
-* **[March 1, 2021]** I was recently interviewed about my experience in computer vision, how I got into the field and my expectations of the future. Read it on the [2D3D.ai blog](https://2d3d.ai/index.php/2021/02/28/meet-the-community-member-shoumik-sharar-chowdhury/) [[archive here](https://archive.ph/QglSe)].
-* **[July 19, 2021]** I joined Andium today where I will be working with ML Ops and computer vision. I'll be WHF from Houston for now but who knows what the future holds 😉 Very excited for this new adventure!
-* **[February 1, 2023]** I moved to Austin! Would love to get to know more people in ATX.
-* **[February 1, 2024]** I have now moved to NYC!
+### Recent Updates
+
+* **[February 1, 2024]** 🗽 Moved to New York City!
+* **[February 1, 2023]** 🤠 Relocated to Austin, Texas! Looking forward to connecting with the amazing ATX community.
+* **[July 19, 2021]** 🚀 Joined [Andium](https://andium.com) as a Machine Learning Engineer, focusing on ML Ops and computer vision. Working remotely from Houston for now, but excited to see where this journey takes me!
+* **[March 1, 2021]** 📸 Featured in an interview on the [2D3D.ai blog](https://2d3d.ai/index.php/2021/02/28/meet-the-community-member-shoumik-sharar-chowdhury/) about my computer vision experience and future expectations. [[archive here](https://archive.ph/QglSe)]

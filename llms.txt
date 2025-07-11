@@ -1,14 +1,14 @@
 # Shoumik Sharar Chowdhury - Personal Website
 
 ## Website Overview
-This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Engineer currently working at Andium. The website is built using Jekyll with the Minimal theme and is hosted on GitHub Pages.
+This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Engineer currently working at Andium. The website is built using Jekyll with the Minimal theme and is hosted on GitHub Pages. The site has been recently redesigned with improved content organization, professional presentation, and enhanced user experience.
 
 ## Website Structure
-- **Homepage**: Personal introduction and recent news updates
-- **About**: Personal background, interests, and hobbies
+- **Homepage**: Professional introduction, work focus areas, and recent updates with engaging call-to-action
+- **About**: Personal background, interests, and hobbies organized into clear sections
 - **Experience**: Educational background, work history, and certifications
-- **Research**: Academic research and published papers
-- **Projects**: Notable software projects and contributions
+- **Research**: Academic research and published papers with detailed abstracts
+- **Projects**: Notable software projects and contributions with feature highlights
 
 ## Personal Information
 - **Name**: Shoumik Sharar Chowdhury
@@ -22,17 +22,18 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
   - MS in Computer Science, University of Houston (2021)
   - BS in Computer Science, BRAC University (2016)
 - **Work Experience**:
-  - Andium (2021-present): ML Ops and computer vision
+  - Andium (2021-present): ML Ops and computer vision, working across the entire ML pipeline
   - University of Houston Quantitative Imaging Lab: Graph structures and videos
-  - Gaze.ai: Computer vision problems
-  - KolpoKoushol: Research and development
-  - Panacea Live: Anti-counterfeit technology
+  - Gaze.ai: Computer vision problems with talented team in Bangladesh
+  - KolpoKoushol: Research and development (part-time then full-time)
+  - Panacea Live: Anti-counterfeit technology for consumer protection
   - G&R: Android development intern
-  - Mastermind School: English teacher
+  - Mastermind School: English teacher (first job out of high school)
 
 ## Technical Expertise
-- **Primary Focus**: Machine Learning, Computer Vision, MLOps
-- **Interests**: Data for good, computer vision, MLOps
+- **Primary Focus**: Machine Learning, Computer Vision, MLOps, ML Infrastructure
+- **Interests**: Data for good, computer vision, MLOps, interdisciplinary problem-solving
+- **Approach**: Combines diverse domain knowledge with technical expertise for innovative solutions
 - **Certifications**:
   - Deep Learning Specialization
   - AI for Medicine Specialization
@@ -41,19 +42,23 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
   - Generative AI with Large Language Models Specialization
 
 ## Research Publications
-1. **Statement networks: a power structure narrative as depicted by newspapers** (NeurIPS 2018 ML4D workshop)
+1. **Statement Networks: A Power Structure Narrative as Depicted by Newspapers** (NeurIPS 2018 ML4D workshop)
    - Analyzed political discourse patterns in Bangladeshi newspapers
-   - Used network analysis to identify power structures
+   - Used network analysis to identify power structures and elite-centered narratives
+   - Revealed how media coverage creates perceived power structures among political elites
 
 2. **Sonar-based SLAM Using Occupancy Grid Mapping and Dead Reckoning** (TENCON 2018)
-   - Developed inexpensive robot for interior mapping
-   - Used sonar-based SLAM technology
+   - Developed low-cost robot for interior mapping using sonar-based SLAM
+   - Combined occupancy grid mapping with dead reckoning for autonomous navigation
+   - Presented at IEEE Region 10's leading technical conference
 
 ## Notable Projects
 1. **bbox-visualizer**: Python library for drawing bounding boxes and labels
    - Featured on Hacker News front page
    - Featured on Python Bytes podcast
    - Solves positioning and visualization challenges in computer vision
+   - Key features: Easy to use, multiple visualization styles, zero configuration, production-ready
+   - Eliminates complex mathematical calculations for proper label positioning
 
 2. **Suicide Prevention Bot**: Twitter bot for mental health support
    - Automatically responds to potentially suicidal tweets
@@ -61,11 +66,18 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
    - Uses sentiment analysis to reduce false positives
 
 ## Personal Interests
-- **Travel and Outdoor Activities**: Hiking, photography
-- **Entertainment**: Reading books, watching movies, listening to podcasts and music
-- **Games**: Chess, board games
-- **Sports**: Chelsea Football Club supporter
+- **Travel and Photography**: Exploring new places and capturing moments through photography
+- **Entertainment**: Reading books (TheStoryGraph), watching movies (Letterboxd), listening to podcasts and music (Spotify)
+- **Games**: Chess enthusiast (active on Chess.com), board games
+- **Sports**: Devoted Chelsea Football Club supporter
 - **Social Media**: Active on Instagram, Twitter, LinkedIn, GitHub
+
+## Website Content Improvements
+- **Enhanced Professional Presentation**: All sections now feature improved descriptions, better organization, and professional formatting
+- **Better User Experience**: Clear sections, visual hierarchy, and engaging content structure
+- **Improved Navigation**: Enhanced back links and better call-to-action elements
+- **Visual Appeal**: Added emojis and better formatting for improved readability
+- **Consistent Styling**: Unified design language across all pages
 
 ## Website Technical Details
 - **Platform**: Jekyll static site generator
@@ -74,11 +86,12 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
 - **Domain**: shoumikchow.com
 - **Analytics**: Google Analytics (G-5CSP643828)
 - **Plugins**: jekyll-sitemap, jekyll-redirect-from, jemoji
+- **Content**: Recently redesigned with improved organization and professional presentation
 
 ## Recent Updates
-- February 2024: Moved to NYC
-- February 2023: Moved to Austin
-- July 2021: Joined Andium
+- February 2024: Moved to NYC, exploring the vibrant tech scene
+- February 2023: Moved to Austin, connecting with ATX community
+- July 2021: Joined Andium as Machine Learning Engineer
 - March 2021: Interviewed by 2D3D.ai about computer vision experience
 
 ## Contact Information
@@ -87,4 +100,4 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
 - **Twitter**: Available through website navigation
 - **GitHub**: Available through website navigation
 
-This website serves as a comprehensive portfolio showcasing Shoumik's professional experience in machine learning and computer vision, his academic research contributions, and his personal interests and projects. 
+This website serves as a comprehensive portfolio showcasing Shoumik's professional experience in machine learning and computer vision, his academic research contributions, and his personal interests and projects. The site has been recently enhanced with improved content organization, professional presentation, and better user experience. 

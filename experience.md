@@ -1,13 +1,11 @@
 ---
 layout: default
-redirect_from:
-  - /experience
 ---
 
 ## Experience
 
 ### Education
-* University of Houston (Houston, Texas, USA)  
+* University of Houston (Houston, Texas)  
 MS in Computer Science, 2021
 
 * BRAC University (Dhaka, Bangladesh)  
@@ -16,19 +14,20 @@ BS in Computer Science, 2016
 
 ### Work
 
-I first started working straight out of high school as an English Language teacher at [Mastermind School](https://www.mastermindschool.org/), the same high school I graduated from. I taught English to sixth grade students.
+My journey started right after high school, when I returned to my alma mater—[Mastermind School](https://www.mastermindschool.org/)—to teach English to sixth graders. Yes, I went from student to teacher in the same hallways!
 
-I was an intern at [G&R](https://www.green-red.com/) from January 2016 to April 2016 where I was in the Android development team.
+In early 2016, I joined [G&R](https://www.green-red.com/) as an intern on the Android development team. It was a short gig (January to April), but a solid introduction to working with real-world code.
 
-In April 2016, I got a job at [Panacea Live](https://www.panacea.live/) where I worked on technology to protect consumers from counterfeit products.
+Then came [Panacea Live](https://www.panacea.live/) in April 2016, where I helped build tech to fight counterfeit products.
 
-From February 2016 to January 2019 at KolpoKoushol (initially part-time and then full-time), detailed in the [Research](../research) page.
+From February 2016 to January 2019, I worked at KolpoKoushol—first part-time, then full-time—doing a bunch of cool things that you can read more about on the [Research](../research) page.
 
-In February 2019, I started working at [Gaze](https://gaze.ai) where I had a short but very sweet 6 month stint working with some of the smartest people in Bangladesh to solve difficult computer vision problems.
+In February 2019, I joined [Gaze](https://gaze.ai), the first computer cision company in Bangladesh, for a short (but sweet!) 6-month stint, tackling tough computer vision problems with some of the brightest minds in Bangladesh.
 
-I worked at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston during my Masters where I worked with graph structures and vidoes.
+During my Master’s, I worked at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston, diving deep into graph structures and video analysis. 
 
-I am now at [Andium](https://andium.com) where I work with ML Ops and computer vision.
+Now, I’m at [Andium](https://andium.com), where I work with ML infra and computer vision to build some pretty cool stuff!
+
 ### Certifications
 
 * [Deep Learning Specialization](https://coursera.org/share/4de30d50ef6f9603b2e860295db80036)

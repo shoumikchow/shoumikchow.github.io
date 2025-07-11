@@ -1,26 +1,41 @@
 ---
 layout: default
-redirect_from:
-  - /research
 ---
 
 ## Research
 
-My undergraduate thesis, led by [Dr. Tarem Ahmed](http://www.cse.iub.edu.bd/faculties/41), turned into a conference paper that was published at Tencon, a premier international technical conference of IEEE Region 10, in 2018. We made an inexpensive robot to map interiors using sonar-based SLAM.
+My research experience spans both robotics and computational social science, focusing on practical applications of machine learning and data analysis.
 
-I worked at [KolpoKoushol](https://www.facebook.com/KKoushol/), a knowledge initiative led by [Dr. Nazmus Saquib](https://nsaquib.org), where we published a paper at NeurIPS. Our paper showed that according to three major English newspapers of Bangladesh, there is a clique that exists -- or seems to exist according to newspaper coverage -- between the top politicians of Bangladesh who only talk about themselves and amongst themselves while ignoring more pertinent issues that exist in the country.
+### Research Areas
 
+#### **Robotics & Computer Vision**
+As part of my undergraduate thesis under [Dr. Tarem Ahmed](http://www.cse.iub.edu.bd/faculties/41), I developed a low-cost robot capable of interior mapping using sonar-based SLAM (Simultaneous Localization and Mapping). This work was presented at **TENCON 2018**, one of IEEE Region 10’s leading technical conferences.
 
-### Papers
+#### **Computational Social Science**
+At [KolpoKoushol](https://www.facebook.com/KKoushol/), a knowledge initiative led by [Dr. Nazmus Saquib](https://nsaquib.org), I worked on a project analyzing how political discourse is represented in Bangladeshi news media. Our research uncovered patterns of elite-centered narratives, and was published at **NeurIPS 2018** in the ML4D workshop.
 
+---
 
-* **Statement networks: a power structure narrative as depicted by newspapers**  
-**Shoumik Sharar Chowdhury**, Nazmus Saquib, Niamat Zawad, Manash Kumar Mandal, Syed Haque. In ML for the Developing World (ML4D) workshop at
-Advances in Neural Information Processing Systems (NeurIPS 2018)  
-  [[link]](https://arxiv.org/abs/1812.03632)
+### Publications
 
-* **Sonar-based SLAM Using Occupancy Grid Mapping and Dead Reckoning**  
-Muhammad S. A. Khan, **Shoumik Sharar Chowdhury**, Nafis Niloy, Fatema Tuz Zohra Aurin, Tarem Ahmed. In TENCON 2018 - 2018 IEEE Region 10 Conference (TENCON 2018)  
-  [[link]](../files/tencon2018.pdf)
+#### **Statement Networks: A Power Structure Narrative as Depicted by Newspapers**  
+**Shoumik Sharar Chowdhury**, Nazmus Saquib, Niamat Zawad, Manash Kumar Mandal, Syed Haque  
+*ML for the Developing World (ML4D) Workshop at NeurIPS 2018*
 
-[back](https://shoumikchow.com)
+**Abstract:**  
+This paper examines political speech coverage across three major English-language newspapers in Bangladesh. Our analysis reveals a tightly connected group of political leaders who dominate the discourse, often focusing on themselves and each other while overlooking broader national concerns.
+
+🔗 **[Read Paper](https://arxiv.org/abs/1812.03632)**
+
+#### **Sonar-based SLAM Using Occupancy Grid Mapping and Dead Reckoning**  
+Muhammad S. A. Khan, **Shoumik Sharar Chowdhury**, Nafis Niloy, Fatema Tuz Zohra Aurin, Tarem Ahmed  
+*IEEE Region 10 Conference (TENCON 2018)*
+
+**Abstract:**  
+We propose an affordable method for indoor mapping using sonar sensors, leveraging occupancy grid mapping and dead reckoning to enable autonomous navigation for mobile robots.
+
+🔗 **[Read Paper](../files/tencon2018.pdf){:target="_blank"}**
+
+---
+
+[← Back to Home](https://shoumikchow.com)

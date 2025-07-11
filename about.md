@@ -1,19 +1,19 @@
 ---
 layout: default
-redirect_from:
-  - /about
 ---
 
 ## About
 
-I am originally from Dhaka, Bangladesh. 🇧🇩
+Hi! I'm from Dhaka, Bangladesh. 🇧🇩
 
-When I am not working, I like travelling, reading [books](https://app.thestorygraph.com/profile/shoumikchow) and watching [movies](https://letterboxd.com/shoumikchow/).
+When I’m not working, you’ll probably find me daydreaming about my next trip, lost in a [book](https://app.thestorygraph.com/profile/shoumikchow), or deep into a [movie](https://letterboxd.com/shoumikchow/) rabbit hole.
 
-I enjoy listening to podcasts and music ([Spotify](https://open.spotify.com/user/shoumikchow)) and can never make up my mind which one to listen to so I switch back and forth frequently. I like taking photos. You can find a carefully curated gallery on my [Instagram](https://www.instagram.com/shoumikchow/).
+I can never decide between podcasts or music—so I just keep switching back and forth. (Decisions are hard.) You can peek into my current audio chaos on [Spotify](https://open.spotify.com/user/shoumikchow).
 
-I like board games and playing chess ([send me a challenge!](https://chess.com/play/shoumikcfc)).
+I love taking photos too. My [Instagram](https://www.instagram.com/shoumikchow/) is where I stash the ones that made the cut.
 
-I am a massive supporter of Chelsea Football Club. Come on Chelsea!
+Big fan of board games, and I’ll never say no to a good chess match—[challenge me](https://chess.com/play/shoumikcfc) if you’re feeling brave. ♟️
+
+Oh, and I’m a *very* loyal Chelsea FC fan. Come on you Blues! 💙
 
 [back](https://shoumikchow.com)
