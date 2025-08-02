@@ -1,12 +1,41 @@
-// Dark mode toggle functionality
+// Dark mode toggle functionality with system theme detection
 (function() {
   'use strict';
 
-  // Check for saved theme preference or default to 'light'
-  const currentTheme = localStorage.getItem('theme') || 'light';
-  
-  // Apply the theme on page load
-  document.documentElement.setAttribute('data-theme', currentTheme);
+  // Function to get system theme preference
+  function getSystemTheme() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  // Function to get current theme (prioritize saved preference, fallback to system)
+  function getCurrentTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme;
+    }
+    return getSystemTheme();
+  }
+
+  // Function to apply theme
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }
+
+  // Initialize theme on page load
+  const initialTheme = getCurrentTheme();
+  applyTheme(initialTheme);
+
+  // Listen for system theme changes
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  mediaQuery.addEventListener('change', function(e) {
+    // Only apply system theme if user hasn't manually set a preference
+    if (!localStorage.getItem('theme')) {
+      const newTheme = e.matches ? 'dark' : 'light';
+      applyTheme(newTheme);
+      updateToggleIcon(newTheme);
+    }
+  });
 
   // Create toggle button
   function createToggleButton() {
@@ -18,7 +47,7 @@
     // Add sun/moon icon
     const icon = document.createElement('span');
     icon.className = 'icon';
-    icon.innerHTML = currentTheme === 'dark' ? '☀️' : '🌙';
+    icon.innerHTML = initialTheme === 'dark' ? '☀️' : '🌙';
     toggle.appendChild(icon);
     
     // Add click event
@@ -27,14 +56,21 @@
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       
       // Update theme
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
+      applyTheme(newTheme);
       
       // Update icon
-      icon.innerHTML = newTheme === 'dark' ? '☀️' : '🌙';
+      updateToggleIcon(newTheme);
     });
     
     return toggle;
+  }
+
+  // Function to update toggle icon
+  function updateToggleIcon(theme) {
+    const icon = document.querySelector('.theme-toggle .icon');
+    if (icon) {
+      icon.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+    }
   }
 
   // Add toggle button to page when DOM is loaded
