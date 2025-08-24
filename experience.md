@@ -26,7 +26,7 @@ In February 2019, I joined [Gaze](https://gaze.ai), the first computer vision co
 
 During my Master’s, I worked at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston, diving deep into graph structures and video analysis. 
 
-Now, I’m at [Andium](https://andium.com), where I work with ML infra and computer vision to build some pretty cool stuff!
+Now, I’m at [Andium](https://andium.com), where I work with ML platform and computer vision to build some pretty cool stuff!
 
 ### Certifications
 

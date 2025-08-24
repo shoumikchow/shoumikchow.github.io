@@ -31,7 +31,7 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
   - Mastermind School: English teacher (first job out of high school)
 
 ## Technical Expertise
-- **Primary Focus**: Machine Learning, Computer Vision, MLOps, ML Infrastructure
+- **Primary Focus**: Machine Learning, Computer Vision, MLOps, ML Infrastructure, ML Platforms
 - **Interests**: Data for good, computer vision, MLOps, interdisciplinary problem-solving
 - **Approach**: Combines diverse domain knowledge with technical expertise for innovative solutions
 - **Certifications**:

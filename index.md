@@ -5,10 +5,10 @@ layout: default
 
 # Hi! I'm Shoumik 👋
 
-I'm a **Machine Learning Engineer** at [Andium](https://andium.com) where I work across the entire machine learning pipeline. My passion lies at the intersection of **computer vision** and **ML infrastructure**, and I'm deeply committed to leveraging data for social good.
+I'm a **Machine Learning Engineer** at [Andium](https://andium.com) where I work across the entire machine learning pipeline. My passion lies at the intersection of **computer vision** and **ML platforms**, and I'm deeply committed to leveraging data for social good.
 
 ### What I Do
-I specialize in building robust ML systems that can scale from research to production. My work spans everything from developing computer vision models to designing efficient ML infrastructure that enables teams to deploy AI solutions effectively.
+I specialize in building robust ML systems that can scale from research to production. My work spans everything from developing computer vision models to designing efficient ML platforms that enables teams to deploy AI solutions effectively.
 
 ### Beyond the Code
 I'm passionate about using technology to create positive social impact. Whether it's through "data for good" initiatives or mentoring others in the ML community, I'm always looking for ways to make a difference.
