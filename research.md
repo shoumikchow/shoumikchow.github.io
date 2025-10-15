@@ -19,7 +19,7 @@ At [KolpoKoushol](https://www.facebook.com/KKoushol/), a knowledge initiative le
 ### Publications
 
 #### **Statement Networks: A Power Structure Narrative as Depicted by Newspapers**  
-**Shoumik Sharar Chowdhury**, Nazmus Saquib, Niamat Zawad, Manash Kumar Mandal, Syed Haque  
+**Shoumik S Chowdhury**, Nazmus Saquib, Niamat Zawad, Manash Kumar Mandal, Syed Haque  
 *ML for the Developing World (ML4D) Workshop at NeurIPS 2018*
 
 **Abstract:**  
@@ -28,7 +28,7 @@ This paper examines political speech coverage across three major English-languag
 🔗 **[Read Paper](https://arxiv.org/abs/1812.03632)**
 
 #### **Sonar-based SLAM Using Occupancy Grid Mapping and Dead Reckoning**  
-Muhammad S. A. Khan, **Shoumik Sharar Chowdhury**, Nafis Niloy, Fatema Tuz Zohra Aurin, Tarem Ahmed  
+Muhammad S. A. Khan, **Shoumik S Chowdhury**, Nafis Niloy, Fatema Tuz Zohra Aurin, Tarem Ahmed  
 *IEEE Region 10 Conference (TENCON 2018)*
 
 **Abstract:**  

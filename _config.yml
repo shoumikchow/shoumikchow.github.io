@@ -1,4 +1,4 @@
-title: Shoumik Sharar Chowdhury
+title: Shoumik Chowdhury
 logo: /assets/img/img.jpg
 description: ML Engineer specializing in computer vision and ML platforms at Andium. Passionate about data for good and solving complex machine learning problems.
 url: "https://shoumikchow.com"
@@ -11,7 +11,7 @@ github: /github
 theme: jekyll-theme-minimal
 
 # SEO and Social Media
-author: Shoumik Sharar Chowdhury
+author: Shoumik Chowdhury
 author_bio: ML Engineer at Andium working on computer vision and ML platforms
 keywords: "machine learning, computer vision, ML platforms, data science, AI, Andium, ML Engineer"
 twitter_username: "@shoumikchow"
@@ -27,7 +27,7 @@ twitter_card: summary_large_image
 structured_data:
   person:
     "@type": Person
-    name: "Shoumik Sharar Chowdhury"
+    name: "Shoumik Chowdhury"
     jobTitle: "ML Engineer"
     worksFor: "Andium"
     url: "https://shoumikchow.com"

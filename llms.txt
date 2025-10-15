@@ -1,7 +1,7 @@
-# Shoumik Sharar Chowdhury - Personal Website
+# Shoumik Chowdhury - Personal Website
 
 ## Website Overview
-This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Engineer currently working at Andium. The website is built using Jekyll with the Minimal theme and is hosted on GitHub Pages. The site has been recently redesigned with improved content organization, professional presentation, and enhanced user experience.
+This is the personal website of Shoumik Chowdhury, a Machine Learning Engineer currently working at Andium. The website is built using Jekyll with the Minimal theme and is hosted on GitHub Pages. The site has been recently redesigned with improved content organization, professional presentation, and enhanced user experience.
 
 ## Website Structure
 - **Homepage**: Professional introduction, work focus areas, and recent updates with engaging call-to-action
@@ -11,7 +11,7 @@ This is the personal website of Shoumik Sharar Chowdhury, a Machine Learning Eng
 - **Projects**: Notable software projects and contributions with feature highlights
 
 ## Personal Information
-- **Name**: Shoumik Sharar Chowdhury
+- **Name**: Shoumik Chowdhury
 - **Current Role**: Machine Learning Engineer at Andium
 - **Location**: New York City (moved in February 2024)
 - **Email**: hello@shoumikchow.com
