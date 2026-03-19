@@ -7,6 +7,7 @@ google_analytics: G-5CSP643828
 email: mailto:hello@shoumikchow.com
 linkedin: /linkedin
 twitter: /twitter
+bluesky: /bluesky
 github: /github
 theme: jekyll-theme-minimal
 
@@ -35,6 +36,12 @@ structured_data:
       - "https://github.com/shoumikchow"
       - "https://linkedin.com/in/shoumikchow"
       - "https://twitter.com/shoumikchow"
+      - "https://bsky.app/profile/shoumikchow.com"
+
+# Update these ISBNs when you start/finish a book
+currently_reading:
+    - "9781784787271"  # The ABCs of Socialism
+    - "9781662510786"  # Bengal Hound
 
 pagelist:
     -
@@ -63,3 +70,4 @@ exclude:
     - README.md
     - CNAME
     - sw.js
+    - worker

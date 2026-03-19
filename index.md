@@ -5,13 +5,32 @@ layout: default
 
 # Hi! I'm Shoumik 👋
 
-I'm a **Machine Learning Engineer** at [Andium](https://andium.com) where I work across the entire machine learning pipeline. My passion lies at the intersection of **computer vision** and **ML platforms**, and I'm deeply committed to leveraging data for social good.
+I'm a **Machine Learning Engineer** at [Andium](https://andium.com) where I work across the entire machine learning pipeline. My passion lies at the intersection of **computer vision** and **ML platforms**, and I'm deeply committed to leveraging data for social good. My pronouns are he/him/él.
 
 ### What I Do
 I specialize in building robust ML systems that can scale from research to production. My work spans everything from developing computer vision models to designing efficient ML platforms that enables teams to deploy AI solutions effectively.
 
 ### Beyond the Code
 I'm passionate about using technology to create positive social impact. Whether it's through "data for good" initiatives or mentoring others in the ML community, I'm always looking for ways to make a difference.
+
+---
+
+### Now
+
+<div class="now-grid">
+  <div class="now-item now-item--music">
+    <span class="now-label"><span class="now-label-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></span>Listening</span>
+    <div class="now-card" id="now-music"><span class="now-loading"></span></div>
+  </div>
+  <div class="now-item now-item--book">
+    <span class="now-label"><span class="now-label-icon"><svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg></span>Reading</span>
+    <div class="now-card" id="now-books" data-isbns="{{ site.currently_reading | join: ',' }}"><span class="now-loading"></span></div>
+  </div>
+  <div class="now-item now-item--movie">
+    <span class="now-label"><span class="now-label-icon"><svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg></span>Watching</span>
+    <div class="now-card" id="now-movie"><span class="now-loading"></span></div>
+  </div>
+</div>
 
 ---
 

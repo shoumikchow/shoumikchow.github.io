@@ -1,0 +1,17 @@
+name = "shoumikchow-now"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+workers_dev = true
+
+[observability]
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+# Set secrets via: npx wrangler secret put <NAME>
+# Required for Spotify:
+#   SPOTIFY_CLIENT_ID
+#   SPOTIFY_CLIENT_SECRET
+#   SPOTIFY_REFRESH_TOKEN
+# Required for Letterboxd movie details (runtime, director, genres):
+#   TMDB_API_KEY
