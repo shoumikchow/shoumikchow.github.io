@@ -1,5 +1,5 @@
 // Update this URL after deploying your Cloudflare Worker
-const WORKER_URL = "https://shoumikchow-now.shoumik.workers.dev";
+const WORKER_URL = "https://shoumikchow-now.shoumikchow.workers.dev";
 
 function createErrorState() {
   return '<span class="now-error">unavailable</span>';

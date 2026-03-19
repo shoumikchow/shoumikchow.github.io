@@ -18,6 +18,7 @@ keywords: "machine learning, computer vision, ML platforms, data science, AI, An
 twitter_username: "@shoumikchow"
 linkedin_username: "shoumikchow"
 github_username: "shoumikchow"
+bluesky_username: "shoumikchow.com"
 
 # Open Graph and Social Media
 og_image: /assets/img/img.jpg
@@ -40,8 +41,8 @@ structured_data:
 
 # Update these ISBNs when you start/finish a book
 currently_reading:
-    - "9781784787271"  # The ABCs of Socialism
-    - "9781662510786"  # Bengal Hound
+    - "9781784787264"
+    - "9781958652022"
 
 pagelist:
     -
