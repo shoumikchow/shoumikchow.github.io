@@ -534,6 +534,13 @@ section {
   padding: 4px 0;
 }
 
+.now-empty {
+  font-size: 12.5px;
+  color: var(--fg-muted);
+  font-style: italic;
+  margin: 4px 0;
+}
+
 // ─── Footer ───────────────────────────────────────────────────
 footer {
   width: 240px;

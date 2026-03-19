@@ -70,7 +70,7 @@ async function loadBooks() {
 
   const isbns = el.dataset.isbns;
   if (!isbns) {
-    el.innerHTML = createErrorState();
+    el.innerHTML = `<p class="now-empty">Between books. Send recs.</p>`;
     return;
   }
 
@@ -80,7 +80,7 @@ async function loadBooks() {
     const books = await res.json();
 
     if (!books.length) {
-      el.innerHTML = createErrorState();
+      el.innerHTML = `<p class="now-empty">Between books. Send recs.</p>`;
       return;
     }
 
@@ -154,7 +154,7 @@ async function loadSteam() {
     const games = await res.json();
 
     if (!games.length) {
-      el.closest(".now-item").style.display = "none";
+      el.innerHTML = `<p class="now-empty">Touching grass instead of controllers lately.</p>`;
       return;
     }
 
