@@ -164,14 +164,16 @@ async function loadSteam() {
           ? `<img src="${escapeHtml(game.cover)}" alt="${escapeHtml(game.name)}" class="now-poster now-poster-game" />`
           : "";
 
+        const storeUrl = `https://store.steampowered.com/app/${encodeURIComponent(game.appid)}`;
+
         return `
-          <div class="now-card-link now-card-link--static">
+          <a href="${escapeHtml(storeUrl)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
             ${coverHtml}
             <div class="now-info">
               <strong class="now-title">${escapeHtml(game.name)}</strong>
               <span class="now-meta">${escapeHtml(game.playtimeForever)} played</span>
             </div>
-          </div>
+          </a>
         `;
       })
       .join("");
