@@ -3,6 +3,8 @@ interface Env {
   SPOTIFY_CLIENT_SECRET?: string;
   SPOTIFY_REFRESH_TOKEN?: string;
   TMDB_API_KEY?: string;
+  STEAM_API_KEY?: string;
+  STEAM_ID?: string;
 }
 
 const LETTERBOXD_USERNAME = "shoumikchow";
@@ -189,6 +191,55 @@ async function fetchBookByISBN(isbn: string): Promise<unknown | null> {
   };
 }
 
+async function handleSteam(env: Env): Promise<Response> {
+  if (!env.STEAM_API_KEY || !env.STEAM_ID) {
+    return jsonResponse({ error: "Steam not configured" }, 503);
+  }
+
+  const res = await fetch(
+    `https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${env.STEAM_API_KEY}&steamid=${env.STEAM_ID}&format=json&count=3`
+  );
+
+  if (!res.ok) {
+    return jsonResponse({ error: "Failed to fetch Steam data" }, 502);
+  }
+
+  const data: {
+    response: {
+      total_count?: number;
+      games?: Array<{
+        appid: number;
+        name: string;
+        playtime_2weeks: number;
+        playtime_forever: number;
+        img_icon_url: string;
+      }>;
+    };
+  } = await res.json();
+
+  if (!data.response.games?.length) {
+    return jsonResponse([]);
+  }
+
+  const formatPlaytime = (minutes: number): string => {
+    if (minutes < 60) return `${minutes}m`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  };
+
+  const games = data.response.games
+    .sort((a, b) => b.playtime_2weeks - a.playtime_2weeks)
+    .map((game) => ({
+      name: game.name,
+      appid: game.appid,
+      cover: `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/library_600x900_2x.jpg`,
+      playtimeForever: formatPlaytime(game.playtime_forever),
+    }));
+
+  return jsonResponse(games);
+}
+
 async function handleSpotify(env: Env): Promise<Response> {
   if (!env.SPOTIFY_CLIENT_ID || !env.SPOTIFY_CLIENT_SECRET || !env.SPOTIFY_REFRESH_TOKEN) {
     return jsonResponse({ error: "Spotify not configured" }, 503);
@@ -282,6 +333,8 @@ export default {
           return handleBooks(request);
         case "/spotify":
           return handleSpotify(env);
+        case "/steam":
+          return handleSteam(env);
         default:
           return jsonResponse({ error: "Not found" }, 404);
       }

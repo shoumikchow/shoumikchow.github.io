@@ -16,6 +16,7 @@
   --now-music: #1db954;
   --now-book: #c7873a;
   --now-movie: #40bcf4;
+  --now-gaming: #7952b3;
 }
 
 [data-theme="dark"] {
@@ -28,6 +29,7 @@
   --surface-hover: rgba(255, 255, 255, 0.07);
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+  --now-gaming: #a78bda;
 }
 
 // ─── Typography ───────────────────────────────────────────────
@@ -353,6 +355,7 @@ section {
 .now-item:nth-child(1) { animation-delay: 0.05s; }
 .now-item:nth-child(2) { animation-delay: 0.12s; }
 .now-item:nth-child(3) { animation-delay: 0.19s; }
+.now-item:nth-child(4) { animation-delay: 0.26s; }
 
 @keyframes nowReveal {
   to { opacity: 1; transform: translateY(0); }
@@ -421,14 +424,25 @@ section {
   }
 }
 
+.now-card-link--static {
+  cursor: default;
+
+  &:hover, &:focus {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
 // Type accents
 .now-item--music .now-card-link { border-left-color: var(--now-music); }
 .now-item--book .now-card-link  { border-left-color: var(--now-book); }
-.now-item--movie .now-card-link { border-left-color: var(--now-movie); }
+.now-item--movie .now-card-link  { border-left-color: var(--now-movie); }
+.now-item--gaming .now-card-link { border-left-color: var(--now-gaming); }
 
-.now-item--music .now-label { color: var(--now-music); }
-.now-item--book .now-label  { color: var(--now-book); }
-.now-item--movie .now-label { color: var(--now-movie); }
+.now-item--music .now-label  { color: var(--now-music); }
+.now-item--book .now-label   { color: var(--now-book); }
+.now-item--movie .now-label  { color: var(--now-movie); }
+.now-item--gaming .now-label { color: var(--now-gaming); }
 
 // Artwork
 .now-poster {
@@ -443,6 +457,12 @@ section {
 
 .now-card-link:hover .now-poster {
   transform: scale(1.03);
+}
+
+.now-poster-game {
+  width: 34px;
+  height: 50px;
+  border-radius: 2px;
 }
 
 .now-poster-book {

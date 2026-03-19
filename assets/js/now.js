@@ -144,8 +144,45 @@ async function loadSpotify() {
   }
 }
 
+async function loadSteam() {
+  const el = document.getElementById("now-gaming");
+  if (!el) return;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/steam`);
+    if (!res.ok) throw new Error();
+    const games = await res.json();
+
+    if (!games.length) {
+      el.closest(".now-item").style.display = "none";
+      return;
+    }
+
+    el.innerHTML = games
+      .map((game) => {
+        const coverHtml = game.cover
+          ? `<img src="${escapeHtml(game.cover)}" alt="${escapeHtml(game.name)}" class="now-poster now-poster-game" />`
+          : "";
+
+        return `
+          <div class="now-card-link now-card-link--static">
+            ${coverHtml}
+            <div class="now-info">
+              <strong class="now-title">${escapeHtml(game.name)}</strong>
+              <span class="now-meta">${escapeHtml(game.playtimeForever)} played</span>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  } catch {
+    el.innerHTML = createErrorState();
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadLetterboxd();
   loadBooks();
   loadSpotify();
+  loadSteam();
 });
