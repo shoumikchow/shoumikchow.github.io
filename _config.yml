@@ -5,10 +5,10 @@ url: "https://shoumikchow.com"
 show_downloads: true
 google_analytics: G-5CSP643828
 email: mailto:hello@shoumikchow.com
-linkedin: /linkedin
-twitter: /twitter
-bluesky: /bluesky
-github: /github
+linkedin: https://linkedin.com/in/shoumikchow
+twitter: https://twitter.com/shoumikchow
+bluesky: https://bsky.app/profile/shoumikchow.com
+github: https://github.com/shoumikchow
 theme: jekyll-theme-minimal
 permalink: pretty
 
