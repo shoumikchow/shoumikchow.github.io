@@ -11,7 +11,7 @@
   --surface-hover: rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-
+  --accent: #3b82f6;
   // Now section accents — the only color on the entire site
   --now-music: #1db954;
   --now-book: #c7873a;
@@ -29,6 +29,7 @@
   --surface-hover: rgba(255, 255, 255, 0.07);
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+  --accent: #60a5fa;
   --now-gaming: #a78bda;
 }
 
@@ -36,7 +37,7 @@
 body {
   background: var(--bg);
   color: var(--fg-muted);
-  font: 400 14px/1.7 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
+  font: 400 15px/1.7 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
   padding: 60px;
   margin: 0;
   transition: background 0.3s ease, color 0.3s ease;
@@ -53,7 +54,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 22px;
+  font-size: 24px;
   margin-bottom: 24px;
 
   a {
@@ -62,7 +63,7 @@ h1 {
   }
 }
 
-h2 { font-size: 18px; }
+h2 { font-size: 19px; }
 h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
 
 p, ul, ol, table, pre, dl {
@@ -73,15 +74,16 @@ p, ul, ol, table, pre, dl {
 a {
   color: var(--fg);
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: all 0.2s ease;
   border-bottom: 1px solid transparent;
 
   &:hover {
-    border-bottom-color: var(--fg);
+    color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 
   &:focus {
-    outline: 1px solid var(--fg);
+    outline: 1px solid var(--accent);
     outline-offset: 2px;
   }
 }
@@ -103,14 +105,14 @@ hr {
 blockquote {
   margin: 0 0 20px;
   padding: 0 0 0 16px;
-  border-left: 2px solid var(--rule);
+  border-left: 2px solid var(--accent);
   color: var(--fg-muted);
   font-style: italic;
 }
 
 code, pre {
   font-family: "SF Mono", "Fira Code", Monaco, Consolas, monospace;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--fg);
 }
 
@@ -146,17 +148,17 @@ header {
   height: 240px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid var(--rule);
+  border: 2px solid var(--rule);
   margin: 0 auto 16px;
   display: block;
   filter: grayscale(20%);
-  transition: filter 0.3s ease;
+  transition: all 0.4s ease;
 
   &:hover { filter: grayscale(0%); }
 }
 
 .site-description {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--fg-faint);
   margin-bottom: 24px;
@@ -237,11 +239,12 @@ ul.downloads {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   color: var(--fg-faint);
   border-bottom: none;
-  transition: color 0.15s ease;
+  border-radius: 8px;
+  transition: all 0.2s ease;
   padding: 0;
   gap: 0;
 
@@ -249,11 +252,20 @@ ul.downloads {
     color: var(--fg);
     border-bottom: none;
     font-weight: 400;
+    background: var(--surface-hover);
+    transform: translateY(-2px);
   }
 
-  svg { width: 14px; height: 14px; }
+  svg { width: 15px; height: 15px; }
   strong { display: none; }
 }
+
+// Social brand color hovers
+.downloads li:nth-child(1) a:hover { color: #1da1f2; } // Twitter
+.downloads li:nth-child(2) a:hover { color: #0085ff; } // Bluesky
+.downloads li:nth-child(3) a:hover { color: #0a66c2; } // LinkedIn
+.downloads li:nth-child(4) a:hover { color: var(--fg); } // GitHub
+.downloads li:nth-child(5) a:hover { color: #ea4335; } // Email
 
 // ─── Content area ─────────────────────────────────────────────
 main {
@@ -290,6 +302,7 @@ main {
     border-color: var(--fg);
     color: var(--fg);
     background: none;
+    transform: rotate(15deg);
   }
 
   .icon { transition: transform 0.3s ease; line-height: 1; }
@@ -360,8 +373,8 @@ main {
 
 // ─── Now section ──────────────────────────────────────────────
 .now-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-bottom: 20px;
 }
@@ -436,6 +449,7 @@ main {
     transform: translateY(-1px);
     border-bottom: 1px solid var(--rule);
     font-weight: 400;
+    color: var(--fg);
   }
 
   &:focus {
@@ -570,6 +584,15 @@ footer {
   -webkit-font-smoothing: subpixel-antialiased;
 }
 
+.site-footer {
+  margin-top: 48px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-size: 11px;
+  color: var(--fg-faint);
+  text-align: center;
+}
+
 // ─── Responsive ───────────────────────────────────────────────
 @media print, screen and (max-width: 960px) {
   div.wrapper { width: auto; margin: 0; }
@@ -599,6 +622,10 @@ footer {
   header { padding: 0; }
   header ul, header p.view { position: static; }
   pre, code { word-wrap: normal; }
+
+  .now-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media print, screen and (max-width: 480px) {
