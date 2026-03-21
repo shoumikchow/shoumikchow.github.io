@@ -18,13 +18,13 @@ Dhaka, Bangladesh
 
 My journey started right after high school, when I returned to my alma mater — [Mastermind School](https://www.mastermindschool.org/) — to teach English to sixth graders. Student to teacher in the same hallways.
 
-That led to my first taste of tech: an Android dev internship at [G&R](https://www.green-red.com/) in early 2016. Short gig, but it got me hooked on building things with code.
+That led to my first taste of tech: an Android dev internship at [G&R](https://www.linkedin.com/company/gnrads) in early 2016. Short gig, but it got me hooked on building things with code.
 
-After I graduated from college, I joined [Panacea Live](https://www.panacea.live/), working on tech to fight counterfeit products. Then came [KolpoKoushol](https://www.facebook.com/KKoushol/) — first part-time, then full-time — where I got into computational social science and published my first research (more on the [Research](/research) page).
+After I graduated from college, I joined [Panacea Live](https://www.panacea.live/), working on tech to fight counterfeit products. Then came [KolpoKoushol](https://kolpokoushol.org/) — first part-time, then full-time — where I got into computational social science and published my first research (more on the [Research](/research) page).
 
 In 2019, I joined [Gaze](https://gaze.ai), the first computer vision company in Bangladesh. Six months of working on hard problems with some of the smartest people I've met.
 
-For my Master's, I worked at the [Quantitative Imaging Lab](http://www2.cs.uh.edu/~shah/) at the University of Houston — graph structures, video analysis, and a proper deep dive into research.
+During my Master's, I worked with [Dr. Shishir Shah](https://shishirkshah.github.io/) at the University of Houston — graph structures, video analysis, and a proper deep dive into research.
 
 Since 2021, I've been at [Andium](https://andium.com), building ML platforms and computer vision systems. It's the kind of work where everything I've done before comes together.
 
