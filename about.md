@@ -16,4 +16,8 @@ Big fan of board games, and I’ll never say no to a good chess match—[challen
 
 Oh, and I’m a *very* loyal Chelsea FC fan. Come on you Blues! 💙
 
-[back](https://shoumikchow.com)
+---
+
+In 2021, I was [interviewed by 2D3D.ai](https://archive.ph/QglSe) about my computer vision experience and where I see the field heading.
+
+[← Back to Home](/)

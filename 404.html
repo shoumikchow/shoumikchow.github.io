@@ -1,0 +1,84 @@
+---
+layout: none
+title: "Page Not Found"
+permalink: /404.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — Page Not Found</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --fg: #111;
+      --fg-muted: #555;
+      --fg-faint: #999;
+      --rule: #ddd;
+    }
+    [data-theme="dark"] {
+      --bg: #0d0d0d;
+      --fg: #e8e8e8;
+      --fg-muted: #aaa;
+      --fg-faint: #666;
+      --rule: #262626;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--fg-muted);
+      font: 400 14px/1.7 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 400px; padding: 20px; }
+    .code {
+      font-size: 72px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .message {
+      font-size: 14px;
+      color: var(--fg-faint);
+      margin-bottom: 32px;
+    }
+    a {
+      color: var(--fg);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+      padding: 8px 20px;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+    a:hover {
+      border-color: var(--fg-faint);
+      background: rgba(128, 128, 128, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="code">404</div>
+    <p class="message">This page doesn't exist.</p>
+    <a href="/">Back to Home</a>
+  </div>
+</body>
+</html>
