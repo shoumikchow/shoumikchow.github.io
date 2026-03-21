@@ -24,9 +24,10 @@ A Python library that simplifies the visualization of bounding boxes and object 
 
 ---
 
-### More Projects
-Explore my other open-source contributions and personal projects on **[GitHub](https://github.com/shoumikchow)**.
+### Other Work
+
+Beyond bbox-visualizer, I build and contribute to projects spanning ML tooling, computer vision pipelines, and web applications. Most of my work lives on **[GitHub](https://github.com/shoumikchow)** — feel free to explore, open issues, or reach out about anything that catches your eye.
 
 ---
 
-[← Back to Home](https://shoumikchow.com)
+[← Back to Home](/)

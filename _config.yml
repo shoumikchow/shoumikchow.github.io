@@ -10,6 +10,7 @@ twitter: /twitter
 bluesky: /bluesky
 github: /github
 theme: jekyll-theme-minimal
+permalink: pretty
 
 # SEO and Social Media
 author: Shoumik Chowdhury
@@ -47,16 +48,16 @@ currently_reading:
 pagelist:
     -
       title: Experience
-      url: experience.html
+      url: experience
     -
       title: Research
-      url: research.html
+      url: research
     -
       title: Projects
-      url: projects.html
+      url: projects
     -
       title: About
-      url: about.html
+      url: about
 
 plugins:
     - jekyll-sitemap
@@ -70,5 +71,4 @@ exclude:
     - LICENSE
     - README.md
     - CNAME
-    - sw.js
     - worker

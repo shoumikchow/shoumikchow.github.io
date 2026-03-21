@@ -30,23 +30,20 @@
     let scrollDepth = 0;
     let timeOnPage = 0;
     const startTime = Date.now();
-    
+    const reportedThresholds = new Set();
+
     // Track scroll depth
     window.addEventListener('scroll', function() {
       const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
       if (scrollPercent > scrollDepth) {
         scrollDepth = scrollPercent;
-        
-        // Track at 25%, 50%, 75%, 100%
-        if (scrollDepth >= 25 && scrollDepth < 50) {
-          trackCustomEvent('scroll_depth', { depth: 25 });
-        } else if (scrollDepth >= 50 && scrollDepth < 75) {
-          trackCustomEvent('scroll_depth', { depth: 50 });
-        } else if (scrollDepth >= 75 && scrollDepth < 100) {
-          trackCustomEvent('scroll_depth', { depth: 75 });
-        } else if (scrollDepth >= 100) {
-          trackCustomEvent('scroll_depth', { depth: 100 });
-        }
+
+        [25, 50, 75, 100].forEach(threshold => {
+          if (scrollDepth >= threshold && !reportedThresholds.has(threshold)) {
+            reportedThresholds.add(threshold);
+            trackCustomEvent('scroll_depth', { depth: threshold });
+          }
+        });
       }
     });
     

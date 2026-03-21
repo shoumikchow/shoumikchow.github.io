@@ -78,13 +78,11 @@ a {
 
   &:hover {
     border-bottom-color: var(--fg);
-    font-weight: 400;
   }
 
   &:focus {
     outline: 1px solid var(--fg);
     outline-offset: 2px;
-    font-weight: 400;
   }
 }
 
@@ -202,6 +200,13 @@ header {
       outline-offset: 1px;
       font-weight: 500;
     }
+
+    &.active {
+      color: var(--fg);
+      background: var(--surface-hover);
+      border-color: var(--fg-faint);
+      font-weight: 600;
+    }
   }
 }
 
@@ -211,6 +216,7 @@ ul.downloads {
   padding: 0;
   margin: 0;
   display: flex;
+  justify-content: center;
   gap: 0;
   width: auto;
   height: auto;
@@ -250,7 +256,7 @@ ul.downloads {
 }
 
 // ─── Content area ─────────────────────────────────────────────
-section {
+main {
   width: 520px;
   float: right;
   padding-bottom: 60px;
@@ -568,7 +574,7 @@ footer {
 @media print, screen and (max-width: 960px) {
   div.wrapper { width: auto; margin: 0; }
 
-  header, section, footer {
+  header, main, footer {
     float: none;
     position: static;
     width: auto;
@@ -576,7 +582,7 @@ footer {
 
   header { padding-right: 0; margin-bottom: 32px; }
 
-  section {
+  main {
     border-left: none;
     border-top: 1px solid var(--rule);
     padding: 24px 0;

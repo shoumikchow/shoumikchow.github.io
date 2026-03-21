@@ -1,18 +1,13 @@
 ---
-title: Home
+title: Shoumik Chowdhury — ML Engineer
 layout: default
 ---
 
-# Hi! I'm Shoumik 👋
+# Hi! I’m Shoumik 👋
 
-I'm a **Machine Learning Engineer** at [Andium](https://andium.com) where I build the infrastructure that helps pixels make sense of the world. While I work across the full ML lifecycle, I’m happiest at the intersection of **computer vision**, **ML platforms**, and **LLM applications**.
-
-I believe technology is most powerful when it’s grounded in community and social good.
+I build ML systems that scale from research to production. Currently a **Machine Learning Engineer** at [Andium](https://andium.com), working at the intersection of **computer vision**, **ML platforms**, and **LLM applications**.
 
 My pronouns are he/him/él.
-
-### What I Do 💻
-I specialize in building robust ML systems that can scale from research to production. My work spans everything from developing models to designing efficient ML platforms.
 
 ### Beyond the Code 🌹
 I’m passionate about using technology to create a positive social impact. Whether it’s through "data for good" initiatives, contributing to open-source projects, or mentoring others in the tech community, I’m always looking for ways to ensure our technical progress actually makes a difference in people's lives.
@@ -42,20 +37,12 @@ I'm a proud member of [NYC-DSA](https://www.socialists.nyc/) (Democratic Sociali
   </div>
 </div>
 
-*When I'm not at the keyboard, I'm likely in Queens with my wife and our dog, Neira, exploring local restaurants or tinkering with a Raspberry Pi.*
+*When I'm not at the keyboard, I'm likely in Queens, NYC with my wife and our dog, Neira, exploring local restaurants or tinkering with a Raspberry Pi.*
 
 ---
 
 ### Let's Connect! 🤝
 Whether you want to talk about AI, socialist organizing, or the best Thai food in Queens, I'd love to hear from you.
 
-**Get in touch:** **hello [at] shoumikchow [dot] com**
+**Get in touch:** **[hello@shoumikchow.com](mailto:hello@shoumikchow.com)**
 
----
-
-### Recent Updates
-
-* **[February 1, 2024]** 🗽 Moved to New York City!
-* **[February 1, 2023]** 🤠 Relocated to Austin, Texas! Looking forward to connecting with the amazing ATX community.
-* **[July 19, 2021]** 🚀 Joined [Andium](https://andium.com) as a Machine Learning Engineer, focusing on ML Ops and computer vision. Working remotely from Houston for now, but excited to see where this journey takes me!
-* **[March 1, 2021]** 📸 Featured in an interview on the [2D3D.ai blog](https://2d3d.ai/index.php/2021/02/28/meet-the-community-member-shoumik-sharar-chowdhury/) about my computer vision experience and future expectations. [[archive here](https://archive.ph/QglSe)]
