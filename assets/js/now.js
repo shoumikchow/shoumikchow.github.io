@@ -6,10 +6,16 @@ function createErrorState() {
 }
 
 function timeAgo(dateStr) {
-  const date = new Date(dateStr);
   const now = new Date();
-  const diffMs = now - date;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  // Parse as local midnight to avoid UTC offset issues with date-only strings like "2026-03-22"
+  const parts = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const date = parts
+    ? new Date(+parts[1], +parts[2] - 1, +parts[3])
+    : new Date(dateStr);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.round((today - target) / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) return "today";
   if (diffDays === 1) return "yesterday";
@@ -55,7 +61,7 @@ async function loadLetterboxd() {
           ${metaParts.length ? `<span class="now-meta">${metaParts.map(escapeHtml).join(" &middot; ")}</span>` : ""}
           ${data.rating ? `<span class="now-rating">${escapeHtml(data.rating)}</span>` : ""}
           ${genreHtml}
-          ${data.watchedDate ? `<span class="now-time">Watched ${timeAgo(data.watchedDate)}</span>` : ""}
+          ${data.watchedDate ? `<span class="now-time">${timeAgo(data.watchedDate)}</span>` : ""}
         </div>
       </a>
     `;
@@ -90,7 +96,7 @@ async function loadBooks() {
           ? `<img src="${escapeHtml(book.cover)}" alt="${escapeHtml(book.title)}" class="now-poster now-poster-book" />`
           : "";
 
-        const meta = [book.author, book.pages ? `${book.pages}p` : null, book.publishDate]
+        const meta = [book.author, book.pages ? `${book.pages} pages` : null]
           .filter(Boolean)
           .join(" &middot; ");
 
