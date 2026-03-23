@@ -108,22 +108,11 @@
   </div>
   <script src="{{ "/assets/js/dark-mode.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/back-to-top.js" | relative_url }}"></script>
-  <script src="{{ "/assets/js/analytics.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/accessibility.js" | relative_url }}"></script>
   <script src="{{ "/assets/js/now.js" | relative_url }}"></script>
-  {% if site.google_analytics %}
-   <!-- Global site tag (gtag.js) - Google Analytics -->
-   <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
-   <script>
-     window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
-     gtag('config', '{{ site.google_analytics }}', {
-       'page_title': '{{ page.title | default: site.title }}',
-       'page_location': '{{ page.url | absolute_url }}'
-     });
-   </script>
-  {% endif %}
+  <!-- Cloudflare Web Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "087a0204fbc34932b82404ff9bc90eb7"}'></script>
+  <!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>
