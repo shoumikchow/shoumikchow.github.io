@@ -7,7 +7,7 @@ on:
 jobs:
   purge-cache:
     runs-on: ubuntu-latest
-    if: github.event.deployment_status.state == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success'
     steps:
       - name: Purge Cloudflare cache
         run: |
