@@ -40,7 +40,6 @@ body {
   font: 400 15px/1.7 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
   padding: 60px;
   margin: 0;
-  transition: background 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -286,6 +285,7 @@ main {
   top: 24px;
   right: 24px;
   z-index: 1000;
+  view-transition-name: theme-toggle;
   background: none;
   border: 1px solid var(--rule);
   border-radius: 20px;
@@ -635,4 +635,24 @@ footer {
 
 @media print {
   body { padding: 0.4in; font-size: 12pt; color: #333; }
+}
+
+// ─── View Transition (theme toggle) ─────────────────────────
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+// Dark-to-light: new (light) expands on top
+::view-transition-new(root) {
+  z-index: 9999;
+  clip-path: circle(0px at var(--vt-x, 0px) var(--vt-y, 0px));
+}
+
+// Light-to-dark: old (light) shrinks on top to reveal dark
+.dark-transition::view-transition-old(root) { z-index: 9999; }
+.dark-transition::view-transition-new(root) {
+  z-index: 1;
+  clip-path: none;
 }
