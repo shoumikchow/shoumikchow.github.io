@@ -5,23 +5,24 @@ interface Env {
   TMDB_API_KEY?: string;
   STEAM_API_KEY?: string;
   STEAM_ID?: string;
+  KV?: KVNamespace;
 }
 
 const LETTERBOXD_USERNAME = "shoumikchow";
 
-const corsHeaders: Record<string, string> = {
+const baseHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Content-Type": "application/json",
-  "Cache-Control": "public, max-age=300",
 };
 
 function jsonResponse(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: corsHeaders,
-  });
+  const headers: Record<string, string> = { ...baseHeaders };
+  if (status >= 200 && status < 300) {
+    headers["Cache-Control"] = "public, max-age=300";
+  }
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
 function extractTag(xml: string, tag: string): string | null {
@@ -245,6 +246,9 @@ async function handleSpotify(env: Env): Promise<Response> {
     return jsonResponse({ error: "Spotify not configured" }, 503);
   }
 
+  // Use KV-stored token if available, otherwise fall back to secret
+  const refreshToken = (await env.KV?.get("spotify_refresh_token")) || env.SPOTIFY_REFRESH_TOKEN;
+
   // Get access token using refresh token
   const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -252,14 +256,19 @@ async function handleSpotify(env: Env): Promise<Response> {
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: `Basic ${btoa(`${env.SPOTIFY_CLIENT_ID}:${env.SPOTIFY_CLIENT_SECRET}`)}`,
     },
-    body: "grant_type=refresh_token&refresh_token=" + env.SPOTIFY_REFRESH_TOKEN,
+    body: "grant_type=refresh_token&refresh_token=" + refreshToken,
   });
 
   if (!tokenRes.ok) {
     return jsonResponse({ error: "Failed to refresh Spotify token" }, 502);
   }
 
-  const tokenData: { access_token: string } = await tokenRes.json();
+  const tokenData: { access_token: string; refresh_token?: string } = await tokenRes.json();
+
+  // Persist rotated refresh token if Spotify issued a new one
+  if (tokenData.refresh_token && tokenData.refresh_token !== refreshToken) {
+    await env.KV?.put("spotify_refresh_token", tokenData.refresh_token);
+  }
 
   // Get recently played
   const recentRes = await fetch(
@@ -319,7 +328,7 @@ async function handleSpotify(env: Env): Promise<Response> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, { headers: baseHeaders });
     }
 
     const url = new URL(request.url);
