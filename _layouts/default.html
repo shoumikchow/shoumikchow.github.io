@@ -5,32 +5,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="{{ page.description | default: site.description }}">
-  <meta name="keywords" content="{{ page.keywords | default: site.keywords }}">
-  <meta name="author" content="{{ site.author }}">
-  
-  <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="{{ page.title | default: site.title }}">
-  <meta property="og:description" content="{{ page.description | default: site.description }}">
-  <meta property="og:type" content="{{ page.og_type | default: site.og_type }}">
-  <meta property="og:url" content="{{ page.url | absolute_url }}">
-  <meta property="og:image" content="{{ page.og_image | default: site.og_image | absolute_url }}">
-  <meta property="og:site_name" content="{{ site.title }}">
-  
-  <!-- Twitter Card Meta Tags -->
-  <meta name="twitter:card" content="{{ page.twitter_card | default: site.twitter_card }}">
-  <meta name="twitter:site" content="{{ site.twitter_username }}">
-  <meta name="twitter:creator" content="{{ site.twitter_username }}">
-  <meta name="twitter:title" content="{{ page.title | default: site.title }}">
-  <meta name="twitter:description" content="{{ page.description | default: site.description }}">
-  <meta name="twitter:image" content="{{ page.og_image | default: site.og_image | absolute_url }}">
-  
-  <!-- Additional Meta Tags -->
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#fafafa">
-  <link rel="canonical" href="{{ page.url | absolute_url }}">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="manifest" href="/manifest.json">
   
@@ -76,7 +52,7 @@
       <h1><a href="{{ "/" | absolute_url }}">{{ site.title }}</a></h1>
 
       {% if site.logo %}
-      <img src="{{site.logo | relative_url}}" alt="{{ site.author }} - {{ site.description }}" class="site-logo" />
+      <img src="{{site.logo | relative_url}}" alt="{{ site.author }} - {{ site.description }}" class="site-logo" width="200" height="150" />
       {% endif %}
 
       <p class="site-description">{{ site.description | default: site.github.project_tagline }}</p>

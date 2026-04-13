@@ -1,5 +1,7 @@
 ---
 layout: default
+title: About — Shoumik Chowdhury
+description: The personal side of Shoumik Chowdhury — Dhaka-born ML engineer based in NYC. Books, films, photography, board games, chess, and loyal Chelsea FC fan.
 ---
 
 ## About

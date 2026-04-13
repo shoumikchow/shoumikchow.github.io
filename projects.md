@@ -1,12 +1,14 @@
 ---
 layout: default
+title: Projects — Shoumik Chowdhury
+description: Open-source projects by Shoumik Chowdhury, including bbox-visualizer — a Python library for visualizing bounding boxes in computer vision workflows.
 ---
 
 ## Projects
 
 ### Featured Project
 
-#### 📦 [bbox-visualizer](https://github.com/shoumikchow/bbox-visualizer)
+#### [bbox-visualizer](https://github.com/shoumikchow/bbox-visualizer) 📦
 A Python library that simplifies the visualization of bounding boxes and object detection results in computer vision applications.
 
 **What it solves:** Traditional bounding box visualization requires complex mathematical calculations for proper label positioning. This library eliminates that pain point by handling all the positioning logic automatically.

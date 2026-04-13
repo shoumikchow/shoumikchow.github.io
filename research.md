@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Research — Shoumik Chowdhury
+description: Research by Shoumik Chowdhury in robotics and SLAM (IEEE TENCON 2018) and computational social science on political discourse (NeurIPS ML4D 2018).
 ---
 
 ## Research
