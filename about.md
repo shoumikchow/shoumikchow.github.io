@@ -8,15 +8,15 @@ description: The personal side of Shoumik Chowdhury — Dhaka-born ML engineer b
 
 Hi! I'm from Dhaka, Bangladesh. 🇧🇩
 
-When I’m not working, you’ll probably find me daydreaming about my next trip, lost in a [book](https://app.thestorygraph.com/profile/shoumikchow), or deep into a [movie](https://letterboxd.com/shoumikchow/) rabbit hole.
-
-I can never decide between podcasts or music—so I just keep switching back and forth. (Decisions are hard.) You can peek into my current audio chaos on [Spotify](https://open.spotify.com/user/shoumikchow).
+When I’m not working, you’ll probably find me daydreaming about my next trip or wandering Queens in search of a new favorite restaurant.
 
 I love taking photos too. My [Instagram](https://www.instagram.com/shoumikchow/) is where I stash the ones that made the cut.
 
 Big fan of board games, and I’ll never say no to a good chess match—[challenge me](https://chess.com/play/shoumikcfc) if you’re feeling brave. ♟️
 
 Oh, and I’m a *very* loyal Chelsea FC fan. Come on you Blues! 💙
+
+Outside of all that, I care a lot about using technology for social good — "data for good" work, open source, mentoring. I'm a proud member of [NYC-DSA](https://www.socialists.nyc/) 🌹 (Democratic Socialists of America) and believe technology should serve working people, not just shareholders. Socialism, to me, means building a world where everyone has access to healthcare, housing, education, and dignity as basic rights. If that resonates, [join DSA](https://www.dsausa.org/join) and get involved.
 
 ---
 
