@@ -41,3 +41,5 @@ Whether you want to talk about AI, socialist organizing, or the best Thai food i
 
 **Get in touch:** **[hello@shoumikchow.com](mailto:hello@shoumikchow.com)**
 
+For sensitive messages, encrypt with my [PGP key](https://keys.openpgp.org/search?q=3FFB42359BBDB66536631E839F3C04E1D3FABE15) (fingerprint `3FFB 4235 9BBD B665 3663 1E83 9F3C 04E1 D3FA BE15`).
+
