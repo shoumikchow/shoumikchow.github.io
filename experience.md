@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Experience — Shoumik Chowdhury
-description: Professional experience and education of Shoumik Chowdhury — ML Engineer at Andium, MS in Computer Science from the University of Houston.
+description: Professional experience and education of Shoumik Chowdhury — Applied ML Engineer at Andium, MS in Computer Science from the University of Houston.
 ---
 
 ## Experience
