@@ -27,11 +27,11 @@ bundle exec jekyll serve
 ```sh
 cd worker
 npm install
-wrangler dev     # local dev server
-wrangler deploy  # deploy to Cloudflare
+npx wrangler dev     # local dev server
+npx wrangler deploy  # deploy to Cloudflare
 ```
 
-The worker requires the following secrets (set via `wrangler secret put <NAME>`):
+The worker requires the following secrets (set via `npx wrangler secret put <NAME>`):
 
 - `SPOTIFY_CLIENT_ID`
 - `SPOTIFY_CLIENT_SECRET`
@@ -66,6 +66,6 @@ automated):
    secrets and KV push straight to the live worker):
    ```sh
    cd worker
-   wrangler secret put SPOTIFY_REFRESH_TOKEN               # paste the new token
-   wrangler kv key delete --binding=KV spotify_refresh_token   # clear the stale rotated token
+   npx wrangler secret put SPOTIFY_REFRESH_TOKEN               # paste the new token
+   npx wrangler kv key delete --binding=KV spotify_refresh_token   # clear the stale rotated token
    ```

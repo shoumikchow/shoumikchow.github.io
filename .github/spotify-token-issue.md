@@ -14,7 +14,8 @@ The `/spotify` worker endpoint is returning `Failed to refresh Spotify token`. S
      -d grant_type=authorization_code -d code=THE_CODE \
      -d redirect_uri=http://127.0.0.1:8888/callback
    ```
-4. Take `refresh_token` from the JSON and update the worker:
+4. Take `refresh_token` from the JSON and update the worker (no redeploy needed —
+   secrets and KV push straight to the live worker):
    ```
    cd worker
    npx wrangler secret put SPOTIFY_REFRESH_TOKEN                   # paste the new token
