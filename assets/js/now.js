@@ -1,8 +1,8 @@
 // Update this URL after deploying your Cloudflare Worker
 const WORKER_URL = "https://shoumikchow-now.shoumikchow.workers.dev";
 
-function createErrorState() {
-  return '<span class="now-error">unavailable</span>';
+function createErrorState(msg = "unavailable") {
+  return `<span class="now-error">${escapeHtml(msg)}</span>`;
 }
 
 function timeAgo(dateStr) {
@@ -66,7 +66,7 @@ async function loadLetterboxd() {
       </a>
     `;
   } catch {
-    el.innerHTML = createErrorState();
+    el.innerHTML = createErrorState("the projector jammed — no movie for you");
   }
 }
 
@@ -112,7 +112,7 @@ async function loadBooks() {
       })
       .join("");
   } catch {
-    el.innerHTML = createErrorState();
+    el.innerHTML = createErrorState("dropped my bookmark in the void");
   }
 }
 
@@ -146,7 +146,7 @@ async function loadSpotify() {
       </a>
     `;
   } catch {
-    el.innerHTML = createErrorState();
+    el.innerHTML = createErrorState("silence — my Spotify token ghosted me again");
   }
 }
 
@@ -184,7 +184,7 @@ async function loadSteam() {
       })
       .join("");
   } catch {
-    el.innerHTML = createErrorState();
+    el.innerHTML = createErrorState("rage quit — stats unavailable");
   }
 }
 

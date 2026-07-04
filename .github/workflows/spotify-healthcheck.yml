@@ -1,0 +1,40 @@
+name: Spotify Token Healthcheck
+
+on:
+  schedule:
+    - cron: "0 12 * * 1" # Mondays 12:00 UTC — refresh token expires 6mo from auth, weekly is plenty
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ping /spotify and open an issue if the token is dead
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body=$(curl -s "https://shoumikchow-now.shoumikchow.workers.dev/spotify")
+          echo "Response: $body"
+
+          # Worker returns this exact error when the refresh token is expired/revoked (invalid_grant).
+          if ! echo "$body" | grep -q "Failed to refresh Spotify token"; then
+            echo "Spotify token healthy."
+            exit 0
+          fi
+
+          gh label create spotify-token --color b048b5 --description "Spotify refresh token expired" 2>/dev/null || true
+
+          # Don't stack duplicate issues — reuse the open one if it exists.
+          if [ -n "$(gh issue list --state open --label spotify-token --json number --jq '.[0].number')" ]; then
+            echo "Open spotify-token issue already exists, skipping."
+            exit 0
+          fi
+
+          gh issue create \
+            --title "Spotify Now-playing token expired — re-authorize" \
+            --label spotify-token \
+            --body-file .github/spotify-token-issue.md

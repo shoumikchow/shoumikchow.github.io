@@ -260,6 +260,13 @@ async function handleSpotify(env: Env): Promise<Response> {
   });
 
   if (!tokenRes.ok) {
+    // Spotify expires refresh tokens after 6 months (as of 2026-07-20) and returns
+    // invalid_grant. Discard the stored KV copy so the next request falls back to the
+    // re-authorized SPOTIFY_REFRESH_TOKEN secret instead of retrying the dead token.
+    const err: { error?: string } = await tokenRes.json().catch(() => ({}));
+    if (err.error === "invalid_grant") {
+      await env.KV?.delete("spotify_refresh_token");
+    }
     return jsonResponse({ error: "Failed to refresh Spotify token" }, 502);
   }
 
