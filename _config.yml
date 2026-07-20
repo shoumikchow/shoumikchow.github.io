@@ -9,7 +9,7 @@ twitter: https://twitter.com/shoumikchow
 bluesky: https://bsky.app/profile/shoumikchow.com
 github: https://github.com/shoumikchow
 theme: jekyll-theme-minimal
-permalink: pretty
+permalink: /:path/:basename
 
 # SEO and Social Media
 author: Shoumik Chowdhury
