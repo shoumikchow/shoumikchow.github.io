@@ -14,7 +14,9 @@ export default {
 
     try {
       const url = new URL(request.url);
-      const md = await fetch(`${url.origin}/index.md`, {
+      // "/" -> /index.md, "/about" (or "/about/") -> /about.md
+      const page = url.pathname === "/" ? "/index" : url.pathname.replace(/\/$/, "");
+      const md = await fetch(`${url.origin}${page}.md`, {
         // Route is root-only so this cannot loop, but a non-terminal UA on the
         // subrequest keeps that true even if the route is widened later.
         headers: { "user-agent": "shoumikchow-terminal-worker" },
