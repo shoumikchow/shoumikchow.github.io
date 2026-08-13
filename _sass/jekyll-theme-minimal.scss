@@ -472,17 +472,16 @@ main {
 }
 
 // Type accents
-.now-item--music .now-card-link { border-left-color: var(--now-music); }
-.now-item--book .now-card-link  { border-left-color: var(--now-book); }
-.now-item--movie .now-card-link  { border-left-color: var(--now-movie); }
-.now-item--gaming .now-card-link { border-left-color: var(--now-gaming); }
-.now-item--chess .now-card-link { border-left-color: var(--now-chess); }
+// One accent per card type, read by both the filled card and the empty state.
+.now-item--music  { --now-accent: var(--now-music); }
+.now-item--book   { --now-accent: var(--now-book); }
+.now-item--movie  { --now-accent: var(--now-movie); }
+.now-item--gaming { --now-accent: var(--now-gaming); }
+.now-item--chess  { --now-accent: var(--now-chess); }
 
-.now-item--music .now-label  { color: var(--now-music); }
-.now-item--book .now-label   { color: var(--now-book); }
-.now-item--movie .now-label  { color: var(--now-movie); }
-.now-item--gaming .now-label { color: var(--now-gaming); }
-.now-item--chess .now-label { color: var(--now-chess); }
+.now-card-link { border-left-color: var(--now-accent, var(--rule)); }
+
+.now-label { color: var(--now-accent); }
 
 // Artwork
 .now-poster {
@@ -574,11 +573,19 @@ main {
   padding: 4px 0;
 }
 
+// Carries the same chrome as .now-card-link so an empty slot reads as a card
+// rather than a hole in the grid.
 .now-empty {
   font-size: 12.5px;
   color: var(--fg-muted);
   font-style: italic;
-  margin: 4px 0;
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--now-accent, var(--rule));
+  border-radius: 1px 4px 4px 1px;
+  box-shadow: var(--shadow-sm);
 }
 
 // ─── Footer ───────────────────────────────────────────────────
