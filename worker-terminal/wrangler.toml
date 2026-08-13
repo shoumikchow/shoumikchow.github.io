@@ -1,0 +1,12 @@
+name = "shoumikchow-terminal"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# No workers.dev URL — this only ever runs on the apex route below.
+workers_dev = false
+
+# Root path only. Deliberately not shoumikchow.com/* : this keeps every other
+# page off the worker, and means the /index.md subrequest cannot re-enter here.
+routes = [
+  { pattern = "shoumikchow.com/", zone_name = "shoumikchow.com" }
+]
