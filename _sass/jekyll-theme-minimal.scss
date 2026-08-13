@@ -384,6 +384,9 @@ main {
 }
 
 .now-item {
+  // Column so the card below the label can be told to fill the row height.
+  display: flex;
+  flex-direction: column;
   opacity: 0;
   transform: translateY(6px);
   animation: nowReveal 0.35s ease forwards;
@@ -393,6 +396,7 @@ main {
 .now-item:nth-child(2) { animation-delay: 0.12s; }
 .now-item:nth-child(3) { animation-delay: 0.19s; }
 .now-item:nth-child(4) { animation-delay: 0.26s; }
+.now-item:nth-child(5) { animation-delay: 0.33s; }
 
 @keyframes nowReveal {
   to { opacity: 1; transform: translateY(0); }
@@ -423,6 +427,14 @@ main {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex: 1;
+}
+
+// Cards in the same grid row share a height. Only a lone card stretches —
+// Books and Steam render several, which should stack from the top instead.
+.now-card-link:only-child,
+.now-empty {
+  flex: 1;
 }
 
 .now-card-link {
@@ -580,6 +592,10 @@ main {
   color: var(--fg-muted);
   font-style: italic;
   margin: 0;
+  // Centred so a stretched empty card reads as deliberate rather than as text
+  // stranded at the top of an oversized box.
+  display: flex;
+  align-items: center;
   padding: 8px 10px;
   background: var(--surface);
   border: 1px solid var(--rule);
