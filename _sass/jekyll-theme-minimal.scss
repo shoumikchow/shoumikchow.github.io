@@ -24,6 +24,9 @@
   --board-dark: #c98f8c;
   --piece-light: #fffaf7;
   --piece-dark: #4a2f2f;
+  // Rating trend arrows
+  --trend-up: #2e9e5b;
+  --trend-down: #c1544f;
 }
 
 [data-theme="dark"] {
@@ -43,6 +46,8 @@
   --board-dark: #3f2e2e;
   --piece-light: #f2e4e1;
   --piece-dark: #17100f;
+  --trend-up: #56c98a;
+  --trend-down: #e08d8f;
 }
 
 // ─── Typography ───────────────────────────────────────────────
@@ -580,6 +585,23 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+// Rating trend arrow, drawn inline by now.js. Sized in em so it tracks the
+// meta line's cap height and reads as a glyph rather than an illustration.
+.now-trend {
+  width: 1.1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  margin-right: 3px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.now-trend--up   { color: var(--trend-up); }
+.now-trend--down { color: var(--trend-down); }
 
 .now-rating {
   font-size: 11px;

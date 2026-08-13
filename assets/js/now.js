@@ -239,6 +239,16 @@ function renderBoard(board) {
   return `<svg viewBox="0 0 8 8" class="now-poster now-poster-board" role="img" aria-label="Board position">${squares}${pieces}</svg>`;
 }
 
+// Rising or falling sparkline for the rating trend. Decorative — the meta line
+// already spells the direction out in words — so it is hidden from assistive
+// tech rather than duplicating "up 6 lately".
+function renderTrendIcon(prog) {
+  const up = prog > 0;
+  const line = up ? "M1 8 L4.5 4.5 L6.5 6 L10 2" : "M1 2 L4.5 5.5 L6.5 4 L10 8";
+  const head = up ? "M7.5 2 L10 2 L10 4.5" : "M7.5 8 L10 8 L10 5.5";
+  return `<svg viewBox="0 0 11 10" class="now-trend now-trend--${up ? "up" : "down"}" aria-hidden="true"><path d="${line}" /><path d="${head}" /></svg>`;
+}
+
 async function loadChess() {
   const el = document.getElementById("now-chess");
   if (!el) return;
@@ -276,13 +286,14 @@ async function loadChess() {
     const trend = prog
       ? `${prog > 0 ? "up" : "down"} ${Math.abs(prog)} lately · `
       : "";
+    const trendIcon = prog ? renderTrendIcon(prog) : "";
 
     el.innerHTML = `
       <a href="${escapeHtml(data.challenge)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
         ${boardHtml}
         <div class="now-info">
           <strong class="now-title">${escapeHtml(String(data.top.rating))} ${escapeHtml(data.top.format)} on Lichess</strong>
-          <span class="now-meta">${escapeHtml(trend)}challenge me</span>
+          <span class="now-meta">${trendIcon}${escapeHtml(trend)}challenge me</span>
         </div>
       </a>
     `;
