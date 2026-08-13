@@ -31,7 +31,7 @@ My pronouns are he/him/él.
     <div class="now-card" id="now-gaming"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--chess">
-    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>Chess</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>Chessing</span>
     <div class="now-card" id="now-chess"><span class="now-loading"></span></div>
   </div>
 </div>

@@ -244,10 +244,39 @@ async function handleSteam(env: Env): Promise<Response> {
 // Public endpoint, no key and no token to rotate — unlike Spotify below.
 const LICHESS_USER = "shoumikchow";
 
+// The board thumbnail. This endpoint serves the game in progress if there is
+// one and the last finished game otherwise, so a single call covers both of the
+// states the card can be in. Everything but the final position is stripped.
+async function fetchLichessBoard(): Promise<{ fen: string; flipped: boolean } | null> {
+  const res = await fetch(
+    `https://lichess.org/api/user/${LICHESS_USER}/current-game?lastFen=true&moves=false&tags=false&clocks=false&evals=false&opening=false`,
+    { headers: { accept: "application/json" } }
+  );
+
+  // 404 when the account has never played. Not an error worth failing the card over.
+  if (!res.ok) return null;
+
+  const game: {
+    lastFen?: string;
+    players?: { black?: { user?: { id?: string } } };
+  } = await res.json();
+
+  if (!game.lastFen) return null;
+
+  return {
+    fen: game.lastFen,
+    // Show the board from the side actually played.
+    flipped: game.players?.black?.user?.id === LICHESS_USER,
+  };
+}
+
 async function handleLichess(): Promise<Response> {
-  const res = await fetch(`https://lichess.org/api/user/${LICHESS_USER}`, {
-    headers: { accept: "application/json" },
-  });
+  const [res, board] = await Promise.all([
+    fetch(`https://lichess.org/api/user/${LICHESS_USER}`, {
+      headers: { accept: "application/json" },
+    }),
+    fetchLichessBoard().catch(() => null),
+  ]);
 
   if (!res.ok) {
     return jsonResponse({ error: "Failed to fetch Lichess data" }, 502);
@@ -273,6 +302,7 @@ async function handleLichess(): Promise<Response> {
     profile: data.url ?? `https://lichess.org/@/${LICHESS_USER}`,
     challenge: `https://lichess.org/?user=${LICHESS_USER}#friend`,
     top: top ? { format: top.format, rating: top.rating, prog: top.prog ?? 0 } : null,
+    board,
   });
 }
 

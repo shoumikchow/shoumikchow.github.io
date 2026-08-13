@@ -12,6 +12,7 @@ The homepage features a live "Right Now" section that shows what I'm currently l
 - **Reading** — Books via [Open Library API](https://openlibrary.org/developers/api), with ISBNs configured in `_config.yml`
 - **Watching** — Last watched film from [Letterboxd](https://letterboxd.com/) RSS, enriched with metadata from [TMDB](https://www.themoviedb.org/documentation/api)
 - **Playing** — Recently played games from the [Steam Web API](https://steamcommunity.com/dev)
+- **Chessing** — Rating and live-game status from the [Lichess API](https://lichess.org/api), with the current or last position drawn as an inline SVG board
 
 The worker source lives in the `worker/` directory and responses are cached at the edge for 5 minutes.
 

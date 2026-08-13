@@ -188,6 +188,57 @@ async function loadSteam() {
   }
 }
 
+// Solid (nominally black) glyphs for both sides — the outline set renders as a
+// few illegible strokes at thumbnail size, so colour carries the side instead.
+const PIECE_GLYPHS = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
+
+// Board position as inline SVG rather than an image from Lichess, so it picks up
+// the site palette and stays sharp at any density. Returns "" for anything that
+// is not a well-formed 8x8 placement; the card then just renders without art.
+function renderBoard(board) {
+  if (!board || typeof board.fen !== "string") return "";
+
+  const ranks = board.fen.split(" ")[0].split("/");
+  if (ranks.length !== 8) return "";
+
+  const rows = [];
+  for (const rank of ranks) {
+    const squares = [];
+    for (const ch of rank) {
+      if (ch >= "1" && ch <= "8") {
+        squares.push(...Array(Number(ch)).fill(null));
+      } else if (PIECE_GLYPHS[ch.toLowerCase()]) {
+        squares.push(ch);
+      } else {
+        return "";
+      }
+    }
+    if (squares.length !== 8) return "";
+    rows.push(squares);
+  }
+
+  if (board.flipped) {
+    rows.reverse();
+    rows.forEach((row) => row.reverse());
+  }
+
+  // Squares first, pieces second: glyphs overhang their cell a little and would
+  // otherwise be clipped by the next square painted on top of them.
+  let squares = "";
+  let pieces = "";
+  rows.forEach((row, y) => {
+    row.forEach((piece, x) => {
+      const shade = (x + y) % 2 === 0 ? "light" : "dark";
+      squares += `<rect x="${x}" y="${y}" width="1" height="1" class="now-sq now-sq--${shade}" />`;
+      if (!piece) return;
+      const side = piece === piece.toUpperCase() ? "w" : "b";
+      pieces += `<text x="${x + 0.5}" y="${y + 0.5}" class="now-pc now-pc--${side}">${PIECE_GLYPHS[piece.toLowerCase()]}</text>`;
+    });
+  });
+
+  return `<svg viewBox="0 0 8 8" class="now-poster now-poster-board" role="img" aria-label="Board position">${squares}${pieces}</svg>`;
+}
+
 async function loadChess() {
   const el = document.getElementById("now-chess");
   if (!el) return;
@@ -197,10 +248,13 @@ async function loadChess() {
     if (!res.ok) throw new Error();
     const data = await res.json();
 
+    const boardHtml = renderBoard(data.board);
+
     // A live game is the only genuinely "now" state, so it wins when present.
     if (data.playing) {
       el.innerHTML = `
         <a href="${escapeHtml(data.playing)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
+          ${boardHtml}
           <div class="now-info">
             <strong class="now-title">In a game right now</strong>
             <span class="now-meta">watch it live on Lichess</span>
@@ -225,6 +279,7 @@ async function loadChess() {
 
     el.innerHTML = `
       <a href="${escapeHtml(data.challenge)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
+        ${boardHtml}
         <div class="now-info">
           <strong class="now-title">${escapeHtml(String(data.top.rating))} ${escapeHtml(data.top.format)} on Lichess</strong>
           <span class="now-meta">${escapeHtml(trend)}challenge me</span>
