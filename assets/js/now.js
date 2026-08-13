@@ -218,13 +218,12 @@ async function loadChess() {
     const format = data.top.format.charAt(0).toUpperCase() + data.top.format.slice(1);
     const prog = data.top.prog;
     const trend = prog ? ` ${prog > 0 ? "+" : "−"}${Math.abs(prog)}` : "";
-    const puzzle = data.puzzle ? ` · puzzles ${data.puzzle}` : "";
 
     el.innerHTML = `
       <a href="${escapeHtml(data.profile)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
         <div class="now-info">
           <strong class="now-title">${escapeHtml(format)} ${escapeHtml(String(data.top.rating))}${escapeHtml(trend)}</strong>
-          <span class="now-meta">not at the board${escapeHtml(puzzle)}</span>
+          <span class="now-meta">not at the board</span>
         </div>
       </a>
     `;

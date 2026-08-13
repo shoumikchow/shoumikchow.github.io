@@ -272,7 +272,6 @@ async function handleLichess(): Promise<Response> {
     playing: data.playing ?? null,
     profile: data.url ?? `https://lichess.org/@/${LICHESS_USER}`,
     top: top ? { format: top.format, rating: top.rating, prog: top.prog ?? 0 } : null,
-    puzzle: perfs.puzzle?.rating ?? null,
   });
 }
 
