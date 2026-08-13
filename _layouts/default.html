@@ -21,6 +21,15 @@
   </script>
 
   {% seo %}
+  {%- comment -%}
+    Advertise the Markdown twin of this page (see md/). Only pages built from a
+    .md source have one; resume.md is a bare redirect, so it is skipped.
+  {%- endcomment -%}
+  {%- if page.path contains '.md' and page.redirect_to == nil -%}
+    {%- if page.url == '/' -%}{%- assign md_url = '/index.md' -%}
+    {%- else -%}{%- assign md_url = page.url | append: '.md' -%}{%- endif %}
+  <link rel="alternate" type="text/markdown" href="{{ md_url | absolute_url }}">
+  {%- endif %}
   <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
   
   <!-- Structured Data -->
