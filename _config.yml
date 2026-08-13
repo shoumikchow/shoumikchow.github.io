@@ -68,5 +68,10 @@ exclude:
     - Gemfile.lock
     - LICENSE
     - README.md
+    - CLAUDE.local.md
     - CNAME
     - worker
+
+# Jekyll skips dot-directories unless they are explicitly included.
+include:
+    - .well-known

@@ -1,0 +1,14 @@
+---
+permalink: /.well-known/security.txt
+sitemap: false
+---
+# Security contact for shoumikchow.com
+# Expires is regenerated on every build (RFC 9116 requires a future date),
+# so it stays valid as long as the site is pushed at least once a year.
+
+Contact: mailto:hello@shoumikchow.com
+Encryption: https://shoumikchow.com/.well-known/openpgpkey/hu/im4cc8qhazwkfsi65a8us1bc5gzk1o4p
+Encryption: https://keys.openpgp.org/vks/v1/by-fingerprint/3FFB42359BBDB66536631E839F3C04E1D3FABE15
+Preferred-Languages: en
+Canonical: https://shoumikchow.com/.well-known/security.txt
+Expires: {{ site.time | date: "%s" | plus: 31536000 | date: "%Y-%m-%dT%H:%M:%SZ" }}

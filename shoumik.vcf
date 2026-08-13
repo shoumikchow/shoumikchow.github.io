@@ -1,0 +1,18 @@
+---
+permalink: /shoumik.vcf
+sitemap: false
+---
+BEGIN:VCARD
+VERSION:3.0
+N:Chowdhury;Shoumik;;;
+FN:{{ site.author }}
+TITLE:{{ site.structured_data.person.jobTitle }}
+ORG:{{ site.structured_data.person.worksFor }}
+EMAIL;TYPE=INTERNET,PREF:{{ site.email | remove: "mailto:" }}
+URL:{{ site.url }}
+URL:{{ site.github }}
+URL:{{ site.linkedin }}
+URL:{{ site.bluesky }}
+NOTE:{{ site.author_bio }}
+REV:{{ site.time | date_to_xmlschema }}
+END:VCARD

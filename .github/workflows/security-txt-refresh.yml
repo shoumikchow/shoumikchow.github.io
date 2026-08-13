@@ -1,0 +1,40 @@
+name: Refresh security.txt Expires
+
+# The Expires field in .well-known/security.txt is generated at build time
+# (site.time + 1 year), so it only needs a rebuild — there is no file to edit.
+# Dependabot pushes usually rebuild the site well inside a year; this is the
+# backstop for a quiet year.
+on:
+  schedule:
+    - cron: "0 12 12 4 *" # April 12, 12:00 UTC
+  workflow_dispatch:
+
+permissions:
+  pages: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request a GitHub Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+
+      - name: Verify the live Expires date is back in the future
+        run: |
+          # ponytail: fixed sleep instead of polling the build status API.
+          # A Pages build of this site takes well under a minute; if this ever
+          # starts flaking, poll repos/.../pages/builds/latest for "built".
+          sleep 120
+
+          expires=$(curl -sS --fail https://shoumikchow.com/.well-known/security.txt \
+            | awk -F': ' '/^Expires:/ {print $2}')
+          echo "Expires: $expires"
+
+          # Must be more than 300 days out, otherwise the rebuild did not take.
+          if [ "$(date -d "$expires" +%s)" -lt "$(date -d '+300 days' +%s)" ]; then
+            echo "::error::security.txt Expires is not a year out — the rebuild did not land."
+            exit 1
+          fi
+          echo "security.txt is valid until $expires"

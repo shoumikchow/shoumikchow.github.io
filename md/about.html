@@ -1,0 +1,6 @@
+---
+permalink: /about.md
+sitemap: false
+---
+{%- assign p = site.pages | where: "path", "about.md" | first -%}
+{{ p.content }}
