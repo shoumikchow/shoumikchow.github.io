@@ -271,6 +271,7 @@ async function handleLichess(): Promise<Response> {
     // Present only while a game is actually in progress.
     playing: data.playing ?? null,
     profile: data.url ?? `https://lichess.org/@/${LICHESS_USER}`,
+    challenge: `https://lichess.org/?user=${LICHESS_USER}#friend`,
     top: top ? { format: top.format, rating: top.rating, prog: top.prog ?? 0 } : null,
   });
 }

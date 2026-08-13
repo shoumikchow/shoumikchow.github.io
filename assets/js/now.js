@@ -215,19 +215,19 @@ async function loadChess() {
       return;
     }
 
-    const format = data.top.format.charAt(0).toUpperCase() + data.top.format.slice(1);
     const prog = data.top.prog;
     // Spell the trend out — a bare "−6" means nothing without knowing it is
-    // Lichess's rating change over the last dozen games.
+    // Lichess's rating change over the last dozen rated games. Drops out
+    // entirely at 0 rather than printing "up 0".
     const trend = prog
-      ? ` · ${prog > 0 ? "up" : "down"} ${Math.abs(prog)} recently`
+      ? `${prog > 0 ? "up" : "down"} ${Math.abs(prog)} lately · `
       : "";
 
     el.innerHTML = `
-      <a href="${escapeHtml(data.profile)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
+      <a href="${escapeHtml(data.challenge)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
         <div class="now-info">
-          <strong class="now-title">${escapeHtml(format)} rating ${escapeHtml(String(data.top.rating))}</strong>
-          <span class="now-meta">not playing right now${escapeHtml(trend)}</span>
+          <strong class="now-title">${escapeHtml(String(data.top.rating))} ${escapeHtml(data.top.format)} on Lichess</strong>
+          <span class="now-meta">${escapeHtml(trend)}challenge me</span>
         </div>
       </a>
     `;
