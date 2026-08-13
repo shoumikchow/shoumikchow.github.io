@@ -18,6 +18,7 @@
   --now-book: #c7873a;
   --now-movie: #40bcf4;
   --now-gaming: #7952b3;
+  --now-chess: #b5484a;
 }
 
 [data-theme="dark"] {
@@ -32,6 +33,7 @@
   --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
   --accent: #60a5fa;
   --now-gaming: #a78bda;
+  --now-chess: #e08d8f;
 }
 
 // ─── Typography ───────────────────────────────────────────────
@@ -474,11 +476,17 @@ main {
 .now-item--book .now-card-link  { border-left-color: var(--now-book); }
 .now-item--movie .now-card-link  { border-left-color: var(--now-movie); }
 .now-item--gaming .now-card-link { border-left-color: var(--now-gaming); }
+.now-item--chess .now-card-link { border-left-color: var(--now-chess); }
+
+// Fifth card in a two-column grid would otherwise sit alone in a half-width
+// row; span it instead.
+.now-item--chess { grid-column: 1 / -1; }
 
 .now-item--music .now-label  { color: var(--now-music); }
 .now-item--book .now-label   { color: var(--now-book); }
 .now-item--movie .now-label  { color: var(--now-movie); }
 .now-item--gaming .now-label { color: var(--now-gaming); }
+.now-item--chess .now-label { color: var(--now-chess); }
 
 // Artwork
 .now-poster {

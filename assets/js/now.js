@@ -188,9 +188,55 @@ async function loadSteam() {
   }
 }
 
+async function loadChess() {
+  const el = document.getElementById("now-chess");
+  if (!el) return;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/lichess`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+
+    // A live game is the only genuinely "now" state, so it wins when present.
+    if (data.playing) {
+      el.innerHTML = `
+        <a href="${escapeHtml(data.playing)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
+          <div class="now-info">
+            <strong class="now-title">In a game right now</strong>
+            <span class="now-meta">watch it live on Lichess</span>
+          </div>
+        </a>
+      `;
+      return;
+    }
+
+    if (!data.top) {
+      el.innerHTML = `<p class="now-empty">Away from the board lately.</p>`;
+      return;
+    }
+
+    const format = data.top.format.charAt(0).toUpperCase() + data.top.format.slice(1);
+    const prog = data.top.prog;
+    const trend = prog ? ` ${prog > 0 ? "+" : "−"}${Math.abs(prog)}` : "";
+    const puzzle = data.puzzle ? ` · puzzles ${data.puzzle}` : "";
+
+    el.innerHTML = `
+      <a href="${escapeHtml(data.profile)}" target="_blank" rel="noopener noreferrer" class="now-card-link">
+        <div class="now-info">
+          <strong class="now-title">${escapeHtml(format)} ${escapeHtml(String(data.top.rating))}${escapeHtml(trend)}</strong>
+          <span class="now-meta">not at the board${escapeHtml(puzzle)}</span>
+        </div>
+      </a>
+    `;
+  } catch {
+    el.innerHTML = createErrorState("blundered — ratings unavailable");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadLetterboxd();
   loadBooks();
   loadSpotify();
   loadSteam();
+  loadChess();
 });

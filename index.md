@@ -30,6 +30,10 @@ My pronouns are he/him/él.
     <span class="now-label"><span class="now-label-icon">{% include icons/gaming.svg %}</span>Playing</span>
     <div class="now-card" id="now-gaming"><span class="now-loading"></span></div>
   </div>
+  <div class="now-item now-item--chess">
+    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>Chess</span>
+    <div class="now-card" id="now-chess"><span class="now-loading"></span></div>
+  </div>
 </div>
 
 *When I'm not at the keyboard, I'm likely in Queens, NYC with my wife and our dog, Neira, exploring local restaurants or tinkering with a Raspberry Pi.*

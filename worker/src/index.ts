@@ -241,6 +241,41 @@ async function handleSteam(env: Env): Promise<Response> {
   return jsonResponse(games);
 }
 
+// Public endpoint, no key and no token to rotate — unlike Spotify below.
+const LICHESS_USER = "shoumikchow";
+
+async function handleLichess(): Promise<Response> {
+  const res = await fetch(`https://lichess.org/api/user/${LICHESS_USER}`, {
+    headers: { accept: "application/json" },
+  });
+
+  if (!res.ok) {
+    return jsonResponse({ error: "Failed to fetch Lichess data" }, 502);
+  }
+
+  const data: {
+    url?: string;
+    playing?: string;
+    perfs?: Record<string, { games?: number; rating?: number; prog?: number }>;
+  } = await res.json();
+
+  const perfs = data.perfs ?? {};
+
+  // Feature the format actually played most, not the best-rated one.
+  const top = (["bullet", "blitz", "rapid", "classical"] as const)
+    .map((format) => ({ format, ...(perfs[format] ?? {}) }))
+    .filter((p) => (p.games ?? 0) > 0)
+    .sort((a, b) => (b.games ?? 0) - (a.games ?? 0))[0];
+
+  return jsonResponse({
+    // Present only while a game is actually in progress.
+    playing: data.playing ?? null,
+    profile: data.url ?? `https://lichess.org/@/${LICHESS_USER}`,
+    top: top ? { format: top.format, rating: top.rating, prog: top.prog ?? 0 } : null,
+    puzzle: perfs.puzzle?.rating ?? null,
+  });
+}
+
 async function handleSpotify(env: Env): Promise<Response> {
   if (!env.SPOTIFY_CLIENT_ID || !env.SPOTIFY_CLIENT_SECRET || !env.SPOTIFY_REFRESH_TOKEN) {
     return jsonResponse({ error: "Spotify not configured" }, 503);
@@ -351,6 +386,8 @@ export default {
           return handleSpotify(env);
         case "/steam":
           return handleSteam(env);
+        case "/lichess":
+          return handleLichess();
         default:
           return jsonResponse({ error: "Not found" }, 404);
       }

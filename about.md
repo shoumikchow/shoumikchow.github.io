@@ -12,7 +12,7 @@ When I’m not working, you’ll probably find me daydreaming about my next trip
 
 I love taking photos too. My [Instagram](https://www.instagram.com/shoumikchow/) is where I stash the ones that made the cut.
 
-Big fan of board games, and I’ll never say no to a good chess match—[challenge me](https://chess.com/play/shoumikcfc) if you’re feeling brave. ♟️
+Big fan of board games, and I’ll never say no to a good chess match—[challenge me on Lichess](https://lichess.org/?user=shoumikchow#friend) if you’re feeling brave. ♟️
 
 Oh, and I’m a *very* loyal Chelsea FC fan. Come on you Blues! 💙
 
