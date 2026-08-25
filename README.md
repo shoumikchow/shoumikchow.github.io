@@ -16,6 +16,28 @@ The homepage features a live "Right Now" section that shows what I'm currently l
 
 The worker source lives in the `worker/` directory and responses are cached at the edge for 5 minutes.
 
+## Markdown twins
+
+Every page is published twice: the usual HTML, and its raw Markdown source at the same URL with `.md` appended (`/about` → `/about.md`) — the convention docs sites use for LLM consumers. GitHub Pages allows no custom plugins, so each one is a short Liquid stub in `md/` that echoes the source page's content. The homepage stub also strips the "Right Now" markup, which is just empty divs without JavaScript.
+
+They are kept out of the sitemap and discoverable two other ways: a `rel="alternate"` link in the head of each page built from a `.md` source, and `llms.txt`.
+
+## Terminal content negotiation
+
+`curl -L shoumikchow.com` returns the Markdown as `text/plain`; browsers get the usual HTML. The `-L` is needed because a bare hostname makes curl try `http://`, and Cloudflare's HTTPS redirect fires before the worker ever runs. A second worker in `worker-terminal/` picks between the two existing representations based on the `User-Agent` and `Accept` headers — it converts nothing, holds no secrets, and has no bindings. Every failure path degrades to the HTML page.
+
+Its `wrangler.toml` lists one exact route per page rather than `shoumikchow.com/*`, so assets, PDFs, `sitemap.xml`, `/.well-known/*` and the `.md` files never reach the worker. The cost is that a new page needs a line there, and until it gets one it serves HTML to curl.
+
+## Generated files
+
+These are built from `_config.yml` or from the build time rather than maintained by hand:
+
+- `llms.txt` — site index for LLM consumers, pointing at the Markdown twins
+- `shoumik.vcf` — contact card
+- `.well-known/security.txt` — [RFC 9116](https://www.rfc-editor.org/rfc/rfc9116) security contact. `Expires` is generated as build time + 365 days, so it cannot silently lapse. Dependabot pushes normally rebuild the site well inside a year; the yearly `Refresh security.txt Expires` workflow is the backstop for a quiet one, and it verifies the live date actually moved.
+
+The site also serves [WKD](https://wiki.gnupg.org/WKD) from `.well-known/openpgpkey/`, so `gpg --locate-keys hello@shoumikchow.com` resolves. The published key carries only the `hello@` uid.
+
 ## Local development
 
 ```sh
@@ -25,6 +47,8 @@ bundle exec jekyll serve
 
 ## Worker development
 
+There are two workers, deployed separately and sharing no code: `worker/` (the "Right Now" API proxy) and `worker-terminal/` (content negotiation on the apex). They are kept apart on purpose — the Now worker changes often as the Letterboxd/TMDB/Spotify/Steam feeds break, which is not something that should sit in front of the homepage.
+
 ```sh
 cd worker
 npm install
@@ -32,7 +56,9 @@ npx wrangler dev     # local dev server
 npx wrangler deploy  # deploy to Cloudflare
 ```
 
-The worker requires the following secrets (set via `npx wrangler secret put <NAME>`):
+`worker-terminal/` is a single file with no dependencies, so it has no `package.json` — run `npx wrangler dev` / `npx wrangler deploy` in it directly.
+
+The Now worker requires the following secrets (set via `npx wrangler secret put <NAME>`). The terminal worker needs none:
 
 - `SPOTIFY_CLIENT_ID`
 - `SPOTIFY_CLIENT_SECRET`
