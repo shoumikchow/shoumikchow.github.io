@@ -30,8 +30,19 @@
     {%- else -%}{%- assign md_url = page.url | append: '.md' -%}{%- endif %}
   <link rel="alternate" type="text/markdown" href="{{ md_url | absolute_url }}">
   {%- endif %}
-  <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
-  
+  {%- comment -%}
+    Cache buster. This used to be site.github.build_revision, which was always
+    empty: jekyll-github-metadata ships with the github-pages gem but was never
+    added to the plugins list in _config.yml, so site.github is never populated
+    and every page served "style.css?v=" with nothing after it.
+
+    site.time is the build timestamp, so it changes on every deploy and needs no
+    plugin, no repository config and no API call at build time — it behaves the
+    same locally as it does on Pages.
+  {%- endcomment -%}
+  {%- assign v = site.time | date: "%Y%m%d%H%M%S" %}
+  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}?v={{ v }}">
+
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
@@ -92,10 +103,11 @@
 
     </main>
   </div>
-  <script src="{{ "/assets/js/dark-mode.js" | relative_url }}"></script>
-  <script src="{{ "/assets/js/back-to-top.js" | relative_url }}"></script>
-  <script src="{{ "/assets/js/accessibility.js" | relative_url }}"></script>
-  <script src="{{ "/assets/js/now.js" | relative_url }}"></script>
+  {%- comment -%} Same buster as the stylesheet: these had none at all. {%- endcomment -%}
+  <script src="{{ "/assets/js/dark-mode.js" | relative_url }}?v={{ v }}"></script>
+  <script src="{{ "/assets/js/back-to-top.js" | relative_url }}?v={{ v }}"></script>
+  <script src="{{ "/assets/js/accessibility.js" | relative_url }}?v={{ v }}"></script>
+  <script src="{{ "/assets/js/now.js" | relative_url }}?v={{ v }}"></script>
   <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "087a0204fbc34932b82404ff9bc90eb7"}'></script>
   <!-- End Cloudflare Web Analytics -->
