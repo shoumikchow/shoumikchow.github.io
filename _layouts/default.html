@@ -103,6 +103,35 @@
 
     </main>
   </div>
+  {%- comment -%}
+    The toggle's ring. The noise period at this frequency is about a third of
+    the button's diameter, so the ring picks up seven or so lobes, and the scale
+    swings each of them a good 5px — visible at a glance rather than only on
+    inspection.
+
+    The seed here is only a fallback. assets/js/dark-mode.js replaces it with a
+    random one on every page view, so the ring is drawn by the same hand but
+    never as quite the same circle; without JS this static value still renders a
+    perfectly good ring, just the same one every time.
+
+    Three settings are load-bearing:
+      · numOctaves must stay at 1. A second octave rides a half-amplitude ripple
+        on top of the waves, which at this scale frays the line into something
+        that looks like a rendering fault instead of a drawn one.
+      · R and G have to be named. feDisplacementMap defaults both channels to A,
+        which displaces along a single diagonal rather than in two axes, so the
+        ring slides off-centre instead of going wobbly.
+      · scale is not the deflection. feDisplacementMap shifts by
+        scale × (channel − 0.5) and fractalNoise seldom reaches its own extremes,
+        so the drawn wobble is nearer a tenth of this number than half of it.
+  {%- endcomment -%}
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="squiggle" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="1" seed="0" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
   {%- comment -%} Same buster as the stylesheet: these had none at all. {%- endcomment -%}
   <script src="{{ "/assets/js/dark-mode.js" | relative_url }}?v={{ v }}"></script>
   <script src="{{ "/assets/js/back-to-top.js" | relative_url }}?v={{ v }}"></script>

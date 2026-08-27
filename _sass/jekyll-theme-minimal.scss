@@ -563,6 +563,9 @@ ul.downloads {
 }
 
 // ─── Controls ─────────────────────────────────────────────────
+// Filter definitions only; nothing to paint, and it must not take up a line box.
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
 .theme-toggle,
 .back-to-top {
   position: fixed;
@@ -586,7 +589,36 @@ ul.downloads {
   background: none;
   color: var(--fg-muted);
 
-  &:hover { border-color: var(--fg); color: var(--fg); transform: rotate(15deg); }
+  // The ring is drawn on ::before rather than on the button, so the turbulence
+  // filter below can wobble it without also smearing the sun/moon glyph. The
+  // button keeps a transparent border of the same width so the two agree on
+  // where the content box is.
+  border-color: transparent;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    // A shade heavier than the 1px it replaces: displacement stretches the line
+    // thin wherever it bends outward, and a flat 1px browns out at those points.
+    border: 1.25px solid var(--rule);
+    border-radius: 20px;
+    // A hand-drawn circle rather than a compass one, for character. Within a
+    // page view the shape is fixed — the noise is anchored to the filter region
+    // in user space, so it is a shape and not a shimmer — but dark-mode.js gives
+    // the filter a fresh seed on each load, so it is a different circle every
+    // time. A browser that cannot resolve the reference simply drops the filter
+    // and leaves a plain one.
+    filter: url("#squiggle");
+    transition: border-color 0.2s ease;
+  }
+
+  &:hover {
+    color: var(--fg);
+    transform: rotate(15deg);
+    &::before { border-color: var(--fg); }
+  }
+
   .icon { line-height: 1; }
 }
 
@@ -661,6 +693,16 @@ ul.downloads {
   main { border-left: none; padding-left: 0; }
   a { color: #000; text-decoration: underline; }
 }
+
+// ─── Selection ────────────────────────────────────────────────
+// Without this the browser's stock blue is the one place the palette hands over
+// to the OS. Gold, so the wash stays in the warm half of the palette.
+//
+// Specified twice on purpose: a single tint cannot serve both themes when one
+// wash sits on cream and the other on #0f0e0d. The dark value is the lighter
+// gold at lower alpha, because the darkened light-mode gold reads as mud there.
+::selection { background: rgba(156, 106, 24, 0.18); color: var(--fg); }
+[data-theme="dark"] ::selection { background: rgba(246, 193, 119, 0.2); color: var(--fg); }
 
 // ─── View transition (theme toggle) ───────────────────────────
 // dark-mode.js supplies the circle, all of it as percentages: --vt-x/--vt-y are

@@ -59,28 +59,50 @@ permalink: /404.html
       color: var(--fg-faint);
       margin-bottom: 32px;
     }
+    /* The border is transparent because the visible one is drawn on ::before —
+       see below. It stays here so the button's box does not change size. */
     a {
+      position: relative;
       color: var(--fg);
       text-decoration: none;
       font-weight: 500;
       font-size: 13px;
       padding: 8px 20px;
-      border: 1px solid var(--rule);
-      border-radius: 8px;
+      border: 1px solid transparent;
       transition: all 0.2s ease;
       display: inline-block;
     }
     a:hover {
-      border-color: var(--fg-faint);
       background: rgba(128, 128, 128, 0.05);
     }
+    /* The home button borrows the hand-drawn border from the site's theme
+       toggle. The border sits on a pseudo-element so the filter cannot smear
+       the label, and the filter itself is inlined below for the same reason the
+       palette is: this page has to stand on its own. */
+    a::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border: 1.25px solid var(--rule);
+      border-radius: 8px;
+      filter: url("#squiggle-404");
+    }
+    a:hover::before { border-color: var(--fg-faint); }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="code">404</div>
-    <p class="message">This page doesn't exist.</p>
-    <a href="/">Back to Home</a>
+    <p class="message">My dog, Neira, ate this page. She is not sorry.</p>
+    <a href="/">Somewhere she has not been</a>
   </div>
+
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <filter id="squiggle-404" x="-20%" y="-60%" width="140%" height="220%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="1" seed="0" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
 </body>
 </html>

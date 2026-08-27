@@ -108,7 +108,22 @@
     });
   }
 
+  // The toggle's border is a circle run through the #squiggle turbulence filter
+  // in _layouts/default.html. Re-seeding it here means the ring is drawn afresh
+  // on every page view rather than being one fixed shape — same hand, never
+  // quite the same circle. Changing the attribute invalidates the filter, so
+  // the ring below picks it up on its first paint.
+  //
+  // If the filter is missing for any reason this does nothing and the button
+  // keeps the plain circular border the stylesheet gives it.
+  function reseedRing() {
+    var noise = document.querySelector('#squiggle feTurbulence');
+    if (noise) noise.setAttribute('seed', Math.floor(Math.random() * 10000));
+  }
+
   function createToggleButton() {
+    reseedRing();
+
     var toggle = document.createElement('button');
     toggle.className = 'theme-toggle';
     toggle.setAttribute('aria-label', 'Toggle dark mode');
