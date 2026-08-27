@@ -23,10 +23,20 @@
 
   --accent: #286983;    // pine
 
+  // The warm accent: every link's hover and focus, the sticky nav's
+  // current-page underline, and the Now section's book channel, which is where
+  // the value started. Lifted out of the block below so the three cannot drift.
+  //
+  // A shade darker than the #9c6a18 the book channel used to carry. That one
+  // measures 4.28:1 on the cream — under AA for text of its size, and under
+  // what the note below claims of it — which body-size link text would have
+  // inherited the moment links went gold. This clears it at 4.83:1.
+  --gold: #92621a;
+
   // The palette's own hues, darkened until the 9px uppercase Now labels clear
   // 4.5:1 on the cream. The undarkened Dawn hues sit around 3:1.
   --now-music: #3b7580;  // foam
-  --now-book: #9c6a18;   // gold
+  --now-book: var(--gold);
   --now-movie: #a1596a;  // rose
   --now-gaming: #7a5f9e; // iris
   --now-chess: #a34a63;  // love
@@ -66,10 +76,14 @@
 
   --accent: #9ccfd8;    // foam
 
+  // 11.77:1 on the near-black, so unlike its light counterpart this one needed
+  // no adjustment to carry link text.
+  --gold: #f6c177;
+
   // Pine is the one Rosé Pine hue too dark to sit on a near-black base, so the
   // music channel borrows foam here rather than going illegible.
   --now-music: #9ccfd8;  // foam
-  --now-book: #f6c177;   // gold
+  --now-book: var(--gold);
   --now-movie: #ebbcba;  // rose
   --now-gaming: #c4a7e7; // iris
   --now-chess: #eb6f92;  // love
@@ -141,8 +155,8 @@ a {
   transition: color 0.2s ease, border-color 0.2s ease;
   border-bottom: 1px solid transparent;
 
-  &:hover { color: var(--accent); border-bottom-color: var(--accent); }
-  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  &:hover { color: var(--gold); border-bottom-color: var(--gold); }
+  &:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
 }
 
 strong { color: var(--fg); font-weight: 600; }
@@ -742,9 +756,9 @@ ul.downloads {
       color: var(--fg);
       font-weight: 600;
       // The pills carry the current page with a ring and a fill, which at this
-      // size would be a smudge. A gold underline instead, borrowing the Now
-      // section's book hue — the one accent already used for "this one".
-      box-shadow: inset 0 -2px 0 -1px var(--now-book);
+      // size would be a smudge. A gold underline instead — the same warm
+      // accent every link hover now uses.
+      box-shadow: inset 0 -2px 0 -1px var(--gold);
     }
   }
 
@@ -855,7 +869,9 @@ ul.downloads {
 // Specified twice on purpose: a single tint cannot serve both themes when one
 // wash sits on cream and the other on #0f0e0d. The dark value is the lighter
 // gold at lower alpha, because the darkened light-mode gold reads as mud there.
-::selection { background: rgba(156, 106, 24, 0.18); color: var(--fg); }
+// Each is its theme's --gold, written out rather than referenced because a
+// tint needs the alpha baked into the value.
+::selection { background: rgba(146, 98, 26, 0.18); color: var(--fg); }
 [data-theme="dark"] ::selection { background: rgba(246, 193, 119, 0.2); color: var(--fg); }
 
 // ─── View transition (theme toggle) ───────────────────────────
