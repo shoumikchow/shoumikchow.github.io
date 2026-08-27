@@ -47,6 +47,8 @@
   --sidebar-w: 240px;
   --gutter: 67px;
   --pad: 60px;
+  // Read by sticky-nav.js to place its IntersectionObserver margin.
+  --sticky-nav-h: 56px;
 }
 
 [data-theme="dark"] {
@@ -580,7 +582,11 @@ ul.downloads {
   border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
-  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  // `top` is here for the theme toggle, which slides up to dock into the
+  // sticky nav; the back-to-top button is positioned from the bottom and is
+  // unaffected by it.
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease,
+              opacity 0.2s ease, top 0.34s cubic-bezier(0.2, 0.8, 0.25, 1);
   // The glyph inside is text, so a tap on mobile both flashes the grey WebKit
   // highlight box and can select the character. Neither means anything on a
   // button; the hover/active styling is the only feedback wanted.
@@ -643,6 +649,121 @@ ul.downloads {
   &:hover { color: var(--fg); border-color: var(--fg); }
 }
 
+// ─── Sticky nav ───────────────────────────────────────────────
+// Phones only. Above 960px the header is a sticky sidebar and the pills never
+// leave the screen, so there is nothing to solve; between 480 and 960 the
+// header is a band that does scroll away, but a bar pinned across a window
+// that wide is desktop furniture this site does without. sticky-nav.js appends
+// the markup and puts .nav-stuck on <html>; whether it may show is decided
+// here. See that file for why the split falls this way.
+//
+// Hidden by default at every width, so a browser without IntersectionObserver
+// (or with JS off) is left exactly where it started rather than with a bar
+// pinned over the page.
+.sticky-nav { display: none; }
+
+@media (max-width: 480px) {
+  .sticky-nav {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 900; // Under the theme toggle, which docks into it below.
+    height: var(--sticky-nav-h);
+    // Solid first, so a browser that cannot parse color-mix gets an opaque bar
+    // rather than unreadable text over the scrolling page.
+    background: var(--bg);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    // Plain, not the toggle's hand-drawn ring. Box-sizing is border-box, so
+    // this sits inside the height rather than adding to it.
+    border-bottom: 1px solid var(--rule);
+
+    transform: translateY(-100%);
+    visibility: hidden;
+    // visibility waits out the slide on the way up so the bar cannot be tapped
+    // while it is leaving, then flips instantly on the way down.
+    transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.25, 1),
+                visibility 0s linear 0.34s;
+  }
+
+  .nav-stuck .sticky-nav {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.25, 1), visibility 0s;
+  }
+
+  .sticky-nav ul {
+    list-style: none;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    // Left padding tracks the page's own gutter so the first label sits on the
+    // same line as the content below it — which is why the narrow breakpoints
+    // now move --pad rather than setting body's padding directly. The right
+    // gutter is the toggle's footprint: 24px offset + 44px button + a gap.
+    padding: 0 76px 0 var(--pad);
+    // A safety valve, not a feature — four labels fit at every width this bar
+    // is shown at, but a longer page title should scroll rather than collide.
+    overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .sticky-nav li {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.2s ease, transform 0.26s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  // Labels stagger in behind the bar's own slide. Leaving is undelayed — the
+  // base rule above carries no delay — so they go all at once and the bar
+  // does not feel slow to dismiss.
+  .nav-stuck .sticky-nav li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(80ms + var(--i) * 45ms);
+  }
+
+  .sticky-nav a {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--fg-muted);
+    border-bottom: none;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+
+    &.active {
+      color: var(--fg);
+      font-weight: 600;
+      // The pills carry the current page with a ring and a fill, which at this
+      // size would be a smudge. A gold underline instead, borrowing the Now
+      // section's book hue — the one accent already used for "this one".
+      box-shadow: inset 0 -2px 0 -1px var(--now-book);
+    }
+  }
+
+  // The toggle rides down into the bar rather than floating over it. 36px
+  // button, 56px bar.
+  .nav-stuck .theme-toggle { top: calc((var(--sticky-nav-h) - 36px) / 2); }
+}
+
+// 44px button at the same touch sizes set further down.
+@media (max-width: 480px) and (hover: none) and (pointer: coarse) {
+  .nav-stuck .theme-toggle { top: calc((var(--sticky-nav-h) - 44px) / 2); }
+}
+
+// The global reduced-motion block zeroes durations but not delays, which would
+// leave the labels blinking on one after another to no purpose.
+@media (prefers-reduced-motion: reduce) {
+  .nav-stuck .sticky-nav li { transition-delay: 0s !important; }
+}
+
 // ─── Responsive ───────────────────────────────────────────────
 @media (max-width: 960px) {
   .wrapper { grid-template-columns: 1fr; }
@@ -667,14 +788,17 @@ ul.downloads {
 }
 
 @media (max-width: 720px) {
-  body { padding: 32px; word-wrap: break-word; }
+  // Moving the constant rather than body's padding keeps the sticky nav's
+  // gutter in step with the page's without repeating the number.
+  :root { --pad: 32px; }
+  body { word-wrap: break-word; }
   .now-grid { grid-template-columns: 1fr; }
   .site-logo { width: 180px; height: 180px; }
   pre, code { word-wrap: normal; }
 }
 
 @media (max-width: 480px) {
-  body { padding: 20px; }
+  :root { --pad: 20px; }
   h1 { font-size: 25px; }
 
   // The left-align above is right for a wide single-column band, but at phone
