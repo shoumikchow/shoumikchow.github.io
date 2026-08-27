@@ -41,13 +41,14 @@
     if (icon) icon.innerHTML = getIcon(theme);
   }
 
-  function getLogoCenter() {
+  function getLogoCircle() {
     var logo = document.querySelector('.site-logo');
-    if (!logo) return { x: 0, y: 0 };
+    if (!logo) return { x: 0, y: 0, r: 0 };
     var rect = logo.getBoundingClientRect();
     return {
       x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
+      y: rect.top + rect.height / 2,
+      r: rect.width / 2
     };
   }
 
@@ -55,70 +56,55 @@
     var current = document.documentElement.getAttribute('data-theme');
     var next = current === 'dark' ? 'light' : 'dark';
 
-    if (!document.startViewTransition) {
+    if (!document.startViewTransition ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       applyTheme(next);
       updateToggleIcon(next);
       return;
     }
 
-    var center = getLogoCenter();
+    // The wipe starts at the avatar's own radius rather than at zero. The avatar
+    // is an opaque photo that looks all but identical in either theme, so a
+    // circle that begins in the middle of it is invisible until it clears the
+    // rim — which reads as the wipe starting off to the side of the avatar
+    // rather than at it. Beginning at the rim makes the whole animation visible.
+    var logo = getLogoCircle();
     var maxDistance = Math.hypot(
-      Math.max(center.x, window.innerWidth - center.x),
-      Math.max(center.y, window.innerHeight - center.y)
+      Math.max(logo.x, window.innerWidth - logo.x),
+      Math.max(logo.y, window.innerHeight - logo.y)
     );
 
-    var goingDark = next === 'dark';
+    // The wipe itself is the ::view-transition-* animation in
+    // _sass/jekyll-theme-minimal.scss; all this does is hand it the geometry and
+    // say which direction we are going.
+    //
+    // The geometry goes over as percentages, never pixels. On a HiDPI display
+    // Chrome paints the wipe's clip-path with pixel lengths read as *device*
+    // pixels, which puts the circle at 1/dpr of the intended centre and radius —
+    // on a 2x screen it opens from half-way up and left of the avatar, at half
+    // the size. Percentages resolve against the pseudo-element's own box, so
+    // they land in the same place whichever unit that box is measured in, and
+    // they stay correct on browsers that get it right.
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    // Per css-shapes, a <percentage> radius for circle() resolves against
+    // sqrt(w^2 + h^2) / sqrt(2) of the reference box.
+    var refR = Math.hypot(vw, vh) / Math.SQRT2;
 
-    document.documentElement.style.setProperty('--vt-x', center.x + 'px');
-    document.documentElement.style.setProperty('--vt-y', center.y + 'px');
-
-    if (goingDark) {
-      document.documentElement.classList.add('dark-transition');
-    }
+    var root = document.documentElement;
+    root.style.setProperty('--vt-x', (logo.x / vw * 100) + '%');
+    root.style.setProperty('--vt-y', (logo.y / vh * 100) + '%');
+    root.style.setProperty('--vt-r0', (logo.r / refR * 100) + '%');
+    root.style.setProperty('--vt-r', (maxDistance / refR * 100) + '%');
+    root.classList.toggle('dark-transition', next === 'dark');
 
     var transition = document.startViewTransition(function() {
       applyTheme(next);
       updateToggleIcon(next);
     });
 
-    transition.finished.then(function() {
-      document.documentElement.classList.remove('dark-transition');
-    });
-
-    transition.ready.then(function() {
-      if (goingDark) {
-        // Light shrinks into the logo
-        document.documentElement.animate(
-          {
-            clipPath: [
-              'circle(' + maxDistance + 'px at ' + center.x + 'px ' + center.y + 'px)',
-              'circle(0px at ' + center.x + 'px ' + center.y + 'px)'
-            ]
-          },
-          {
-            duration: 350,
-            easing: 'ease-in-out',
-            pseudoElement: '::view-transition-old(root)',
-            fill: 'forwards'
-          }
-        );
-      } else {
-        // Light expands from the logo
-        document.documentElement.animate(
-          {
-            clipPath: [
-              'circle(0px at ' + center.x + 'px ' + center.y + 'px)',
-              'circle(' + maxDistance + 'px at ' + center.x + 'px ' + center.y + 'px)'
-            ]
-          },
-          {
-            duration: 350,
-            easing: 'ease-in-out',
-            pseudoElement: '::view-transition-new(root)',
-            fill: 'forwards'
-          }
-        );
-      }
+    transition.finished.finally(function() {
+      root.classList.remove('dark-transition');
     });
   }
 

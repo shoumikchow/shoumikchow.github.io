@@ -7,6 +7,10 @@
 // own base (#191724), which is a visibly violet charcoal — the accent hues are
 // what carry the family resemblance between the two themes, not the neutrals.
 :root {
+  // Also sets the base canvas the browser paints under the page, which is
+  // otherwise white and shows through during a view transition.
+  color-scheme: light;
+
   --bg: #faf4ed;
   --fg: #575279;        // text
   --fg-muted: #797593;  // subtle
@@ -46,6 +50,8 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
+
   --bg: #0f0e0d;
   --fg: #ece7e1;
   --fg-muted: #a39d96;
@@ -657,21 +663,69 @@ ul.downloads {
 }
 
 // ─── View transition (theme toggle) ───────────────────────────
+// dark-mode.js supplies the circle, all of it as percentages: --vt-x/--vt-y are
+// the logo's centre, --vt-r0 the logo's own radius (where the wipe starts) and
+// --vt-r the distance from the centre to the furthest viewport corner.
+//
+// To inspect a frame mid-wipe, stretch the duration from the console *before*
+// clicking the toggle, so the animation is created slow:
+//   document.documentElement.style.setProperty('--vt-duration', '5s')
+// Do not instead override animation-duration with !important, or call
+// updatePlaybackRate on the running animation. Both perturb an already-started
+// composited animation and make the painted frame disagree with the computed
+// style, which looks exactly like a positioning bug and is not one.
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
+  animation: none;         // drop the UA cross-fade
+  mix-blend-mode: normal;  // ...and the plus-lighter blending that goes with it
 }
 
-// Dark-to-light: new (light) expands on top
+// Dark-to-light: the new (light) view opens out of the logo.
 ::view-transition-new(root) {
   z-index: 9999;
-  clip-path: circle(0px at var(--vt-x, 0px) var(--vt-y, 0px));
+  animation: theme-open var(--vt-duration, 350ms) ease-in-out forwards;
 }
+::view-transition-old(root) { z-index: 1; }
 
-// Light-to-dark: old (light) shrinks on top to reveal dark
-.dark-transition::view-transition-old(root) { z-index: 9999; }
+// Light-to-dark: the old (light) view closes into the logo instead, so the dark
+// one is what is left behind.
+.dark-transition::view-transition-old(root) {
+  z-index: 9999;
+  animation: theme-close var(--vt-duration, 350ms) ease-in-out forwards;
+}
 .dark-transition::view-transition-new(root) {
   z-index: 1;
-  clip-path: none;
+  animation: none;
+}
+
+// Keep the wipe here rather than in Element.animate(..., { pseudoElement }).
+// Three reasons, in order of how badly they bite:
+//
+//  1. On a HiDPI display Chrome paints the scripted version's circle at the
+//     intended coordinates read as *device* pixels — centre and radius both land
+//     at 1/dpr, so on a 2x screen the wipe opens from half-way up and left of
+//     the avatar at half the size. Measured off screenshots: the rendered centre
+//     in device px equalled the intended centre in CSS px, both axes, both
+//     directions. It does not reproduce through DevTools screenshots or with the
+//     animation paused, because both re-rasterize on the main thread.
+//  2. A scripted animation added in a `ready` callback starts a few frames late,
+//     longest on the first transition of a page load.
+//  3. It needs fill:forwards, so it outlives the transition and goes on clipping
+//     the *next* one's snapshots — that is what flashed the whole viewport light.
+//
+// A CSS animation on the pseudo-element has none of these: it is scoped to the
+// transition, starts on the same frame as the snapshot, and dies with the
+// pseudo tree.
+//
+// Every value here is a percentage, deliberately — see the note in dark-mode.js.
+// The fallbacks degrade to a wipe from the middle of the screen; an unresolved
+// var() would make the whole clip-path invalid, which blanks the snapshot.
+@keyframes theme-open {
+  from { clip-path: circle(var(--vt-r0, 0%) at var(--vt-x, 50%) var(--vt-y, 50%)); }
+  to   { clip-path: circle(var(--vt-r, 150%) at var(--vt-x, 50%) var(--vt-y, 50%)); }
+}
+
+@keyframes theme-close {
+  from { clip-path: circle(var(--vt-r, 150%) at var(--vt-x, 50%) var(--vt-y, 50%)); }
+  to   { clip-path: circle(var(--vt-r0, 0%) at var(--vt-x, 50%) var(--vt-y, 50%)); }
 }
