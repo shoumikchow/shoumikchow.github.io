@@ -7,6 +7,7 @@ email: mailto:hello@shoumikchow.com
 linkedin: https://linkedin.com/in/shoumikchow
 twitter: https://twitter.com/shoumikchow
 bluesky: https://bsky.app/profile/shoumikchow.com
+instagram: https://instagram.com/shoumikchow
 github: https://github.com/shoumikchow
 theme: jekyll-theme-minimal
 permalink: /:path/:basename
@@ -19,6 +20,7 @@ twitter_username: "@shoumikchow"
 linkedin_username: "shoumikchow"
 github_username: "shoumikchow"
 bluesky_username: "shoumikchow.com"
+instagram_username: "shoumikchow"
 
 # Open Graph and Social Media
 og_image: /assets/img/og-card.png
@@ -38,6 +40,7 @@ structured_data:
       - "https://linkedin.com/in/shoumikchow"
       - "https://twitter.com/shoumikchow"
       - "https://bsky.app/profile/shoumikchow.com"
+      - "https://instagram.com/shoumikchow"
 
 # Update these ISBNs when you start/finish a book
 currently_reading:
