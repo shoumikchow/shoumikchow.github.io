@@ -4,9 +4,9 @@ title: Experience — Shoumik Chowdhury
 description: Professional experience and education of Shoumik Chowdhury — Applied ML Engineer at Andium, MS in Computer Science from the University of Houston.
 ---
 
-## Experience
+# Experience
 
-### Education
+## Education
 
 **University of Houston** — MS in Computer Science, 2021.
 Houston, Texas
@@ -16,7 +16,7 @@ Dhaka, Bangladesh
 
 ---
 
-### Work
+## Work
 
 My journey started right after high school, when I returned to my alma mater — [Mastermind School](https://www.mastermindschool.org/) — to teach English to sixth graders. Student to teacher in the same hallways.
 
@@ -32,7 +32,7 @@ Since 2021, I've been at [Andium](https://andium.com), building ML platforms and
 
 ---
 
-### Certifications
+## Certifications
 
 * [Deep Learning Specialization](https://coursera.org/share/4de30d50ef6f9603b2e860295db80036)
 * [AI for Medicine Specialization](https://coursera.org/share/5043c1edcf059d48b607ab31181352d5)

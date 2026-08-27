@@ -3,35 +3,35 @@ title: Shoumik Chowdhury — Applied ML Engineer
 layout: default
 ---
 
-## Hi! I’m Shoumik 👋
+# Hi! I’m Shoumik 👋
 
-I build ML systems that scale from research to production. Currently a **Applied ML Engineer** at [Andium](https://andium.com), working at the intersection of **computer vision**, **ML platforms**, and **LLM applications**.
+I build ML systems that scale from research to production. Currently an **Applied ML Engineer** at [Andium](https://andium.com), working at the intersection of **computer vision**, **ML platforms**, and **LLM applications**.
 
 My pronouns are he/him/él.
 
 ---
 
-### Right Now 📍
+## Right Now 📍
 
 <div class="now-grid">
   <div class="now-item now-item--music">
-    <span class="now-label"><span class="now-label-icon">{% include icons/music.svg %}</span>Listening</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/music.svg %}</span>On the Turntable</span>
     <div class="now-card" id="now-music"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--book">
-    <span class="now-label"><span class="now-label-icon">{% include icons/book.svg %}</span>Reading</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/book.svg %}</span>On the Nightstand</span>
     <div class="now-card" id="now-books" data-isbns="{{ site.currently_reading | join: ',' }}"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--movie">
-    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>Watching</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>At the Pictures</span>
     <div class="now-card" id="now-movie"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--gaming">
-    <span class="now-label"><span class="now-label-icon">{% include icons/gaming.svg %}</span>Playing</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/gaming.svg %}</span>In the Arcade</span>
     <div class="now-card" id="now-gaming"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--chess">
-    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>Chessing</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>At the Board</span>
     <div class="now-card" id="now-chess"><span class="now-loading"></span></div>
   </div>
 </div>
@@ -40,7 +40,7 @@ My pronouns are he/him/él.
 
 ---
 
-### Let's Connect! 🤝
+## Let's Connect! 🤝
 Whether you want to talk about AI, socialist organizing, or the best Thai food in Queens, I'd love to hear from you.
 
 **Get in touch:** **[hello@shoumikchow.com](mailto:hello@shoumikchow.com)**

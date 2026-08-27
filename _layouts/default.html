@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#fafafa">
+  <meta name="theme-color" content="#faf4ed">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
   <!-- Preload primary webfont to avoid FOUT -->
@@ -60,10 +60,15 @@
 <body>
   <div class="wrapper">
     <header>
-      <h1><a href="{{ "/" | absolute_url }}">{{ site.title }}</a></h1>
+      {%- comment -%}
+        A <p>, not an <h1>: this is identical on every page, so as an h1 it gave
+        all five pages the same headline and pushed each page's real title down
+        to an h2. The h1 now belongs to the page content.
+      {%- endcomment -%}
+      <p class="site-name"><a href="{{ "/" | absolute_url }}">{{ site.title }}</a></p>
 
       {% if site.logo %}
-      <img src="{{site.logo | relative_url}}" alt="{{ site.author }} - {{ site.description }}" class="site-logo" width="200" height="150" />
+      <img src="{{site.logo | relative_url}}" alt="{{ site.author }} - {{ site.description }}" class="site-logo" width="240" height="240" />
       {% endif %}
 
       <p class="site-description">{{ site.description | default: site.github.project_tagline }}</p>

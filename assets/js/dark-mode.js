@@ -14,7 +14,8 @@
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = theme === 'dark' ? '#0d0d0d' : '#fafafa';
+    // Must track --bg in _sass/jekyll-theme-minimal.scss.
+    if (meta) meta.content = theme === 'dark' ? '#0f0e0d' : '#faf4ed';
   }
 
   var initialTheme = getCurrentTheme();
