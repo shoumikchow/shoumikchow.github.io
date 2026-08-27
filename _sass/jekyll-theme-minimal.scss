@@ -353,11 +353,20 @@ ul.downloads {
   strong { display: none; }
 }
 
-.downloads li:nth-child(1) a:hover { color: #1da1f2; }
-.downloads li:nth-child(2) a:hover { color: #0085ff; }
-.downloads li:nth-child(3) a:hover { color: #0a66c2; }
-.downloads li:nth-child(4) a:hover { color: var(--fg); }
-.downloads li:nth-child(5) a:hover { color: #ea4335; }
+// Brand colours on hover, keyed to the link rather than its position. These
+// were nth-child rules written against a five-item list, so adding Instagram in
+// the middle handed every icon after it the next one's colour — LinkedIn blue
+// on Instagram, Gmail red on GitHub — and left Email, now sixth, with no rule
+// at all. Reordering or adding a network cannot do that again.
+//
+// GitHub's brand is black on white and white on black, which is what --fg
+// already is in each theme, so it is the one that takes a variable.
+.downloads a[data-social="twitter"]:hover   { color: #1da1f2; }
+.downloads a[data-social="bluesky"]:hover   { color: #0085ff; }
+.downloads a[data-social="instagram"]:hover { color: #e4405f; }
+.downloads a[data-social="linkedin"]:hover  { color: #0a66c2; }
+.downloads a[data-social="github"]:hover    { color: var(--fg); }
+.downloads a[data-social="email"]:hover     { color: #ea4335; }
 
 // ─── Now section ──────────────────────────────────────────────
 .now-grid {
