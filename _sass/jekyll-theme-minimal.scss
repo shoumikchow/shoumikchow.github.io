@@ -581,6 +581,13 @@ ul.downloads {
   cursor: pointer;
   font-size: 14px;
   transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  // The glyph inside is text, so a tap on mobile both flashes the grey WebKit
+  // highlight box and can select the character. Neither means anything on a
+  // button; the hover/active styling is the only feedback wanted.
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .theme-toggle {
@@ -669,6 +676,29 @@ ul.downloads {
 @media (max-width: 480px) {
   body { padding: 20px; }
   h1 { font-size: 25px; }
+
+  // The left-align above is right for a wide single-column band, but at phone
+  // widths a 180px avatar hugging the left edge reads as adrift rather than
+  // placed. The whole header centres, not just the avatar: centring the
+  // identity pair alone left the social row pinned to the left under a centred
+  // portrait, which reads as unfinished. Centred throughout, the header becomes
+  // a profile card, and the rule below it makes the hand-off to the left-
+  // aligned page content read as card-then-content. Not applied at the 960px
+  // breakpoint because a centred name over a band that wide looks stranded.
+  //
+  // The padding is what makes it safe. Left-aligned, the name ended well clear
+  // of the fixed theme toggle; centred, it reaches toward it, and below about
+  // 367px — most Android phones, and the SE by four pixels — it would run
+  // under the ring. The toggle eats the rightmost 48px of the content box, so
+  // reserving that plus a gap on *both* sides keeps the text centred on the
+  // page while guaranteeing the clearance. On the narrowest phones the name
+  // wraps to two lines instead, which is the graceful version of the collision.
+  .site-name { text-align: center; padding-inline: 56px; }
+  .site-logo { margin-inline: auto; }
+  .site-description { text-align: center; }
+  // The pills are already full-width; only their labels were still left-set.
+  .nav-list a { text-align: center; }
+  ul.downloads { justify-content: center; }
 }
 
 // Touch targets
