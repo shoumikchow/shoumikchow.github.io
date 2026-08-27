@@ -23,7 +23,7 @@ My pronouns are he/him/él.
     <div class="now-card" id="now-books" data-isbns="{{ site.currently_reading | join: ',' }}"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--movie">
-    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>At the Pictures</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>At the Movies</span>
     <div class="now-card" id="now-movie"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--gaming">
