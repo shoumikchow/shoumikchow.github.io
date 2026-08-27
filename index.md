@@ -15,23 +15,23 @@ My pronouns are he/him/él.
 
 <div class="now-grid">
   <div class="now-item now-item--music">
-    <span class="now-label"><span class="now-label-icon">{% include icons/music.svg %}</span>On the Turntable</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/music.svg %}</span>Listening</span>
     <div class="now-card" id="now-music"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--book">
-    <span class="now-label"><span class="now-label-icon">{% include icons/book.svg %}</span>On the Nightstand</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/book.svg %}</span>Reading</span>
     <div class="now-card" id="now-books" data-isbns="{{ site.currently_reading | join: ',' }}"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--movie">
-    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>At the Movies</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>Watching</span>
     <div class="now-card" id="now-movie"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--gaming">
-    <span class="now-label"><span class="now-label-icon">{% include icons/gaming.svg %}</span>In the Arcade</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/gaming.svg %}</span>Playing</span>
     <div class="now-card" id="now-gaming"><span class="now-loading"></span></div>
   </div>
   <div class="now-item now-item--chess">
-    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>At the Board</span>
+    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>Chessing</span>
     <div class="now-card" id="now-chess"><span class="now-loading"></span></div>
   </div>
 </div>
