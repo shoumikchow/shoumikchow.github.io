@@ -6,37 +6,89 @@
 // Rosé Pine Dawn in light. Dark is a warm near-black rather than Rosé Pine's
 // own base (#191724), which is a visibly violet charcoal — the accent hues are
 // what carry the family resemblance between the two themes, not the neutrals.
+//
+// ── The text tones are set for WCAG AAA (1.4.6): 7:1 normal, 4.5:1 large ──
+//
+// They are darker than Dawn's own, and by a lot. The reason is measured, not
+// aesthetic. Audited 2026-08-28, light theme, against #faf4ed:
+//
+//   --fg-muted  was #797593  4.02:1  ✗   and this is body's colour, so the
+//                                        site's entire running text sat under
+//                                        even AA — 35 elements on the homepage
+//   --fg-faint  was #9893a5  2.73:1  ✗   site description, timestamps, <small>
+//   --rating    was #b07d1a  3.32:1  ✗   the star row
+//
+// Solving each tone for 7:1 individually collapses the three tiers into three
+// shades of one colour (#534f74 / #544f6e / #545069), so the ramp is pulled
+// apart on purpose to 11 / 8.5 / 7.05. The hierarchy survives; the cost is
+// that the whole page is darker, not just its faintest parts. AAA on a light
+// background is a heavier page, and there is no way around that.
+//
+// Dark mode needed almost nothing — only --fg-faint was short, at 4.17:1.
+//
+// Values were solved by binary search against the real formula and re-measured
+// in the browser. Light tones darken by scaling in *linear* space, preserving
+// hue and saturation exactly; dark tones mix toward white, which desaturates.
+//
+// This targets 1.4.6, which is what "AAA" almost always means and is the part
+// verifiable by measurement. The one other AAA criterion that would bite here
+// is 1.4.8 Visual Presentation, which wants paragraph spacing ≥1.5× the line
+// spacing — 15 × 1.8 × 1.5 ≈ 41px against the 24px used below. Not adopted.
 :root {
   // Also sets the base canvas the browser paints under the page, which is
   // otherwise white and shows through during a view transition.
   color-scheme: light;
 
   --bg: #faf4ed;
-  --fg: #575279;        // text
-  --fg-muted: #797593;  // subtle
-  --fg-faint: #9893a5;  // muted
-  --rule: #dfdad9;      // highlight-med
-  --surface: rgba(87, 82, 121, 0.035);
-  --surface-hover: rgba(87, 82, 121, 0.075);
-  --shadow-sm: 0 1px 2px rgba(87, 82, 121, 0.06);
-  --shadow-md: 0 4px 12px rgba(87, 82, 121, 0.11);
+  --fg: #37334e;        // text   — 11.01:1
+  --fg-muted: #47445e;  // subtle —  8.52:1  (body)
+  --fg-faint: #535069;  // muted  —  7.07:1
 
-  --accent: #286983;    // pine
+  // 1.4.11 (Non-text Contrast) territory, which has no AAA level — raised
+  // anyway because at the new text weight a hairline set for the old one reads
+  // as a rendering fault rather than a rule.
+  --rule: #b9b1af;
 
-  // The warm accent: every link's hover and focus, the sticky nav's
-  // current-page underline, and the Now section's book channel, which is where
-  // the value started. Lifted out of the block below so the three cannot drift.
+  // Surfaces carry the panels on their own now that those have no borders, so
+  // the tint is roughly double what it was when it only had to sit inside one.
+  --surface: rgba(87, 82, 121, 0.062);
+  --surface-hover: rgba(87, 82, 121, 0.105);
+  // Wide, soft and warm-tinted. There is no small shadow any more: the tight
+  // 1px drop existed to lift cards that already had a border and a fill, which
+  // was three ways of saying the same thing.
+  --shadow-md: 0 8px 28px rgba(87, 82, 121, 0.13);
+
+  --accent: #21596f;    // pine — 7.06:1
+
+  // The warm accent: every link's underline, hover and focus, and the sticky
+  // nav's current-page mark. All of those are text or text decoration, so it
+  // is solved for 7:1.
+  --gold: #714b12;      // 7.08:1
+
+  // ── The Now channels are marks, not text ──────────────────────────────
+  // These are *not* solved for 7:1, and that is deliberate rather than an
+  // oversight. They used to colour the 9px labels, which made them text and
+  // dragged them under the contrast floor with everything else — and darkening
+  // five already-dark hues by another 8–10 points of L* turned the liveliest
+  // part of the page into five near-black smudges.
   //
-  // A shade darker than the #9c6a18 the book channel used to carry. That one
-  // measures 4.28:1 on the cream — under AA for text of its size, and under
-  // what the note below claims of it — which body-size link text would have
-  // inherited the moment links went gold. This clears it at 4.83:1.
-  --gold: #92621a;
-
-  // The palette's own hues, darkened until the 9px uppercase Now labels clear
-  // 4.5:1 on the cream. The undarkened Dawn hues sit around 3:1.
+  // But the colour is not doing a text job. It categorises — music from chess
+  // at a glance — and a mark that categorises is a graphical object, which
+  // 1.4.11 asks 3:1 of, not 7:1. It only inherited the text requirement
+  // because it happened to be painted onto the glyphs of a word.
+  //
+  // So the colour lives on the icon and the panel's left edge bar (see the Now
+  // section below), the label word takes --fg-muted, and these keep the
+  // palette's own vivid values: 4.2–5.2:1 against what they sit on in light,
+  // 6.0–11.8:1 in dark. Comfortably past 3:1, and nothing got darker.
+  //
+  // --now-book is written out rather than pointing at --gold, which is what it
+  // used to do. Under AAA the two are genuinely different jobs — the gold is
+  // 7:1 text, the book mark is a 3:1 category colour — so tying them together
+  // would drag the mark dark for no reason. Keep them in the same family by
+  // hand; they can no longer be the same variable.
   --now-music: #3b7580;  // foam
-  --now-book: var(--gold);
+  --now-book: #92621a;   // the undarkened gold
   --now-movie: #a1596a;  // rose
   --now-gaming: #7a5f9e; // iris
   --now-chess: #a34a63;  // love
@@ -48,14 +100,21 @@
   --piece-light: #fffaf3;
   --piece-dark: #3a2f3f;
 
-  --trend-up: #4a7c59;
-  --trend-down: #a34a63;
+  // Text, both of them — the trend arrow sits inline in the meta line and the
+  // stars are a rendered glyph — so these do take the 7:1 floor.
+  --trend-up: #355b41;   // 7.06:1
+  --trend-down: #843b50; // 7.06:1
 
-  --rating: #b07d1a;
+  // A shade darker than --gold, which it used to equal. The star row only ever
+  // renders inside a Now panel, and a panel is the surface tint *over* the
+  // page rather than the page itself — worth about a point of contrast. On the
+  // hover tint #714b12 measures 6.07:1; this is 7.06:1 there, 8.22:1 on the
+  // page. See the note on .now-card-link for the general version of this.
+  --rating: #65420f;
 
   // Layout constants, named so a change lands in one place.
   --sidebar-w: 240px;
-  --gutter: 67px;
+  --gutter: 76px;
   --pad: 60px;
   // Read by sticky-nav.js to place its IntersectionObserver margin.
   --sticky-nav-h: 56px;
@@ -65,25 +124,33 @@
   color-scheme: dark;
 
   --bg: #0f0e0d;
-  --fg: #ece7e1;
-  --fg-muted: #a39d96;
-  --fg-faint: #7a746c;
-  --rule: #262320;
-  --surface: rgba(236, 231, 225, 0.04);
-  --surface-hover: rgba(236, 231, 225, 0.08);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  // The light theme is where the contrast trouble was: --fg was already
+  // 15.69:1 here and --fg-muted 7.18, so only --fg-faint (4.17) actually had
+  // to move. --fg-muted is lifted a little anyway, to hold the same
+  // 11 / 8.5 / 7 spacing the light ramp uses.
+  --fg: #ece7e1;        // 15.69:1
+  --fg-muted: #b0aca6;  //  8.54:1
+  --fg-faint: #a09c96;  //  7.06:1
+  --rule: #423c37;
+  --surface: rgba(236, 231, 225, 0.055);
+  --surface-hover: rgba(236, 231, 225, 0.095);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.5);
 
-  --accent: #9ccfd8;    // foam
+  --accent: #9ccfd8;    // foam — 11.32:1
 
   // 11.77:1 on the near-black, so unlike its light counterpart this one needed
-  // no adjustment to carry link text.
+  // no adjustment to carry link text even at 7:1.
   --gold: #f6c177;
 
+  // Marks, not text — same reasoning as the light block. Untouched: every one
+  // of them was already past 3:1 here by a wide margin. --now-book is written
+  // out to match its light counterpart, so the two themes decouple the book
+  // channel from --gold in the same place.
+  //
   // Pine is the one Rosé Pine hue too dark to sit on a near-black base, so the
   // music channel borrows foam here rather than going illegible.
   --now-music: #9ccfd8;  // foam
-  --now-book: var(--gold);
+  --now-book: #f6c177;
   --now-movie: #ebbcba;  // rose
   --now-gaming: #c4a7e7; // iris
   --now-chess: #eb6f92;  // love
@@ -93,10 +160,9 @@
   --piece-light: #f5ece7;
   --piece-dark: #120e0c;
 
-  --trend-up: #8fd0a4;
-  --trend-down: #eb6f92;
-
-  --rating: #f6c177;
+  --trend-up: #8fd0a4;   // 10.77:1
+  --trend-down: #ec7897; //  7.07:1 — was #eb6f92 at 6.62, the one short of 7
+  --rating: #f6c177;     // 11.77:1
 }
 
 // ─── Typography ───────────────────────────────────────────────
@@ -105,7 +171,7 @@
 body {
   background: var(--bg);
   color: var(--fg-muted);
-  font: 400 15px/1.7 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
+  font: 400 15px/1.8 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
   padding: var(--pad);
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -124,7 +190,7 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 30px;
   letter-spacing: -0.028em;
-  margin-bottom: 20px;
+  margin-bottom: 26px;
 }
 
 // Section headings — the small-uppercase treatment these have always had. What
@@ -134,10 +200,10 @@ h2 {
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  margin: 0 0 16px;
+  margin: 0 0 20px;
 }
 
-p + h2, ul + h2, ol + h2 { margin-top: 32px; }
+p + h2, ul + h2, ol + h2 { margin-top: 44px; }
 
 // Subsections (experience, research, projects).
 h3 {
@@ -147,17 +213,43 @@ h3 {
   color: var(--fg);
 }
 
-p, ul, ol, table, pre, dl { margin: 0 0 20px; }
+p, ul, ol, table, pre, dl { margin: 0 0 24px; }
 
+// Links carry a permanent tinted underline, and it is there for a reason
+// rather than for looks: without it a link is --fg sitting in --fg-muted body
+// text, distinguished from its own paragraph *only* by being darker. That is
+// colour alone, which fails WCAG 1.4.1, and in practice it means finding the
+// links in a paragraph by sweeping the mouse across it.
+//
+// Tinted at rest so it reads as an affordance without turning a paragraph into
+// a ladder; solid gold on hover. color-mix so one declaration serves cream and
+// near-black; the flat --rule ahead of it is the fallback for anything that
+// cannot parse the mix, and is still a line.
+//
+// 75%, which looks high and is not. The underline is an indicator rather than
+// text, so 3:1 is its bar — and on the cream a lighter mix does not clear it:
+// 45% measures 2.11:1 there, present in the markup and invisible in use, which
+// is the worst of both. 75% clears it in both themes (3.93:1 on the cream,
+// 6.89:1 on the near-black), so one value serves. The hover still reads,
+// because what changes on hover is mostly the text colour, not the line.
 a {
   color: var(--fg);
   text-decoration: none;
   transition: color 0.2s ease, border-color 0.2s ease;
   border-bottom: 1px solid transparent;
+  border-bottom-color: var(--rule);
+  border-bottom-color: color-mix(in srgb, var(--gold) 75%, transparent);
 
   &:hover { color: var(--gold); border-bottom-color: var(--gold); }
   &:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
 }
+
+// The wordmark is a masthead, not a link in prose. The nav chips, the sticky
+// bar and the social icons are already exempt — each sets its own border to 0
+// or none at a specificity the rule above cannot reach — but this one has no
+// border of its own, so it has to be said. Its hover rule below restores the
+// quiet grey line it has always had.
+.site-name a { border-bottom-color: transparent; }
 
 strong { color: var(--fg); font-weight: 600; }
 em { color: var(--fg-muted); }
@@ -167,13 +259,13 @@ hr {
   border: 0;
   height: 1px;
   background: var(--rule);
-  margin: 32px 0;
+  margin: 44px 0;
 }
 
 blockquote {
-  margin: 0 0 20px;
-  padding: 0 0 0 16px;
-  border-left: 2px solid var(--accent);
+  margin: 0 0 24px;
+  padding: 4px 0 4px 20px;
+  border-left: 3px solid var(--accent);
   color: var(--fg-muted);
   font-style: italic;
 }
@@ -187,10 +279,10 @@ code, pre {
 code { font-size: 0.85em; }
 
 pre {
-  padding: 12px 16px;
+  padding: 16px 20px;
   background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
+  border: 0;
+  border-radius: 12px;
   overflow-x: auto;
 
   code { font-size: 13px; }
@@ -215,14 +307,16 @@ img { max-width: 100%; height: auto; }
 }
 
 // ─── Layout ───────────────────────────────────────────────────
-// A two-column grid at the measurements the floated version used: 240 + 67
-// gutter + 1px rule + 32 padding leaves exactly the 520px content column.
+// A two-column grid: 240 sidebar + 76 gutter + 1px rule + 40 padding leaves a
+// 543px content column. Both the gutter and the column grew when the panels
+// below lost their borders — a borderless surface needs space around it to
+// read as a surface at all, where a bordered one could sit closer.
 .wrapper {
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   column-gap: var(--gutter);
   align-items: start;
-  max-width: 860px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -240,7 +334,7 @@ header {
 
 main {
   min-width: 0;
-  padding-left: 32px;
+  padding-left: 40px;
   padding-bottom: 60px;
   border-left: 1px solid var(--rule);
 }
@@ -263,13 +357,22 @@ main {
   }
 }
 
+// A circle, centred in the sidebar. It was briefly a rounded square, on the
+// reasoning that a squircle joins the same family as the nav chips and the Now
+// panels — but the portrait is the one thing on the page that is not a
+// container, and rounding it into one made it look like another panel rather
+// than a face.
+//
+// 176px rather than the full 240px column, which is what makes the centring
+// visible: at column width there is nothing to centre it in. The 32px of air
+// either side is the point.
 .site-logo {
-  width: var(--sidebar-w);
-  height: var(--sidebar-w);
+  width: 176px;
+  height: 176px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--rule);
-  margin: 0 auto 16px;
+  border: 0;
+  margin: 0 auto 22px;
   display: block;
   filter: grayscale(15%) sepia(8%);
   transition: filter 0.4s ease;
@@ -277,47 +380,53 @@ main {
   &:hover { filter: none; }
 }
 
+// Centred to sit under the centred portrait, and with the social row below it
+// already centred, the three of them read as one block rather than as a
+// centred image with left-set text stuck to it. Reverts to left at 960 along
+// with the avatar — see the note in the responsive section for why.
 .site-description {
   font-size: 13px;
   line-height: 1.5;
   color: var(--fg-faint);
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  text-align: center;
 }
 
 // ─── Navigation ───────────────────────────────────────────────
 .nav-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 24px;
+  margin: 0 0 28px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 
   a {
     font-size: 13px;
     font-weight: 500;
     color: var(--fg-muted);
     letter-spacing: 0.02em;
-    padding: 8px 14px;
+    padding: 10px 16px;
     display: block;
-    border: 1px solid var(--rule);
-    border-radius: 8px;
+    border: 0;
+    border-radius: 12px;
     background: var(--surface);
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
 
     &:hover {
       color: var(--fg);
       background: var(--surface-hover);
-      border-color: var(--fg-faint);
-      box-shadow: var(--shadow-sm);
     }
 
+    // With both the ring and the border gone, tone is the only thing left to
+    // carry the current page — a tint deeper than hover ever reaches, plus the
+    // semibold. color-mix so one value serves both themes; the flat fallback
+    // ahead of it is still distinguishable from hover.
     &.active {
       color: var(--fg);
       background: var(--surface-hover);
-      border-color: var(--fg-faint);
+      background: color-mix(in srgb, var(--fg) 13%, transparent);
       font-weight: 600;
-      box-shadow: 0 0 0 1px var(--fg-faint);
     }
   }
 }
@@ -340,7 +449,7 @@ ul.downloads {
   height: 34px;
   color: var(--fg-faint);
   border-bottom: none;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 
   &:hover {
@@ -369,11 +478,25 @@ ul.downloads {
 .downloads a[data-social="email"]:hover     { color: #ea4335; }
 
 // ─── Now section ──────────────────────────────────────────────
+// minmax(0, …) rather than a bare 1fr, and it is load-bearing on phones.
+//
+// A 1fr track's automatic minimum is min-content, and `.now-meta` is
+// `white-space: nowrap`, so its min-content is the *whole* string however long
+// the feed makes it. That measurement climbs the whole chain — the ellipsis on
+// .now-meta and the `min-width: 0` on .now-info both govern flex sizing and
+// neither stops it — and sets a floor under the track. With a long enough
+// scrobble the column simply refuses to be narrower than the text.
+//
+// Measured on the live Spotify row ("Pritom Hasan, Ghaashphoring Choir, Islam
+// Uddin Palakar · 3:41"): a hard 374px floor, which is 73px of horizontal
+// scroll on a 320px screen and 3px on a 390px one. An explicit zero minimum
+// lets the track shrink and the ellipsis do its job. Same fix, and the same
+// reason, as the `minmax(0, 1fr)` on .wrapper's content column.
 .now-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .now-item {
@@ -392,6 +515,9 @@ ul.downloads {
 
 @keyframes nowReveal { to { opacity: 1; transform: translateY(0); } }
 
+// The word is text at 9px, so it takes the 7:1 tone. The channel colour is on
+// the icon beside it and the bar down the panel's edge — see the note in the
+// palette for why those are allowed to stay vivid.
 .now-label {
   display: inline-flex;
   align-items: center;
@@ -401,7 +527,7 @@ ul.downloads {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 5px;
-  color: var(--now-accent);
+  color: var(--fg-muted);
 }
 
 .now-label-icon {
@@ -410,7 +536,9 @@ ul.downloads {
   height: 12px;
   align-items: center;
   justify-content: center;
-  opacity: 0.8;
+  // Full strength: this is now one of the two things carrying the channel, so
+  // it cannot afford the 0.8 it wore when the word beside it was coloured too.
+  color: var(--now-accent);
 
   svg { width: 11px; height: 11px; fill: currentColor; }
 }
@@ -418,7 +546,7 @@ ul.downloads {
 .now-card {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   flex: 1;
 }
 
@@ -427,16 +555,19 @@ ul.downloads {
 .now-card-link:only-child,
 .now-empty { flex: 1; }
 
+// Panels, not cards. A border plus a tint plus a shadow were three ways of
+// saying the same thing; the tint says it alone, and the space the borders
+// were crowding goes back into padding and the gaps between panels.
+//
+// The left padding is wider than the right by the accent bar's footprint.
 .now-card-link {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 12px 14px 12px 16px;
   background: var(--surface);
-  border: 1px solid var(--rule);
-  border-left: 2px solid var(--now-accent, var(--rule));
-  border-radius: 1px 4px 4px 1px;
-  box-shadow: var(--shadow-sm);
+  border: 0;
+  border-radius: 14px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   position: relative;
   overflow: hidden;
@@ -445,10 +576,41 @@ ul.downloads {
   &:hover, &:focus-visible {
     background: var(--surface-hover);
     box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     color: var(--fg);
   }
 }
+
+// The channel colour, which used to be the panel's left border. Inset from the
+// top and bottom it reads as a tab *on* the panel rather than as an edge of
+// it, which is the whole point of taking the border away.
+.now-card-link::before,
+.now-empty::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--now-accent, var(--rule));
+}
+
+// Text inside a panel does not sit on the page — it sits on the page *plus*
+// the surface tint, which is worth roughly a point of contrast and is easy to
+// forget when checking a colour against --bg. At 7:1 that point matters:
+// --fg-faint is 7.07:1 on the page and 6.07:1 on a hovered panel.
+//
+// There is no darker "faint" left to reach for without colliding with
+// --fg-muted — solving for 7:1 on the tint lands on #49475d against a muted of
+// #47445e, which is the same colour. So inside a panel the faint tier simply
+// collapses into the muted one, and the size difference (9px against 10px)
+// carries what is left of the hierarchy. Same principle as the palette note:
+// past a point, separation has to come from size rather than tint.
+//
+// This covers .now-time, .now-rewatch and .now-error in one place.
+.now-card-link,
+.now-empty { --fg-faint: var(--fg-muted); }
 
 // Type accents
 .now-item--music  { --now-accent: var(--now-music); }
@@ -465,14 +627,14 @@ ul.downloads {
   width: 44px;
   height: 44px;
   object-fit: cover;
-  border-radius: 3px;
+  border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s ease;
 }
 
 .now-card-link:hover .now-poster { transform: scale(1.03); }
 
-.now-poster-game { width: 34px; height: 50px; border-radius: 2px; }
+.now-poster-game { width: 34px; height: 50px; border-radius: 4px; }
 
 // Chess board thumbnail. Drawn inline by now.js so it themes with the site
 // instead of shipping a raster, which also keeps it sharp on retina.
@@ -480,20 +642,37 @@ ul.downloads {
 .now-sq--light { fill: var(--board-light); }
 .now-sq--dark  { fill: var(--board-dark); }
 
+// Each piece is outlined in the opposite piece colour, and it is a legibility
+// fix rather than decoration. A piece has to be readable on *both* square
+// colours, and any single fill that contrasts with one is close to the other —
+// which is why the position used to render as a smudge. Measured before:
+//
+//     light theme: white piece on a light square   1.23:1
+//     dark theme:  black piece on a dark square    1.27:1
+//
+// Recolouring cannot fix that; an outline can. `paint-order` puts the stroke
+// under the fill so it reads as a halo instead of thickening the glyph, and
+// every piece then has either its fill or its outline past 3:1 against
+// whichever square it stands on. 0.08 user units against a 0.88 unit glyph is
+// about a tenth of the cap height — at 44px, the thinnest line that survives
+// rasterisation.
 .now-pc {
   // SVG user units: the board is an 8-unit square, so this is ~7/8 of a square.
   font-size: 0.88px;
   text-anchor: middle;
   dominant-baseline: central;
+  paint-order: stroke fill;
+  stroke-width: 0.08px;
+  stroke-linejoin: round;
 }
 
-.now-pc--w { fill: var(--piece-light); }
-.now-pc--b { fill: var(--piece-dark); }
+.now-pc--w { fill: var(--piece-light); stroke: var(--piece-dark); }
+.now-pc--b { fill: var(--piece-dark); stroke: var(--piece-light); }
 
 .now-poster-book {
   width: 34px;
   height: 50px;
-  border-radius: 1px 3px 3px 1px;
+  border-radius: 2px 5px 5px 2px;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15), inset -1px 0 0 rgba(0, 0, 0, 0.04);
 }
 
@@ -552,7 +731,7 @@ ul.downloads {
 .now-loading {
   display: block;
   height: 44px;
-  border-radius: 4px;
+  border-radius: 12px;
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -579,12 +758,12 @@ ul.downloads {
   margin: 0;
   display: flex;
   align-items: center;
-  padding: 8px 10px;
+  padding: 12px 14px 12px 16px;
   background: var(--surface);
-  border: 1px solid var(--rule);
-  border-left: 2px solid var(--now-accent, var(--rule));
-  border-radius: 1px 4px 4px 1px;
-  box-shadow: var(--shadow-sm);
+  border: 0;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
 }
 
 // ─── Controls ─────────────────────────────────────────────────
@@ -662,14 +841,16 @@ ul.downloads {
 
 .back-to-top {
   bottom: 24px;
-  background: var(--bg);
+  // A tinted disc rather than an outlined one, in step with the panels.
+  background: var(--surface);
+  border-color: transparent;
   color: var(--fg-faint);
   opacity: 0;
   visibility: hidden;
   transform: translateY(8px);
 
   &.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-  &:hover { color: var(--fg); border-color: var(--fg); }
+  &:hover { color: var(--fg); background: var(--surface-hover); }
 }
 
 // ─── Sticky nav ───────────────────────────────────────────────
@@ -805,9 +986,13 @@ ul.downloads {
   }
 
   // Everything in the header aligns left once it is a full-width band, so the
-  // avatar drops its auto margins with the rest of it.
+  // avatar and the description drop the centring they have in the sidebar.
+  // Centred across a 900px band they would be stranded in the middle of
+  // nothing; the 480px block below puts both back once the header becomes a
+  // profile card again.
   ul.downloads { justify-content: flex-start; }
   .site-logo { margin-left: 0; }
+  .site-description { text-align: left; }
 }
 
 @media (max-width: 720px) {
@@ -815,8 +1000,8 @@ ul.downloads {
   // gutter in step with the page's without repeating the number.
   :root { --pad: 32px; }
   body { word-wrap: break-word; }
-  .now-grid { grid-template-columns: 1fr; }
-  .site-logo { width: 180px; height: 180px; }
+  .now-grid { grid-template-columns: minmax(0, 1fr); }
+  .site-logo { width: 148px; height: 148px; }
   pre, code { word-wrap: normal; }
 }
 
@@ -825,7 +1010,7 @@ ul.downloads {
   h1 { font-size: 25px; }
 
   // The left-align above is right for a wide single-column band, but at phone
-  // widths a 180px avatar hugging the left edge reads as adrift rather than
+  // widths a 148px avatar hugging the left edge reads as adrift rather than
   // placed. The whole header centres, not just the avatar: centring the
   // identity pair alone left the social row pinned to the left under a centred
   // portrait, which reads as unfinished. Centred throughout, the header becomes
@@ -880,7 +1065,7 @@ ul.downloads {
 // gold at lower alpha, because the darkened light-mode gold reads as mud there.
 // Each is its theme's --gold, written out rather than referenced because a
 // tint needs the alpha baked into the value.
-::selection { background: rgba(146, 98, 26, 0.18); color: var(--fg); }
+::selection { background: rgba(113, 75, 18, 0.18); color: var(--fg); }
 [data-theme="dark"] ::selection { background: rgba(246, 193, 119, 0.2); color: var(--fg); }
 
 // ─── View transition (theme toggle) ───────────────────────────

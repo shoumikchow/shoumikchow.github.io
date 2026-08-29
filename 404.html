@@ -19,19 +19,27 @@ permalink: /404.html
   <style>
     /* Deliberately inlined so this page still renders if the stylesheet is the
        thing that 404'd. Keep in sync with _sass/jekyll-theme-minimal.scss. */
+    /* AAA (7:1) tones — must track the ramp in the theme. See the note there
+       for why they are this dark and how the values were derived. */
     :root {
       --bg: #faf4ed;
-      --fg: #575279;
-      --fg-muted: #797593;
-      --fg-faint: #9893a5;
-      --rule: #dfdad9;
+      --fg: #37334e;        /* 11.01:1 */
+      --fg-muted: #47445e;  /*  8.52:1 */
+      --fg-faint: #535069;  /*  7.07:1 */
+      --rule: #b9b1af;
+      --gold: #714b12;
+      --surface: rgba(87, 82, 121, 0.062);
+      --surface-hover: rgba(87, 82, 121, 0.105);
     }
     [data-theme="dark"] {
       --bg: #0f0e0d;
-      --fg: #ece7e1;
-      --fg-muted: #a39d96;
-      --fg-faint: #7a746c;
-      --rule: #262320;
+      --fg: #ece7e1;        /* 15.69:1 */
+      --fg-muted: #b0aca6;  /*  8.54:1 */
+      --fg-faint: #a09c96;  /*  7.06:1 */
+      --rule: #423c37;
+      --gold: #f6c177;
+      --surface: rgba(236, 231, 225, 0.055);
+      --surface-hover: rgba(236, 231, 225, 0.095);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -59,35 +67,55 @@ permalink: /404.html
       color: var(--fg-faint);
       margin-bottom: 32px;
     }
-    /* The border is transparent because the visible one is drawn on ::before —
-       see below. It stays here so the button's box does not change size. */
+    /* The nav pill's shape, but filled solid.
+       Two earlier versions read as decoration rather than as a control: the
+       hand-drawn squiggly ring (a wobbly hairline around text looks like a
+       decorated caption) and then the nav pill proper. The pill fails here for
+       a reason that is not the pill's fault — in the sidebar it is one of four
+       in a stack, and the repetition is what says "these are controls". Alone
+       and centred on an empty page, a 6% tint says nothing at all.
+       So: same radius, same type, but a solid fill and an arrow. This is the
+       only way off the page and it should look like it. Inverting --fg/--bg
+       keeps it inside the palette and measures the same 11:1 as body text. */
     a {
-      position: relative;
-      color: var(--fg);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      color: var(--bg);
+      background: var(--fg);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 13px;
-      padding: 8px 20px;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-      display: inline-block;
+      letter-spacing: 0.02em;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 12px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+    /* The arrow is generated rather than typed so it cannot end up inside the
+       link's accessible name, which should stay the sentence alone. */
+    a::after {
+      content: "→";
+      font-size: 15px;
+      line-height: 1;
+      transition: transform 0.2s ease;
     }
     a:hover {
-      background: rgba(128, 128, 128, 0.05);
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
     }
-    /* The home button borrows the hand-drawn border from the site's theme
-       toggle. The border sits on a pseudo-element so the filter cannot smear
-       the label, and the filter itself is inlined below for the same reason the
-       palette is: this page has to stand on its own. */
-    a::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border: 1.25px solid var(--rule);
-      border-radius: 8px;
-      filter: url("#squiggle-404");
+    a:hover::after { transform: translateX(3px); }
+    a:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
     }
-    a:hover::before { border-color: var(--fg-faint); }
+    @media (prefers-reduced-motion: reduce) {
+      a, a::after { transition: none; }
+      a:hover { transform: none; }
+      a:hover::after { transform: none; }
+    }
   </style>
 </head>
 <body>
@@ -96,13 +124,5 @@ permalink: /404.html
     <p class="message">My dog, Neira, ate this page. She is not sorry.</p>
     <a href="/">Somewhere she has not been</a>
   </div>
-
-  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-    <filter id="squiggle-404" x="-20%" y="-60%" width="140%" height="220%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="1" seed="0" result="noise" />
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" />
-    </filter>
-  </svg>
-
 </body>
 </html>
