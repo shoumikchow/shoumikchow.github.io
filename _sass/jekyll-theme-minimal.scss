@@ -78,20 +78,40 @@
   // because it happened to be painted onto the glyphs of a word.
   //
   // So the colour lives on the icon and the panel's left edge bar (see the Now
-  // section below), the label word takes --fg-muted, and these keep the
-  // palette's own vivid values: 4.2–5.2:1 against what they sit on in light,
-  // 6.0–11.8:1 in dark. Comfortably past 3:1, and nothing got darker.
+  // section below), the label word takes --fg-muted, and these keep vivid
+  // values: 4.0–9.7:1 on the panel tint in light, 6.0–10.6:1 in dark.
   //
-  // --now-book is written out rather than pointing at --gold, which is what it
-  // used to do. Under AAA the two are genuinely different jobs — the gold is
-  // 7:1 text, the book mark is a 3:1 category colour — so tying them together
-  // would drag the mark dark for no reason. Keep them in the same family by
-  // hand; they can no longer be the same variable.
-  --now-music: #3b7580;  // foam
-  --now-book: #92621a;   // the undarkened gold
-  --now-movie: #a1596a;  // rose
-  --now-gaming: #7a5f9e; // iris
-  --now-chess: #a34a63;  // love
+  // Three channels now carry the source's brand colour rather than a Rosé Pine
+  // hue, because the mark's job is to say *which service* at a glance and the
+  // brand does that faster than an arbitrary swatch: Spotify green (H 149),
+  // Letterboxd orange (H 53), Steam blue (H 236). Books and chess have no
+  // brand worth borrowing — Lichess is black and white — so they stay on the
+  // palette.
+  //
+  // A mark that categorises has a second job the contrast number does not
+  // measure: it has to be told apart from the other four. Darkening the Rosé
+  // Pine hues had quietly collapsed rose and love onto each other — 1.2° of
+  // hue between them, a perceptual distance of 3.3 where every other pair sat
+  // above 10. The set below is solved for that distance directly, in OKLab,
+  // and the closest pair is 15.7 in light and 14.5 in dark.
+  //
+  // Borrowed brands cluster, which is the whole difficulty here. Letterboxd's
+  // orange lands 19° from the gold — near enough to repeat the rose/love
+  // mistake — and its other two logo dots are no help, one being Spotify's
+  // green almost exactly and the other Steam's blue. So the two are separated
+  // by *depth* instead of hue: Letterboxd keeps the orange at full strength
+  // and the book channel drops to an espresso two and a half times darker.
+  // Dark mode has the same collision and answers it the same way, in the
+  // direction that theme has room for — the gold goes pale rather than deep.
+  //
+  // --now-book is no longer in the --gold family at all in light, which is a
+  // real loss and was chosen deliberately over a dimmer orange. It is still
+  // gold's hue (72°); only the lightness moved.
+  --now-music: #1c7838;  // Spotify green, darkened to carry 4.6:1
+  --now-book: #513303;   // gold's hue at 9.7:1 — see the depth-split note
+  --now-movie: #b35a0c;  // Letterboxd orange
+  --now-gaming: #015377; // Steam blue, at the navy end of its own lockup
+  --now-chess: #ad417c;  // love, pushed magenta and away from the orange
 
   // The board renders at 44px, so the two shades need real separation and the
   // dark pieces need to be genuinely dark or the position is a pink smudge.
@@ -142,17 +162,21 @@
   // no adjustment to carry link text even at 7:1.
   --gold: #f6c177;
 
-  // Marks, not text — same reasoning as the light block. Untouched: every one
-  // of them was already past 3:1 here by a wide margin. --now-book is written
-  // out to match its light counterpart, so the two themes decouple the book
-  // channel from --gold in the same place.
+  // Marks, not text — same reasoning as the light block, and the three
+  // borrowed brands are the *literal* brand hexes here. They only had to be
+  // darkened in light mode; on a near-black base all three clear 6.7:1 as
+  // shipped, so this theme gets them unmodified.
   //
-  // Pine is the one Rosé Pine hue too dark to sit on a near-black base, so the
-  // music channel borrows foam here rather than going illegible.
-  --now-music: #9ccfd8;  // foam
-  --now-book: #f6c177;
-  --now-movie: #ebbcba;  // rose
-  --now-gaming: #c4a7e7; // iris
+  // The gold stays where it was. Light mode had to drop the book channel to an
+  // espresso to clear Letterboxd's orange, but up here the same 19° collision
+  // resolves in the other direction — #f6c177 is already a full 11 points of
+  // OKLCH lightness above #ff8000, which is 14.5 of separation without moving
+  // anything. --now-book is written out rather than pointing at --gold so the
+  // two themes decouple the book channel from it in the same place.
+  --now-music: #1db954;  // Spotify green
+  --now-book: #f6c177;   // gold's hue, pale — the light theme's espresso inverted
+  --now-movie: #ff8000;  // Letterboxd orange
+  --now-gaming: #66c0f4; // Steam blue
   --now-chess: #eb6f92;  // love
 
   --board-light: #6b564f;
