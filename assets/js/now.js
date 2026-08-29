@@ -66,7 +66,7 @@ async function loadLetterboxd() {
       </a>
     `;
   } catch {
-    el.innerHTML = createErrorState("the projector jammed — no movie for you");
+    el.innerHTML = createErrorState("the projector jammed, no movie for you");
   }
 }
 
@@ -146,7 +146,7 @@ async function loadSpotify() {
       </a>
     `;
   } catch {
-    el.innerHTML = createErrorState("silence — my Spotify token ghosted me again");
+    el.innerHTML = createErrorState("silence, my Spotify token ghosted me again");
   }
 }
 
@@ -184,7 +184,7 @@ async function loadSteam() {
       })
       .join("");
   } catch {
-    el.innerHTML = createErrorState("rage quit — stats unavailable");
+    el.innerHTML = createErrorState("rage quit, stats unavailable");
   }
 }
 
@@ -298,7 +298,7 @@ async function loadChess() {
       </a>
     `;
   } catch {
-    el.innerHTML = createErrorState("blundered — ratings unavailable");
+    el.innerHTML = createErrorState("blundered, ratings unavailable");
   }
 }
 

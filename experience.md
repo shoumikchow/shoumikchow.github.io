@@ -1,34 +1,30 @@
 ---
 layout: default
-title: Experience — Shoumik Chowdhury
-description: Professional experience and education of Shoumik Chowdhury — Applied ML Engineer at Andium, MS in Computer Science from the University of Houston.
+title: Experience | Shoumik Chowdhury
+description: Professional experience and education of Shoumik Chowdhury, Applied ML Engineer at Andium, with an MS in Computer Science from the University of Houston.
 ---
 
 # Experience
 
 ## Education
 
-**University of Houston** — MS in Computer Science, 2021.
+**University of Houston**, MS in Computer Science, 2021.
 Houston, Texas
 
-**BRAC University** — BS in Computer Science, 2016.
+**BRAC University**, BS in Computer Science, 2016.
 Dhaka, Bangladesh
 
 ---
 
 ## Work
 
-My journey started right after high school, when I returned to my alma mater — [Mastermind School](https://www.mastermindschool.org/) — to teach English to sixth graders. Student to teacher in the same hallways.
+My career started right after high school, when I returned to my alma mater, [Mastermind School](https://www.mastermindschool.org/), to teach English to sixth graders, walking the same hallways as both student and teacher.
 
-That led to my first taste of tech: an Android dev internship at [G&R](https://www.linkedin.com/company/gnrads) in early 2016. Short gig, but it got me hooked on building things with code.
+That curiosity soon led me into tech with an Android development internship at [G&R](https://www.linkedin.com/company/gnrads) in early 2016, getting me hooked on building software. After college, I joined [Panacea Live](https://www.panacea.live/) to build anti-counterfeit solutions, followed by [KolpoKoushol](https://kolpokoushol.org/), where I delved into computational social science and published [a paper](/research).
 
-After I graduated from college, I joined [Panacea Live](https://www.panacea.live/), working on tech to fight counterfeit products. Then came [KolpoKoushol](https://kolpokoushol.org/) — first part-time, then full-time — where I got into computational social science and published my first research (more on the [Research](/research) page).
+In 2019, I joined [Gaze](https://gaze.ai), Bangladesh's pioneering computer vision startup, tackling complex visual problems alongside an exceptional team. During my Master's at the University of Houston, I worked with [Dr. Shishir Shah](https://shishirkshah.github.io/) focusing on graph structures and video analysis.
 
-In 2019, I joined [Gaze](https://gaze.ai), the first computer vision company in Bangladesh. Six months of working on hard problems with some of the smartest people I've met.
-
-During my Master's, I worked with [Dr. Shishir Shah](https://shishirkshah.github.io/) at the University of Houston — graph structures, video analysis, and a proper deep dive into research.
-
-Since 2021, I've been at [Andium](https://andium.com), building ML platforms and computer vision systems. It's the kind of work where everything I've done before comes together.
+Since 2021, I've been at [Andium](https://andium.com) building scalable platforms and visual systems, a role where my background in research, product engineering, and systems design all comes together.
 
 ---
 

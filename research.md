@@ -1,15 +1,15 @@
 ---
 layout: default
-title: Research — Shoumik Chowdhury
+title: Research | Shoumik Chowdhury
 description: Research by Shoumik Chowdhury in robotics and SLAM (IEEE TENCON 2018) and computational social science on political discourse (NeurIPS ML4D 2018).
 ---
 
 # Research
 
-Before moving into industry, I spent time in academic research across robotics and computational social science. These projects shaped how I think about ML — not just as models and metrics, but as tools that interact with real systems and real people.
+Before moving into industry, I spent time in academic research across robotics and computational social science. These projects shaped how I think about ML: not just as models and metrics, but as tools that interact with real systems and real people.
 
 ## Robotics & Computer Vision
-For my undergraduate thesis under [Dr. Tarem Ahmed](http://www.cse.iub.edu.bd/faculties/41), I built a low-cost robot capable of interior mapping using sonar-based SLAM (Simultaneous Localization and Mapping). The constraint was the fun part — making it work with cheap sonar sensors instead of expensive LiDAR. Presented at **TENCON 2018** (IEEE Region 10).
+For my undergraduate thesis under [Dr. Tarem Ahmed](http://www.cse.iub.edu.bd/faculties/41), I built a low-cost robot capable of interior mapping using sonar-based SLAM (Simultaneous Localization and Mapping). The constraint was the fun part: making it work with cheap sonar sensors instead of expensive LiDAR. Presented at **TENCON 2018** (IEEE Region 10).
 
 ## Computational Social Science
 At [KolpoKoushol](https://www.facebook.com/KKoushol/), a knowledge initiative led by [Dr. Nazmus Saquib](https://nsaquib.org), I analyzed a decade of political discourse in Bangladeshi news media. We mapped how tight-knit groups of political leaders dominate coverage while broader national concerns get sidelined. Published at the **ML4D workshop at NeurIPS 2018**.

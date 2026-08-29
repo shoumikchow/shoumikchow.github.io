@@ -1,5 +1,5 @@
 ---
-title: Shoumik Chowdhury — Applied ML Engineer
+title: Shoumik Chowdhury | Applied ML Engineer
 layout: default
 ---
 
