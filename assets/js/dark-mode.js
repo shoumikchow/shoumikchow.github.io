@@ -10,9 +10,13 @@
     return localStorage.getItem('theme') || getSystemTheme();
   }
 
+  // Applying a theme deliberately does NOT persist it. An absent 'theme' key is
+  // meaningful: it says "follow the system". Writing the system-derived theme on
+  // load would pin the site to whatever the OS happened to be on the first visit,
+  // and the listener below would never fire again. Only an explicit toggle stores
+  // anything.
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
     var meta = document.querySelector('meta[name="theme-color"]');
     // Must track --bg in _sass/jekyll-theme-minimal.scss.
     if (meta) meta.content = theme === 'dark' ? '#0f0e0d' : '#faf4ed';
@@ -55,6 +59,8 @@
   function toggleTheme() {
     var current = document.documentElement.getAttribute('data-theme');
     var next = current === 'dark' ? 'light' : 'dark';
+
+    localStorage.setItem('theme', next);
 
     if (!document.startViewTransition ||
         window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
