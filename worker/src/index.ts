@@ -1,4 +1,4 @@
-import { handleChat, type ChatEnv } from "./chat";
+import { handleChat, handleChatStatus, type ChatEnv } from "./chat";
 
 interface Env extends ChatEnv {
   SPOTIFY_CLIENT_ID?: string;
@@ -406,9 +406,13 @@ export default {
 
     // Ahead of the shared OPTIONS branch: /chat is POST-only against a fixed
     // origin list, so it cannot use the GET/"*" preflight the feeds send.
-    if (path === "/chat") {
+    // /chat/status rides along with it because it shares those CORS headers and
+    // must skip jsonResponse()'s blanket max-age, which it sets for itself.
+    if (path === "/chat" || path === "/chat/status") {
       try {
-        return await handleChat(request, env);
+        return path === "/chat"
+          ? await handleChat(request, env)
+          : await handleChatStatus(request, env);
       } catch {
         return jsonResponse({ error: "Internal error" }, 500);
       }

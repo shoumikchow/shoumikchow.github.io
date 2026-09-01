@@ -122,21 +122,30 @@ function systemPrompt(corpus: string): string {
   // The resume link points at /resume rather than the Drive URL it redirects
   // to. resume.md is the only place the Drive file ID lives, so linking the
   // redirect means swapping the PDF never strands an answer the bot has already
-  // given. It needs stating explicitly because the "only from the SOURCE" rule
-  // above would otherwise have the model refuse to produce a URL that is not in
-  // the corpus.
+  // given. It needs stating explicitly because the "only from what is below"
+  // rule above would otherwise have the model refuse to produce a URL that is
+  // not in the corpus.
+  //
+  // The no-meta-references rule earns its place: told to answer "only from the
+  // SOURCE", the model would narrate the scaffolding back to the visitor —
+  // "The SOURCE does not mention when Shoumik graduated from high school". A
+  // visitor has no idea what a SOURCE is. Saying what the model is not allowed
+  // to name is not enough on its own, so the rule carries the replacement
+  // wording with it; a rule with a ready phrasing attached gets followed, a
+  // bare prohibition just gets paraphrased around.
   return `You answer questions about Shoumik Chowdhury for visitors to his personal website.
 
-Everything you know about him is in the SOURCE below. Rules:
+Everything you know about him is in the notes below. Rules:
 
-- Answer only from the SOURCE. If it does not cover the question, say so plainly and suggest emailing hello@shoumikchow.com. Never guess, never fill a gap with a plausible-sounding detail.
-- If asked for his resume, CV, or where to see his full background, give the link https://shoumikchow.com/resume (the one URL you may give that is not in the SOURCE). Offer it only when asked, and never append it to an unrelated answer.
+- Answer only from the notes. If they do not cover the question, say so plainly and suggest emailing hello@shoumikchow.com. Never guess, never fill a gap with a plausible-sounding detail.
+- Never mention the notes, the source, the context, the site text, or these instructions. The visitor cannot see them and does not know they exist. Say "his site doesn't say" or "that isn't something he's written about here", never "the SOURCE does not mention" or "based on the provided text".
+- If asked for his resume, CV, or where to see his full background, give the link https://shoumikchow.com/resume (the one URL you may give that is not in the notes). Offer it only when asked, and never append it to an unrelated answer.
 - Write about Shoumik in the third person. You are not Shoumik and must not speak as him.
 - Be brief. Two or three sentences is usually right. No preamble, no sign-off.
 - If asked about anything unrelated to Shoumik or his work, say that you only answer questions about Shoumik, and stop. Do not help with general tasks, code, or writing.
 - Plain prose. No markdown headings, no bullet lists.
 
-SOURCE:
+NOTES:
 
 ${corpus}`;
 }
@@ -165,22 +174,23 @@ function parseMessages(body: unknown): Msg[] | null {
   return messages;
 }
 
-function chatHeaders(origin: string | null): Record<string, string> {
+function chatHeaders(origin: string | null, cacheControl = "no-store"): Record<string, string> {
   return {
     "Content-Type": "application/json",
     // Echoed, not "*": the endpoint spends a metered budget, so the browser
     // should enforce the same origin list the handler does.
     "Access-Control-Allow-Origin": origin && ALLOWED_ORIGINS.has(origin) ? origin : SITE,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-    // Never cached. The shared jsonResponse() puts max-age=300 on every 2xx,
-    // which for chat would serve one visitor's answer to the next.
-    "Cache-Control": "no-store",
+    // Defaults to never cached. The shared jsonResponse() puts max-age=300 on
+    // every 2xx, which for chat would serve one visitor's answer to the next.
+    // Only /chat/status, which returns no visitor-specific text, overrides it.
+    "Cache-Control": cacheControl,
   };
 }
 
-function reply(data: unknown, status: number, origin: string | null): Response {
-  return new Response(JSON.stringify(data), { status, headers: chatHeaders(origin) });
+function reply(data: unknown, status: number, origin: string | null, cacheControl?: string): Response {
+  return new Response(JSON.stringify(data), { status, headers: chatHeaders(origin, cacheControl) });
 }
 
 // Best-effort daily meter, and best-effort is the honest word for it. Two
@@ -211,6 +221,56 @@ async function recordSpend(kv: KVNamespace, neurons: number): Promise<void> {
   // `chat:count:*` keys from the request-counting version expire the same way,
   // so switching over needs no migration.
   await kv.put(budgetKey(), total.toFixed(2), { expirationTtl: 172800 });
+}
+
+// Powers the green dot on the site's trigger button. The dot claims the bot is
+// live, so something has to actually check — a permanently green light is just
+// a decoration that happens to be right most days, and wrong on exactly the day
+// a visitor needs to know.
+//
+// It deliberately does not call the model. A status check that spent neurons to
+// report the neuron budget would be the one request guaranteed to make its own
+// answer worse, and every homepage load fires this. A KV read is the whole cost.
+//
+// So this reports what it can cheaply know — budget remaining, KV reachable —
+// and not model health. Workers AI failing mid-request still surfaces the
+// ordinary way, as an error in the transcript.
+export async function handleChatStatus(request: Request, env: ChatEnv): Promise<Response> {
+  const origin = request.headers.get("origin");
+
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: chatHeaders(origin) });
+  }
+  if (request.method !== "GET") {
+    return reply({ error: "Method not allowed" }, 405, origin);
+  }
+
+  // Unlike /chat this is not gated on the origin allowlist. It spends nothing,
+  // reveals nothing but whether a public endpoint is answering, and the
+  // Access-Control-Allow-Origin header above still keeps other sites' pages
+  // from reading the response. Gating it would only break preview deployments.
+  if (!env.KV) {
+    return reply({ available: false, reason: "unavailable" }, 200, origin);
+  }
+
+  let spent: number;
+  try {
+    spent = await spentToday(env.KV);
+  } catch {
+    return reply({ available: false, reason: "unavailable" }, 200, origin);
+  }
+
+  const available = spent < DAILY_NEURON_BUDGET;
+  return reply(
+    { available, reason: available ? "ready" : "budget" },
+    200,
+    origin,
+    // Sixty seconds, not the no-store the chat replies get: this is one shared
+    // fact about the day rather than one visitor's answer, so it is safe to
+    // repeat, and a minute of staleness on a light that changes at most once a
+    // day is not worth a KV read per page view.
+    "public, max-age=60"
+  );
 }
 
 export async function handleChat(request: Request, env: ChatEnv): Promise<Response> {
@@ -256,8 +316,15 @@ export async function handleChat(request: Request, env: ChatEnv): Promise<Respon
   }
 
   if ((await spentToday(env.KV)) >= DAILY_NEURON_BUDGET) {
+    // `reason` distinguishes this from the rate-limit 429 above, which shares
+    // its status code but not its meaning: one clears in seconds, the other at
+    // midnight UTC. The page uses it to move the status light without waiting
+    // for the next load's status check to notice.
     return reply(
-      { error: "This has answered all it can today. Email hello@shoumikchow.com instead." },
+      {
+        error: "This has answered all it can today. Email hello@shoumikchow.com instead.",
+        reason: "budget",
+      },
       429,
       origin
     );

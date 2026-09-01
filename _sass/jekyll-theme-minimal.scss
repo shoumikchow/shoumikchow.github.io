@@ -132,6 +132,21 @@
   // page. See the note on .now-card-link for the general version of this.
   --rating: #65420f;
 
+  // The chat dock's status light. A 7px mark rather than text, so it takes the
+  // 3:1 floor the Now channel colours take and not the 7:1 body floor — which
+  // is the whole reason it can be an actual green. --trend-up, solved at 7:1
+  // for inline arrows, is #355b41, and at this size that forest reads grey.
+  // 4.64:1 on the trigger's fill.
+  --status-live: #1c7838;
+
+  // The trigger's edge. The button used to be borderless on the argument that a
+  // tint plus a shadow already said "object" — but --surface is a 6% wash and
+  // --shadow-md is soft by design, so at the bottom of a warm page the thing
+  // read as a line of text that had wandered off. A border is the one of the
+  // three that survives being subtle. 3.82:1 on the page, 3.50:1 on its own
+  // fill; a UI component boundary wants 3.
+  --chat-edge: #847a78;
+
   // Layout constants, named so a change lands in one place.
   --sidebar-w: 240px;
   --gutter: 76px;
@@ -187,6 +202,19 @@
   --trend-up: #8fd0a4;   // 10.77:1
   --trend-down: #ec7897; //  7.07:1 — was #eb6f92 at 6.62, the one short of 7
   --rating: #f6c177;     // 11.77:1
+
+  // Softer than the light theme's green, and for the same reason the trigger is
+  // not filled with --accent: on a near-black page any saturated colour is the
+  // brightest thing on screen, and a status light that shouts is worse than one
+  // that reads. Spotify's #1db954 was the other candidate and measures 6.72:1,
+  // but tying the dot to a brand token means a rebrand moves it. 9.70:1 here.
+  --status-live: #8fd0a4;
+
+  // 3.55:1 on the page, 3.20:1 on its own fill. --rule (#423c37, 1.78:1) is the
+  // obvious token to reach for and is far too quiet to be the thing that makes
+  // a floating control findable; it is drawn *between* elements that are
+  // already placed, which is a different job.
+  --chat-edge: #726860;
 }
 
 // ─── Typography ───────────────────────────────────────────────
@@ -1037,9 +1065,14 @@ ul.downloads {
   align-items: center;
   gap: 9px;
   padding: 11px 18px 11px 15px;
-  // Borderless, like the Now panels. A border plus a tint plus a shadow are
-  // three ways of saying the same thing, which is why the panels dropped theirs.
-  border: 0;
+  // Bordered, unlike the Now panels, and the exception is the point. A panel is
+  // a region of the page, already bounded by the text that stops at its edge; a
+  // border there is a third way of saying what the tint and the spacing say. A
+  // floating control has none of that context — it sits over whatever happens
+  // to be under it with nothing to be flush with, and the 6% tint and soft
+  // shadow that suffice inside the page read as nothing against it. Everything
+  // box-sizing above keeps the footprint identical to the borderless version.
+  border: 1px solid var(--chat-edge);
   border-radius: 999px;
 
   // Tinted rather than filled, and deliberately not with --accent.
@@ -1074,33 +1107,45 @@ ul.downloads {
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-md);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
     background-image: linear-gradient(var(--surface-hover), var(--surface-hover));
+    border-color: var(--fg-faint);
   }
   &:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 }
 
-// A slow breath, not a notification badge. It says "live", which is true, and
-// avoids claiming an unread message, which would be a lie told to get a click.
+// A status light, not a notification badge and no longer a decoration. It is
+// grey until /chat/status answers, so the green is a thing the page checked
+// rather than a thing it always claims — see handleChatStatus in the worker for
+// what that check does and does not cover. Still never a red or a count: an
+// unread badge would be a lie told to get a click.
 .chat-trigger-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  // Gold, not the accent: it is the site's established interaction colour
-  // (link underlines, focus, the sticky nav's current mark) and it sits at 35°,
-  // right on the palette's warm axis. The only saturated value in the widget,
-  // on the smallest element in it. 10.60:1 dark, 6.48:1 light — a mark needs 3.
-  background: var(--gold);
-  animation: chatBreathe 2.8s ease-in-out infinite;
+  // The unknown state, and the one that ships in the HTML. A dot that starts
+  // green and corrects itself a moment later has already made the claim, and a
+  // visitor on a broken endpoint would see the truthful colour only if they
+  // happened to still be looking. 6.48:1 light, 6.36:1 dark — a mark needs 3.
+  background: var(--fg-faint);
+  transition: background-color 0.3s ease;
 }
 
-@keyframes chatBreathe {
-  0%, 100% { opacity: 0.45; transform: scale(0.85); }
-  50%      { opacity: 1;    transform: scale(1); }
-}
+// Answering. Static, not pulsing — the dot used to breathe on a 2.8s loop and
+// no longer does. A pulse is a request for attention, and this is a fact the
+// visitor can read whenever they happen to look at it; it does not need to keep
+// asking. Colour alone carries the state, which is also what lets it sit at
+// full opacity: the old animation dipped to 0.45, which composited to 1.87:1 in
+// light and put the mark under its own 3:1 floor for most of every cycle.
+.chat-trigger-dot.is-live { background: var(--status-live); }
+
+// The day's neuron budget is spent. Gold, not red, and deliberately still: this
+// is the widget resting, not a fault, and the site's own interaction colour is
+// the honest way to say "come back tomorrow". 10.60:1 dark, 6.48:1 light.
+.chat-trigger-dot.is-paused { background: var(--gold); }
 
 .chat.is-open .chat-trigger { opacity: 0; pointer-events: none; }
 
@@ -1290,7 +1335,10 @@ ul.downloads {
 
 @media (prefers-reduced-motion: reduce) {
   .chat-panel { animation: none; }
-  .chat-trigger-dot { animation: none; opacity: 0.8; }
+  // The dot has no entry here any more. It used to breathe and needed stopping;
+  // it is now static in every state, so there is nothing left for this block to
+  // turn off, and the 0.8 opacity it also set would only have dimmed a mark
+  // that is already at its contrast floor.
   .chat-bubble--pending::after { animation: none; content: "..."; }
   .chat-trigger:hover, .chat-send:hover:not(:disabled) { transform: none; }
 }

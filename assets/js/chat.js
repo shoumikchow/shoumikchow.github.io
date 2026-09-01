@@ -20,6 +20,8 @@
   var root = document.querySelector('.chat');
   if (!root) return;
 
+  var STATUS_ENDPOINT = ENDPOINT + '/status';
+
   var trigger = root.querySelector('.chat-trigger');
   var panel = root.querySelector('.chat-panel');
   var log = root.querySelector('.chat-log');
@@ -39,6 +41,45 @@
   var history = [];
   var busy = false;
   var open = false;
+
+  // The trigger's status light. Three states, and the default in the HTML is
+  // the grey "not checked yet" one — the endpoint is asked on load rather than
+  // assumed to be up, because a light that is green regardless is a decoration
+  // with a claim attached to it.
+  var dot = root.querySelector('.chat-trigger-dot');
+  var statusText = root.querySelector('.chat-trigger-status');
+
+  function setStatus(state) {
+    if (dot) {
+      dot.classList.toggle('is-live', state === 'live');
+      dot.classList.toggle('is-paused', state === 'paused');
+    }
+
+    // Sighted hover and the accessible name, kept in step. Both are silent when
+    // the answer is "live": the button already says what it does, and repeating
+    // it is how a status light turns into noise.
+    var label =
+      state === 'paused' ? 'Answering again tomorrow'
+      : state === 'down' ? 'Currently unavailable'
+      : '';
+
+    if (statusText) statusText.textContent = label ? '(' + label.toLowerCase() + ')' : '';
+    if (label) trigger.setAttribute('title', label);
+    else trigger.removeAttribute('title');
+  }
+
+  // Fired on load, for every visitor, whether or not they ever open the dock —
+  // which is the point of a light. The cost is one cached GET against a handler
+  // that only reads a counter; it never touches the model.
+  fetch(STATUS_ENDPOINT)
+    .then(function (res) {
+      if (!res.ok) throw new Error('status');
+      return res.json();
+    })
+    .then(function (data) { setStatus(data.available ? 'live' : 'paused'); })
+    // Covers the worker being down, DNS failing, and an ad blocker eating the
+    // request. All three mean the same thing to a visitor: asking will not work.
+    .catch(function () { setStatus('down'); });
 
   // The one URL the bot is allowed to hand out (the worker's system prompt
   // gives it for resume questions). Kept as an exact string on both sides.
@@ -113,7 +154,14 @@
           // The worker puts a visitor-readable sentence in `error` for the two
           // cases worth explaining (rate limited, daily budget spent). Prefer
           // it over a generic failure string.
-          if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+          if (!res.ok) {
+            var failure = new Error(data.error || 'Something went wrong.');
+            // Carried through to the catch so the status light can react to
+            // what this request just learned. Only the budget case sets it;
+            // a rate limit clears on its own and must not park the light.
+            failure.reason = data.reason;
+            throw failure;
+          }
           return data.reply;
         });
       })
@@ -128,6 +176,10 @@
         pending.classList.remove('chat-bubble--pending');
         pending.classList.add('chat-bubble--error');
         pending.textContent = err.message || 'Something went wrong.';
+        // The trigger is hidden while the panel is open, so this is not seen
+        // until the visitor closes it — which is exactly when a light saying
+        // "spent for today" is worth having.
+        if (err.reason === 'budget') setStatus('paused');
         // Drop the question that failed. Leaving it in would send it again on
         // the next turn and bill a second time for an exchange that never
         // produced an answer.

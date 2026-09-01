@@ -24,6 +24,11 @@ My pronouns are he/him/él.
   <button class="chat-trigger" type="button" aria-expanded="false" aria-controls="chat-panel">
     <span class="chat-trigger-dot" aria-hidden="true"></span>
     <span>Ask about me</span>
+    <!-- The dot's meaning, for anyone who cannot see a 7px circle. Empty in the
+         ordinary case: "live" is what the button already implies, so announcing
+         it adds a word to the button's name for no information. chat.js fills
+         it in only when the answer is something other than yes. -->
+    <span class="chat-trigger-status sr-only"></span>
   </button>
 
   <div class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-label="Ask about Shoumik" hidden>
