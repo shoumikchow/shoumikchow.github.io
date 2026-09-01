@@ -1,11 +1,11 @@
 ---
-title: Shoumik Chowdhury | Applied ML Engineer
+title: Shoumik Chowdhury | Applied AI Engineer
 layout: default
 ---
 
 # Hi! I’m Shoumik 👋
 
-I build ML systems that scale from research to production. Currently an **Applied ML Engineer** at [Andium](https://andium.com), working at the intersection of **computer vision**, **ML platforms**, and **LLM applications**.
+I build ML systems that scale from research to production. Currently an **Applied AI Engineer** at [Andium](https://andium.com), working at the intersection of **computer vision**, **ML platforms**, and **LLM applications**.
 
 My pronouns are he/him/él.
 
