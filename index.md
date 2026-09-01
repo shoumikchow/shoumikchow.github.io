@@ -59,7 +59,7 @@ My pronouns are he/him/él.
       </button>
     </form>
 
-    <p class="chat-note">It can get things wrong, so <a href="mailto:hello@shoumikchow.com">email me</a> for anything that matters.</p>
+    <p class="chat-note">This bot can get things wrong, so <a href="mailto:hello@shoumikchow.com">email me</a> for anything that matters.</p>
   </div>
 </div>
 <!--/chat-->
