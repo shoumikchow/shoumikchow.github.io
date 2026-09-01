@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .wrangler/
+
+# Local-only vars for `wrangler dev` (e.g. CORPUS_ORIGIN). Never deployed.
+.dev.vars

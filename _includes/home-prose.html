@@ -1,0 +1,39 @@
+{%- comment -%}
+The homepage with its live JS widgets removed, as Markdown source.
+
+Consumed by md/index.html, which serves it to `curl` and to the /chat worker.
+That second consumer is why the stripping matters: anything left in here becomes
+text the model reads as fact about Shoumik, so leaving the chat widget in would
+feed the bot the markup of its own input box.
+
+Each widget is bracketed by a `<!--name-->` / `<!--/name-->` pair in index.md,
+with the opening marker placed *above* the section heading so the heading goes
+with it. A heading left behind advertises a section that has no content in the
+output — which reads as damage in the curl view, and as a phantom section to
+the model.
+
+Stripping is per-widget on purpose. An earlier version split on a bare
+'</div>' and kept everything after the last one; that worked only while there
+was exactly one widget, and with two it would have silently swallowed every
+paragraph between them. Each block below guards on `size > 1`, so a renamed
+marker costs the stripping rather than the content.
+{%- endcomment -%}
+{%- assign home = site.pages | where: "path", "index.md" | first -%}
+{%- assign body = home.content -%}
+
+{%- assign open = body | split: '<!--now-->' -%}
+{%- if open.size > 1 -%}
+  {%- assign close = open[1] | split: '<!--/now-->' -%}
+  {%- if close.size > 1 -%}
+    {%- capture body -%}{{ open[0] }}{{ close[1] }}{%- endcapture -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign open = body | split: '<!--chat-->' -%}
+{%- if open.size > 1 -%}
+  {%- assign close = open[1] | split: '<!--/chat-->' -%}
+  {%- if close.size > 1 -%}
+    {%- capture body -%}{{ open[0] }}{{ close[1] }}{%- endcapture -%}
+  {%- endif -%}
+{%- endif -%}
+{{- body -}}

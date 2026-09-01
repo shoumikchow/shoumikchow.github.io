@@ -1,0 +1,49 @@
+name: Refresh resume text
+
+# resume.txt is the text layer of the resume PDF that resume.md redirects to,
+# and it is part of the corpus the /chat bot answers from (worker/src/chat.ts).
+# The PDF lives in Google Drive, so nothing in this repo changes when it is
+# updated — this is what notices.
+#
+# Monthly rather than on every push: the resume changes a few times a year, and
+# the job spends a Drive fetch and a uv install each run.
+#
+# It commits rather than writing straight to the corpus so there is a reviewable
+# diff. The bot asserts this text as fact about Shoumik's work history, and a
+# silent change to the PDF should not silently change what it claims.
+on:
+  schedule:
+    - cron: "0 6 1 * *" # 1st of the month, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      # The script declares its own dependencies inline (PEP 723), so uv
+      # resolves them itself and there is no requirements file to keep in step.
+      - name: Extract the resume PDF
+        run: uv run tools/extract_resume.py
+
+      - name: Commit if the resume changed
+        run: |
+          if git diff --quiet -- resume.txt; then
+            echo "resume.txt unchanged — nothing to do."
+            exit 0
+          fi
+
+          echo "::notice::resume.txt changed; committing."
+          git diff --stat -- resume.txt
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add resume.txt
+          git commit -m "Refresh the resume text from the PDF"
+          git push

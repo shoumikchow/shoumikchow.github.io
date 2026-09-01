@@ -1,4 +1,6 @@
-interface Env {
+import { handleChat, type ChatEnv } from "./chat";
+
+interface Env extends ChatEnv {
   SPOTIFY_CLIENT_ID?: string;
   SPOTIFY_CLIENT_SECRET?: string;
   SPOTIFY_REFRESH_TOKEN?: string;
@@ -399,12 +401,22 @@ async function handleSpotify(env: Env): Promise<Response> {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    // Ahead of the shared OPTIONS branch: /chat is POST-only against a fixed
+    // origin list, so it cannot use the GET/"*" preflight the feeds send.
+    if (path === "/chat") {
+      try {
+        return await handleChat(request, env);
+      } catch {
+        return jsonResponse({ error: "Internal error" }, 500);
+      }
+    }
+
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: baseHeaders });
     }
-
-    const url = new URL(request.url);
-    const path = url.pathname;
 
     try {
       switch (path) {

@@ -1,0 +1,74 @@
+Shoumik Chowdhury
+Queens, NY https://shoumikchow.com
+Profiles  Github
+shoumikchow
+ LinkedIn
+shoumikchow
+Experience Andium New York, NY
+Machine Learning Engineer July 2021 - Present
+Founding ML Engineer, working on creating several products related to classification,
+object detection and segmentation
+Products include flare monitoring service, tank monitoring service using infrared
+images, liquid leak detection, fire detection and asset tracking. These are used for
+performance, security, regulatory and compliance purposes. Some technologies and
+tools used include Pytorch, Tensorflow, AWS, Postgres, RabbitMQ, Redis, FastAPI, etc.
+Working on the ML platform to facilitate 3 million+ daily inferences, and helping to
+creating a multi-cloud, multi-region system.
+Creating agentic LLM chatbots that end-users interact with to retrieve information or
+create workflows (alerts, etc.)
+Orchestrating and streamlining the machine learning lifecycle, from data gathering,
+ingest, training, deployment and monitoring. This involves talking to stakeholders,
+working with 3rd party vendors for labeling, working with APIs for monitoring, etc.
+Performed exploratory research on deploying models to edge devices (Jetson Nano,
+Xavier, Orin)
+https://andium.com
+Gaze Dhaka, Bangladesh
+Machine Learning Engineer February 2019 - July 2019
+Developed and devised novel deep learning models for license plate recognition and
+face recognition and integrated them to the backend
+Worked on projects which have been deployed with public entities and private
+conglomerates like Dhaka Metropolitan Police, Meghna Group of Industries, etc.
+Mentored two interns
+Kolpokoushol Remote
+Research Assistant February 2017 - January 2019
+Worked on applications of machine learning and network analysis. Published a short
+paper at NeurIPS while working here.
+https://kolpokoushol.org/
+Panacea Live Dhaka, Bangladesh
+Backend Developer April 2017 - July 2018
+Designed and developed many new features to the system, including an entirely new
+vertical for the product
+Made the system more robust, including a ~400% increase in speed of a critical process
+in the workflow for businesses. Performed data analytics on user retention and user
+churn rate
+https://panacea.live/
+Education University of Houston MS
+Computer Science 2021
+BRAC University BS
+Computer Science 2016
+Projects bbox-visualizer
+A PyPI package that helps the users draw bounding boxes around objects, without doing
+the clumsy math that one would need to do for positioning the labels. It also has a few
+different types of visualizations that can be used to label objects after identifying them.
+1M+ downloads and used by major AI companies like Landing AI
+Reached the front page of Hacker News and was featured on the Python Bytes podcast.
+https://github.com/shoumikchow/bbox-visualizer
+Other projects can be found on my Github
+Skills Languages
+Tools
+Frameworks and Libraries
+Publications Statement networks: a power structure narrative as depicted by newspapers 2018
+NeurIPS
+Shoumik Sharar Chowdhury, Nazmus Saquib, Niamat Zawad, Manash Kumar Mandal, Syed
+Haque. In ML for the Developing World (ML4D) workshop at Advances in Neural
+Information Processing Systems (NeurIPS 2018)
+https://arxiv.org/pdf/1812.03632
+Sonar-based SLAM Using Occupancy Grid Mapping and Dead Reckoning 2018
+TENCON
+Muhammad S. A. Khan, Shoumik Sharar Chowdhury, Nafis Niloy, Fatema Tuz Zohra Aurin,
+Tarem Ahmed. In TENCON 2018 - 2018 IEEE Region 10 Conference (TENCON 2018)
+https://shoumikchow.com/files/tencon2018.pdf
+Python, SQL, Java
+MongoDB, Redis, gRPC, Docker, ElasticSearch, git, Latex, AWS, RabbitMQ, MLflow
+PyTorch, Tensorflow, Transformers, Pandas, OpenCV, Scikit-learn, Numpy, spaCy, Flask,
+FastAPI

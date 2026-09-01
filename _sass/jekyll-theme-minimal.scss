@@ -1019,12 +1019,293 @@ ul.downloads {
   .site-description { text-align: left; }
 }
 
+// Ask-about-me dock
+// A trigger in the bottom-left corner that opens a card above itself. Bottom
+// LEFT because .back-to-top owns the bottom right and .theme-toggle the top
+// right, both at z-index 1000; the empty corner is cheaper than relocating two
+// existing controls to make room for a third.
+//
+// The panel is opaque rather than tinted. --surface is a transparency, and this
+// floats over arbitrary page content, so a tint would let paragraphs show
+// through the transcript. The shadow is what separates it from the page.
+.chat-trigger {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 18px 11px 15px;
+  // Borderless, like the Now panels. A border plus a tint plus a shadow are
+  // three ways of saying the same thing, which is why the panels dropped theirs.
+  border: 0;
+  border-radius: 999px;
+
+  // Tinted rather than filled, and deliberately not with --accent.
+  //
+  // --accent is solved for 7:1 as *text*, so it lands on opposite sides of its
+  // own background per theme: a dark pine in light (0.09x the page's luminance,
+  // an object sitting into the page) and a near-white foam in dark (127x the
+  // page). Same contrast number, completely different object — and the dark one
+  // was the brightest thing on the screen. Darkening the foam does not fix it
+  // either; matched to light's 7.06:1 fill contrast it is still 76x, because on
+  // a near-black page any legible fill is.
+  //
+  // It is also the wrong hue for this theme. The dark palette's neutrals all sit
+  // between 27° and 36° — bg 30, fg 33, rule 27, gold 35 — and foam is at 189°,
+  // the only cool value in the chrome. It reads as imported because it is: its
+  // sole other use in this stylesheet is a blockquote border, and the site has
+  // no blockquotes, so it rendered nowhere before this control existed.
+  //
+  // Two backgrounds rather than `background: var(--surface)`: --surface is a
+  // transparency, and this floats over arbitrary page content, so on its own it
+  // would let paragraphs show through and would stack darker over a Now panel.
+  // An opaque base with the tint painted on top composites to a fixed colour
+  // (#1b1a19 dark, #f0eae6 light) wherever it lands.
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--surface), var(--surface));
+
+  // 14.14:1 in dark, 10.09:1 in light. The accent itself would be 6.47:1 on the
+  // light tint — under AAA, and the exact trap the palette notes warn about.
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background-image: linear-gradient(var(--surface-hover), var(--surface-hover));
+  }
+  &:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+}
+
+// A slow breath, not a notification badge. It says "live", which is true, and
+// avoids claiming an unread message, which would be a lie told to get a click.
+.chat-trigger-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  // Gold, not the accent: it is the site's established interaction colour
+  // (link underlines, focus, the sticky nav's current mark) and it sits at 35°,
+  // right on the palette's warm axis. The only saturated value in the widget,
+  // on the smallest element in it. 10.60:1 dark, 6.48:1 light — a mark needs 3.
+  background: var(--gold);
+  animation: chatBreathe 2.8s ease-in-out infinite;
+}
+
+@keyframes chatBreathe {
+  0%, 100% { opacity: 0.45; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1); }
+}
+
+.chat.is-open .chat-trigger { opacity: 0; pointer-events: none; }
+
+.chat-panel {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1001;
+  width: 370px;
+  max-width: calc(100vw - 48px);
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md), 0 24px 60px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  transform-origin: bottom left;
+  animation: chatOpen 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+// The `hidden` attribute is only a UA-level `display: none`, which the author
+// `display: flex` above outranks. Without this the panel would render open on
+// every page load, and the starter chips would survive the first question.
+.chat-panel[hidden],
+.chat-starters[hidden] { display: none; }
+
+@keyframes chatOpen {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+// Centred, not flex-start: the title is a single line now, so top-aligning it
+// against a 28px button just left the button hanging below it.
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+}
+
+.chat-head-title { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
+
+.chat-close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--fg-faint);
+  cursor: pointer;
+
+  &:hover { background: var(--surface); color: var(--fg); }
+  &:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+}
+
+.chat-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  &:not(:empty) { padding-bottom: 12px; }
+}
+
+.chat-msg { display: flex; }
+.chat-msg--user { justify-content: flex-end; }
+
+.chat-bubble {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 13px;
+  background: var(--surface);
+  // --fg, not --fg-muted: bubble text sits on the page *plus* the surface tint,
+  // which is worth about a point of contrast. Same trap the Now panels note.
+  color: var(--fg);
+  font-size: 13.5px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.chat-msg--user .chat-bubble { background: var(--surface-hover); max-width: 85%; }
+
+// Distinguished by rhythm, not colour. A colour would have to clear 7:1 on the
+// tint, and the two candidates that do are already spoken for by links and by
+// the Now channels.
+.chat-bubble--pending {
+  color: var(--fg-faint);
+
+  &::after {
+    content: "";
+    animation: chatDots 1.2s steps(4, end) infinite;
+  }
+}
+
+@keyframes chatDots {
+  0%   { content: ""; }
+  25%  { content: "."; }
+  50%  { content: ".."; }
+  75%  { content: "..."; }
+}
+
+.chat-bubble--error { color: var(--trend-down); }
+
+.chat-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 16px 12px;
+
+  button {
+    border: 0;
+    background: var(--surface);
+    color: var(--fg-muted);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+
+    &:hover { background: var(--surface-hover); color: var(--fg); }
+    &:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  }
+}
+
+.chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 0;
+}
+
+.chat-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13.5px;
+  transition: background-color 0.18s ease;
+
+  &::placeholder { color: var(--fg-faint); }
+  &:focus { background: var(--surface-hover); outline: 2px solid var(--gold); outline-offset: 2px; }
+  &:disabled { opacity: 0.6; }
+}
+
+.chat-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  border: 0;
+  border-radius: 12px;
+  // A step above --surface rather than a saturated fill. The input beside it is
+  // --surface, so matching would read as one control split in two; the stronger
+  // tint separates them without introducing the only vivid block in the panel.
+  // Enter submits regardless, so this affordance does not have to shout.
+  background: var(--surface-hover);
+  color: var(--fg);
+  cursor: pointer;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+
+  &:hover:not(:disabled) { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  &:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  &:disabled { opacity: 0.6; cursor: default; }
+}
+
+.chat-note {
+  margin: 0;
+  padding: 10px 16px 16px;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--fg-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel { animation: none; }
+  .chat-trigger-dot { animation: none; opacity: 0.8; }
+  .chat-bubble--pending::after { animation: none; content: "..."; }
+  .chat-trigger:hover, .chat-send:hover:not(:disabled) { transform: none; }
+}
+
 @media (max-width: 720px) {
   // Moving the constant rather than body's padding keeps the sticky nav's
   // gutter in step with the page's without repeating the number.
   :root { --pad: 32px; }
   body { word-wrap: break-word; }
   .now-grid { grid-template-columns: minmax(0, 1fr); }
+  // The dock spans the width at phone sizes rather than floating in a corner:
+  // a 370px card inset 24px from the left would sit almost flush with the right
+  // edge anyway, so the inset is what goes rather than the card.
+  .chat-panel { left: 12px; right: 12px; bottom: 12px; width: auto; max-width: none; }
+  .chat-trigger { left: 12px; bottom: 12px; }
   .site-logo { width: 148px; height: 148px; }
   pre, code { word-wrap: normal; }
 }

@@ -2,12 +2,4 @@
 permalink: /index.md
 sitemap: false
 ---
-{%- assign p = site.pages | where: "path", "index.md" | first -%}
-{%- comment -%}
-ponytail: the Now section is a live JS widget — empty divs are noise in a
-markdown dump, so cut it. Splits on the literal wrapper; if the markup in
-index.md changes, this silently stops stripping. Move the widget behind an
-include and strip on that if it happens twice.
-{%- endcomment -%}
-{%- assign parts = p.content | split: '<div class="now-grid">' -%}
-{{ parts[0] }}{{ parts[1] | split: '</div>' | last }}
+{% include home-prose.html %}

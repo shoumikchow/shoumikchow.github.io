@@ -7,6 +7,22 @@ workers_dev = true
 binding = "KV"
 id = "feb57135336c4b17b58e2d0cf443ae2b"
 
+# Workers AI, for /chat. No API key and no secret to rotate — the binding is the
+# credential, and inference is billed in neurons against the account's free
+# daily allowance rather than to a third party.
+[ai]
+binding = "AI"
+
+# Per-IP burst control for /chat. `period` only accepts 10 or 60, so this bounds
+# the rate, not the daily total; the DAILY_CAP in src/chat.ts does the latter.
+[[ratelimits]]
+name = "CHAT_LIMIT"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
 [observability]
 [observability.logs]
 enabled = true

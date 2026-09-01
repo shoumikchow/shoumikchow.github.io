@@ -11,34 +11,53 @@ My pronouns are he/him/él.
 
 ---
 
-## Right Now 📍
-
-<div class="now-grid">
-  <div class="now-item now-item--music">
-    <span class="now-label"><span class="now-label-icon">{% include icons/music.svg %}</span>Listening</span>
-    <div class="now-card" id="now-music"><span class="now-loading"></span></div>
-  </div>
-  <div class="now-item now-item--book">
-    <span class="now-label"><span class="now-label-icon">{% include icons/book.svg %}</span>Reading</span>
-    <div class="now-card" id="now-books" data-isbns="{{ site.currently_reading | join: ',' }}"><span class="now-loading"></span></div>
-  </div>
-  <div class="now-item now-item--movie">
-    <span class="now-label"><span class="now-label-icon">{% include icons/movie.svg %}</span>Watching</span>
-    <div class="now-card" id="now-movie"><span class="now-loading"></span></div>
-  </div>
-  <div class="now-item now-item--gaming">
-    <span class="now-label"><span class="now-label-icon">{% include icons/gaming.svg %}</span>Playing</span>
-    <div class="now-card" id="now-gaming"><span class="now-loading"></span></div>
-  </div>
-  <div class="now-item now-item--chess">
-    <span class="now-label"><span class="now-label-icon">{% include icons/chess.svg %}</span>Chessing</span>
-    <div class="now-card" id="now-chess"><span class="now-loading"></span></div>
-  </div>
-</div>
+<!--now-->
+{% include now-section.html %}
+<!--/now-->
 
 *When I'm not at the keyboard, I'm likely in Queens, NYC with my wife and our dog, Neira, exploring local restaurants or tinkering with a Raspberry Pi.*
 
 ---
+
+<!--chat-->
+<div class="chat">
+  <button class="chat-trigger" type="button" aria-expanded="false" aria-controls="chat-panel">
+    <span class="chat-trigger-dot" aria-hidden="true"></span>
+    <span>Ask about me</span>
+  </button>
+
+  <div class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-label="Ask about Shoumik" hidden>
+    <div class="chat-head">
+      <p class="chat-head-title">Ask about me</p>
+      <button class="chat-close" type="button" aria-label="Close">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-log" role="log" aria-live="polite" aria-label="Conversation"></div>
+
+    <div class="chat-starters">
+      <button type="button">What does he work on?</button>
+      <button type="button">What are his skills?</button>
+      <button type="button">Where has he worked?</button>
+    </div>
+
+    <form class="chat-form">
+      <label class="sr-only" for="chat-input">Your question</label>
+      <input class="chat-input" id="chat-input" type="text" maxlength="500" autocomplete="off" placeholder="Ask a question">
+      <button class="chat-send" type="submit" aria-label="Send">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+          <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </button>
+    </form>
+
+    <p class="chat-note">It can get things wrong, so <a href="mailto:hello@shoumikchow.com">email me</a> for anything that matters.</p>
+  </div>
+</div>
+<!--/chat-->
 
 ## Let's Connect! 🤝
 Whether you want to talk about AI, socialist organizing, or the best Thai food in Queens, I'd love to hear from you.

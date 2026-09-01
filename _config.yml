@@ -74,6 +74,9 @@ exclude:
     - CLAUDE.local.md
     - CNAME
     - worker
+    # Build-time tooling, not site content. Without this Jekyll copies the
+    # directory verbatim and serves it at /tools/.
+    - tools
 
 # Jekyll skips dot-directories unless they are explicitly included.
 include:
