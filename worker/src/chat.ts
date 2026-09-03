@@ -28,6 +28,25 @@ const MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 const MAX_OUTPUT_TOKENS = 320;
 
+// Every model call is proxied through AI Gateway so the prompts and answers are
+// readable after the fact. Without it nothing about a conversation survives the
+// request: the worker logs no bodies, and an abusive question would show up only
+// as a bump in the neuron counter below, with no way to see what was asked.
+//
+// This gateway must exist on the account before deploying — a missing id makes
+// AI.run throw, and every question 500s. It is deliberately not wrapped in a
+// fallback that retries without the gateway: that would spend the neurons twice
+// and turn a misconfiguration into silent unlogged traffic, which is the exact
+// state this is here to end.
+//
+// Caching is left off (it is off by default at the gateway, and nothing here
+// asks for a cacheTtl). It would genuinely stretch the daily budget, since
+// visitors ask the same handful of questions, but a cache hit costs no neurons
+// and it is unverified whether the hit still reports `usage.neurons`. If it
+// reports none, recordSpend() charges ASSUMED_NEURONS for a free request and
+// the budget drains faster than before. Verify that before enabling.
+const GATEWAY_ID = "shoumikchow-chat";
+
 // Workers AI gives every account 10,000 neurons/day free, and every response
 // reports what it actually cost in `usage.neurons`. So the budget meters real
 // spend rather than counting requests against worst-case arithmetic.
@@ -337,13 +356,17 @@ export async function handleChat(request: Request, env: ChatEnv): Promise<Respon
     return reply({ error: "Unavailable" }, 503, origin);
   }
 
-  const result = (await env.AI.run(MODEL, {
-    messages: [{ role: "system", content: systemPrompt(corpus) }, ...messages],
-    max_tokens: MAX_OUTPUT_TOKENS,
-    // Low but not zero: this is recall over a fixed source, where invention is
-    // the failure mode worth suppressing.
-    temperature: 0.3,
-  })) as {
+  const result = (await env.AI.run(
+    MODEL,
+    {
+      messages: [{ role: "system", content: systemPrompt(corpus) }, ...messages],
+      max_tokens: MAX_OUTPUT_TOKENS,
+      // Low but not zero: this is recall over a fixed source, where invention is
+      // the failure mode worth suppressing.
+      temperature: 0.3,
+    },
+    { gateway: { id: GATEWAY_ID } }
+  )) as {
     response?: string;
     choices?: Array<{ message?: { content?: string } }>;
     usage?: { neurons?: number };
