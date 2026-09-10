@@ -3,8 +3,12 @@ The homepage with its live JS widgets removed, as Markdown source.
 
 Consumed by md/index.html, which serves it to `curl` and to the /chat worker.
 That second consumer is why the stripping matters: anything left in here becomes
-text the model reads as fact about Shoumik, so leaving the chat widget in would
-feed the bot the markup of its own input box.
+text the model reads as fact about Shoumik, so a widget's markup left in would
+be read as prose about him.
+
+Only widgets written into index.md need this. The chat dock was one until it
+moved to _layouts/default.html to appear site-wide; anything the layout includes
+never reaches here, because md/ reads page source rather than rendered HTML.
 
 Each widget is bracketed by a `<!--name-->` / `<!--/name-->` pair in index.md,
 with the opening marker placed *above* the section heading so the heading goes
@@ -24,14 +28,6 @@ marker costs the stripping rather than the content.
 {%- assign open = body | split: '<!--now-->' -%}
 {%- if open.size > 1 -%}
   {%- assign close = open[1] | split: '<!--/now-->' -%}
-  {%- if close.size > 1 -%}
-    {%- capture body -%}{{ open[0] }}{{ close[1] }}{%- endcapture -%}
-  {%- endif -%}
-{%- endif -%}
-
-{%- assign open = body | split: '<!--chat-->' -%}
-{%- if open.size > 1 -%}
-  {%- assign close = open[1] | split: '<!--/chat-->' -%}
   {%- if close.size > 1 -%}
     {%- capture body -%}{{ open[0] }}{{ close[1] }}{%- endcapture -%}
   {%- endif -%}

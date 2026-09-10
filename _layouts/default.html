@@ -104,6 +104,22 @@
 
     </main>
   </div>
+
+  {%- comment -%}
+    The ask-about-me dock. It lives in the layout rather than in a page's
+    Markdown so it is on every page; it used to sit in index.md, which is also
+    why _includes/home-prose.html carried a block to strip it back out of the
+    homepage's Markdown twin. That block is gone with it — a widget included by
+    the layout is invisible to md/, which reads page source, not rendered HTML.
+
+    Outside .wrapper on purpose. The dock is position: fixed and chat.js moves
+    it to <body> anyway, so parenting it to the page's content column would only
+    create an ancestor whose transforms could capture it before that runs.
+
+    Deliberately not on 404.html, which uses layout: none and is its own file.
+  {%- endcomment -%}
+  {% include chat-widget.html %}
+
   {%- comment -%}
     The toggle's ring. The noise period at this frequency is about a third of
     the button's diameter, so the ring picks up seven or so lobes, and the scale
