@@ -2,9 +2,11 @@
 // above itself; the card posts to the worker's /chat endpoint, which runs an
 // open-weights model over this site's own Markdown.
 //
-// The transcript lives in this closure only. Nothing is stored, nothing is sent
-// anywhere but the worker, and a reload starts over — which is also why there
-// is no "clear" button to write.
+// The transcript is kept in sessionStorage so it survives moving between pages.
+// That became necessary when the dock moved into the layout: on the homepage
+// alone there was nowhere to navigate to mid-conversation, and now every link
+// on the page is somewhere to navigate to. Nothing is sent anywhere but the
+// worker, and the store dies with the tab.
 (function () {
   // Unlike now.js, which always talks to the deployed worker, this points at a
   // local `wrangler dev` when the page is served from localhost. Two reasons:
@@ -41,6 +43,69 @@
   var history = [];
   var busy = false;
   var open = false;
+
+  // sessionStorage rather than localStorage, deliberately. This is continuity
+  // within one visit, not a record of it: the store dies with the tab, so a
+  // conversation is never sitting there waiting for someone who comes back next
+  // week having forgotten they had one, and a shared computer does not hand the
+  // next person a transcript. Being per-tab also means two tabs hold two
+  // separate conversations, which is the behaviour you would otherwise have to
+  // write by hand.
+  var STORE_KEY = 'chat';
+
+  // Every call into storage is wrapped. sessionStorage *throws* rather than
+  // returning null when a browser has storage switched off, so an unguarded
+  // getItem here would take the whole dock down for the people most likely to
+  // have it off. Failing to persist is a much smaller loss than failing to run.
+  //
+  // The value is parsed rather than trusted, too. It is same-origin data this
+  // file wrote, but an older deploy's shape (or anything else that ends up
+  // under this key) should mean "start fresh" and not an exception part-way
+  // through replaying the log.
+  function readStored() {
+    var raw;
+    try {
+      raw = sessionStorage.getItem(STORE_KEY);
+    } catch (e) {
+      return null;
+    }
+    if (!raw) return null;
+
+    var data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+    if (!data || typeof data !== 'object' || !Array.isArray(data.messages)) return null;
+
+    var messages = [];
+    for (var i = 0; i < data.messages.length; i++) {
+      var m = data.messages[i];
+      if (!m || typeof m !== 'object') return null;
+      if (m.role !== 'user' && m.role !== 'assistant') return null;
+      if (typeof m.content !== 'string' || !m.content) return null;
+      messages.push({ role: m.role, content: m.content });
+    }
+
+    return { messages: messages, open: data.open === true };
+  }
+
+  function save() {
+    try {
+      // A visitor who never opened the dock leaves nothing behind, rather than
+      // an empty object under a key with their name on it.
+      if (!history.length && !open) {
+        sessionStorage.removeItem(STORE_KEY);
+        return;
+      }
+      sessionStorage.setItem(STORE_KEY, JSON.stringify({ messages: history, open: open }));
+    } catch (e) {
+      // Storage off, or quota reached. Neither is worth surfacing: the
+      // conversation on this page still works, it just stops following the
+      // visitor to the next one.
+    }
+  }
 
   // The trigger's status light. Three states, and the default in the HTML is
   // the grey "not checked yet" one — the endpoint is asked on load rather than
@@ -189,10 +254,17 @@
         setBusy(false);
         log.scrollTop = log.scrollHeight;
         input.focus();
+        // Saved here rather than in each branch above, because this runs once
+        // the exchange has settled either way and a settled exchange is the
+        // only thing worth restoring. A question still in flight when the
+        // visitor navigates is deliberately lost: the answer never arrived, and
+        // restoring the question on its own would show them a transcript that
+        // looks like it is still thinking about it.
+        save();
       });
   }
 
-  function setOpen(next) {
+  function setOpen(next, restoring) {
     if (next === open) return;
     open = next;
 
@@ -200,17 +272,57 @@
     root.classList.toggle('is-open', open);
     trigger.setAttribute('aria-expanded', String(open));
 
-    if (open) {
-      // Next frame: a hidden input cannot take focus, and the transition wants
-      // a frame to start from the closed state rather than snapping open.
-      requestAnimationFrame(function () { input.focus(); });
-    } else {
-      // Returning focus to the trigger is the part that is easy to skip and
-      // most obvious when missing: without it, closing drops a keyboard user
-      // back at the top of the document.
-      trigger.focus();
+    // Open on the newest message. This matters for a restored transcript, which
+    // is written into the log while the panel is still hidden: scrollTop cannot
+    // be set on a display: none element, so without this the visitor opens the
+    // card onto the top of a conversation they have already read.
+    if (open) log.scrollTop = log.scrollHeight;
+
+    // Focus moves only when the visitor is the one who opened or closed the
+    // panel. `restoring` is the page reopening it on their behalf after a
+    // navigation, and pulling focus into the input then would scroll them down
+    // to the dock and take away the top of the document they just asked for.
+    if (!restoring) {
+      if (open) {
+        // Next frame: a hidden input cannot take focus, and the transition wants
+        // a frame to start from the closed state rather than snapping open.
+        requestAnimationFrame(function () { input.focus(); });
+      } else {
+        // Returning focus to the trigger is the part that is easy to skip and
+        // most obvious when missing: without it, closing drops a keyboard user
+        // back at the top of the document.
+        trigger.focus();
+      }
     }
+
+    save();
   }
+
+  // Replays a stored conversation into an otherwise fresh widget. It goes
+  // through the same addMessage() the live path uses, so restored answers are
+  // built the same way answers that just arrived are: text nodes, with an
+  // anchor only for the one URL render() knows about.
+  function restore() {
+    var stored = readStored();
+    if (!stored) return;
+
+    for (var i = 0; i < stored.messages.length; i++) {
+      var m = stored.messages[i];
+      history.push({ role: m.role, content: m.content });
+      addMessage(m.role === 'user' ? 'user' : 'bot', m.content);
+    }
+
+    // Same rule as the live path: the starters are an empty-state affordance,
+    // and a restored transcript is not an empty state.
+    if (history.length && starters) starters.hidden = true;
+
+    // The panel's own state is part of the conversation. Landing on the next
+    // page with the card shut, having left it open, is the same break in
+    // continuity as landing with an empty one.
+    if (stored.open) setOpen(true, true);
+  }
+
+  restore();
 
   trigger.addEventListener('click', function () { setOpen(!open); });
   if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });
