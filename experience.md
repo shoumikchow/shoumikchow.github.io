@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Experience | Shoumik Chowdhury
+title: Experience
 description: Professional experience and education of Shoumik Chowdhury, Applied AI Engineer at Andium, with an MS in Computer Science from the University of Houston.
 ---
 

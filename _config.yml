@@ -1,4 +1,10 @@
 title: Shoumik Chowdhury
+# jekyll-seo-tag appends site.title to every page title, so page front matter
+# should carry only the leaf name ("About", not "About | Shoumik Chowdhury").
+# On the homepage there is no leaf name, so seo-tag falls back to this tagline.
+# Never put a literal "|" in a title: seo-tag markdownifies it and kramdown
+# reads the line as a table row, silently swallowing the pipe.
+tagline: Applied AI Engineer
 logo: /assets/img/img.jpg
 description: Applied AI Engineer at Andium, working across computer vision, ML platforms, and LLM applications. Believer in tech for social good.
 url: "https://shoumikchow.com"

@@ -1,6 +1,10 @@
 ---
-title: Shoumik Chowdhury | Applied AI Engineer
 layout: default
+# Must match site.title exactly. That equality is what makes jekyll-seo-tag
+# render "Shoumik Chowdhury | Applied AI Engineer" from site.tagline instead of
+# repeating the name, and it stops jekyll-titles-from-headings (on by default on
+# Pages) from lifting the "Hi! I'm Shoumik" h1 into the tab.
+title: Shoumik Chowdhury
 ---
 
 # Hi! I’m Shoumik 👋
