@@ -1,6 +1,9 @@
 name = "shoumikchow-now"
 main = "src/index.ts"
-compatibility_date = "2024-01-01"
+# Capped at the installed workerd (1.20260910.1) rather than set to today, so
+# `wrangler dev` runs the same semantics the edge will. Raising this past the
+# bundled runtime is what to check first if local dev and production diverge.
+compatibility_date = "2026-09-10"
 workers_dev = true
 
 [[kv_namespaces]]
