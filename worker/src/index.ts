@@ -148,7 +148,35 @@ async function handleLetterboxd(env: Env): Promise<Response> {
   });
 }
 
-async function handleBooks(request: Request): Promise<Response> {
+// openlibrary.org/api/books is by far the slowest upstream the Now section
+// touches — measured at a 3.2s median and a 20s tail, with no Cache-Control on
+// the response, so neither the browser nor Cloudflare's subrequest cache will
+// hold it. Everything below exists to make exactly one visitor per TTL pay that.
+const BOOK_TTL = 60 * 60 * 24 * 7;
+// Misses get a much shorter TTL: a typo'd ISBN should not pin an empty card for
+// a week, but it should not re-pay 3s on every page load either.
+const BOOK_MISS_TTL = 60 * 10;
+// Guards the Workers subrequest limit — the ISBN list is attacker-controlled
+// (it arrives as a query param) and each entry costs one fetch.
+const MAX_ISBNS = 10;
+
+interface Book {
+  title: string;
+  author: string | null;
+  pages: number | null;
+  publishDate: string | null;
+  coverId: string | null;
+  link: string;
+  isbn: string;
+}
+
+// ISBNs are digits with an optional trailing X, sometimes hyphenated. Anything
+// else is refused rather than interpolated into the upstream URL.
+function isValidIsbn(isbn: string): boolean {
+  return /^[0-9-]{9,17}[0-9X]$/i.test(isbn);
+}
+
+async function handleBooks(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const url = new URL(request.url);
   const isbns = url.searchParams.get("isbns");
 
@@ -156,15 +184,55 @@ async function handleBooks(request: Request): Promise<Response> {
     return jsonResponse({ error: "No ISBNs provided" }, 400);
   }
 
-  const isbnList = isbns.split(",").map((s) => s.trim()).filter(Boolean);
-  const books = await Promise.all(isbnList.map(fetchBookByISBN));
+  const isbnList = isbns
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s && isValidIsbn(s))
+    .slice(0, MAX_ISBNS);
 
-  return jsonResponse(books.filter(Boolean));
+  const books = await Promise.all(isbnList.map((isbn) => getBook(isbn, env, ctx)));
+
+  // The cover id is stored rather than a full URL so the cached copy stays
+  // independent of which hostname the worker is answering on.
+  const payload = books.filter((b): b is Book => b !== null).map((book) => ({
+    title: book.title,
+    author: book.author,
+    pages: book.pages,
+    publishDate: book.publishDate,
+    cover: book.coverId ? `${url.origin}/cover?id=${book.coverId}` : null,
+    link: book.link,
+    isbn: book.isbn,
+  }));
+
+  return jsonResponse(payload);
 }
 
-async function fetchBookByISBN(isbn: string): Promise<unknown | null> {
+async function getBook(isbn: string, env: Env, ctx: ExecutionContext): Promise<Book | null> {
+  const key = `book:${isbn}`;
+
+  // Wrapped rather than stored bare, because KV returns null for an absent key
+  // and a stored `null` parses to null too. Without the wrapper a cached miss
+  // would be indistinguishable from a cache miss, and BOOK_MISS_TTL would never
+  // take effect — every load of an unknown ISBN would re-pay the upstream call.
+  const cached = await env.KV?.get<{ book: Book | null }>(key, "json");
+  if (cached) return cached.book;
+
+  const book = await fetchBookByISBN(isbn);
+
+  // Off the critical path: the visitor already has their answer, and a failed
+  // write just means the next request repeats the fetch.
+  ctx.waitUntil(
+    env.KV?.put(key, JSON.stringify({ book }), {
+      expirationTtl: book ? BOOK_TTL : BOOK_MISS_TTL,
+    }) ?? Promise.resolve()
+  );
+
+  return book;
+}
+
+async function fetchBookByISBN(isbn: string): Promise<Book | null> {
   const res = await fetch(
-    `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`,
+    `https://openlibrary.org/api/books?bibkeys=ISBN:${encodeURIComponent(isbn)}&format=json&jscmd=data`,
     { headers: { "User-Agent": "ShoumikChowNow/1.0 (hello@shoumikchow.com)" } }
   );
 
@@ -188,10 +256,111 @@ async function fetchBookByISBN(isbn: string): Promise<unknown | null> {
     author: book.authors?.map((a) => a.name).join(", ") || null,
     pages: book.number_of_pages || null,
     publishDate: book.publish_date || null,
-    cover: book.cover?.medium || book.cover?.large || null,
-    link: book.url || `https://openlibrary.org/isbn/${isbn}`,
+    coverId: extractCoverId(book.cover?.medium || book.cover?.large),
+    // Open Library's own `url` field is http://, which costs the visitor a
+    // redirect and trips mixed-content warnings on an https page.
+    link: (book.url || `https://openlibrary.org/isbn/${isbn}`).replace(/^http:/, "https:"),
     isbn,
   };
+}
+
+// Open Library hands back cover URLs of the form
+// https://covers.openlibrary.org/b/id/12183649-M.jpg. Only the numeric id is
+// kept; the size suffix is reapplied when the image is actually fetched.
+function extractCoverId(coverUrl: string | undefined): string | null {
+  const match = coverUrl?.match(/\/b\/id\/(\d+)-[SML]\.jpg/i);
+  return match ? match[1] : null;
+}
+
+// Covers are the second half of the Reading card's latency problem. The public
+// URL is a two-hop redirect that bottoms out at archive.org extracting the JPEG
+// from inside a ZIP on demand — about 2s, and it cannot start until the books
+// JSON lands, so the two delays are serial. Proxying through KV collapses that
+// to a single edge read.
+//
+// Caching is unbounded on purpose: the id is content-addressed (one id is one
+// uploaded image, which is why Open Library itself sends `expires` in 2126). If
+// a book's cover is ever replaced, the new id arrives via the books JSON above,
+// governed by BOOK_TTL.
+const COVER_MAX_BYTES = 2 * 1024 * 1024;
+// A cover Open Library does not have comes back as HTTP 200 carrying a 43-byte
+// 1x1 transparent GIF, so "no cover" has to be detected by size rather than by
+// status. Anything this small is that placeholder, never a real jacket.
+const COVER_MIN_BYTES = 100;
+const COVER_CACHE_CONTROL = "public, max-age=31536000, immutable";
+
+// Upstream sometimes omits Content-Type entirely, and its 1x1 placeholder is a
+// GIF served from a .jpg path, so the header is not trustworthy on its own.
+function sniffImageType(body: ArrayBuffer, header: string | null): string {
+  const b = new Uint8Array(body.slice(0, 4));
+  if (b[0] === 0xff && b[1] === 0xd8) return "image/jpeg";
+  if (b[0] === 0x89 && b[1] === 0x50) return "image/png";
+  if (b[0] === 0x47 && b[1] === 0x49) return "image/gif";
+  return header || "application/octet-stream";
+}
+
+async function handleCover(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  const id = new URL(request.url).searchParams.get("id");
+
+  // Strict: this value is interpolated into an outbound URL, so anything but a
+  // bare id is refused rather than sanitized.
+  if (!id || !/^\d{1,12}$/.test(id)) {
+    return jsonResponse({ error: "Invalid cover id" }, 400);
+  }
+
+  const key = `cover:${id}`;
+
+  const hit = await env.KV?.getWithMetadata<{ type: string }>(key, "stream");
+  if (hit?.value) {
+    return new Response(hit.value, {
+      headers: {
+        "Content-Type": hit.metadata?.type || "image/jpeg",
+        "Cache-Control": COVER_CACHE_CONTROL,
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+
+  const res = await fetch(`https://covers.openlibrary.org/b/id/${id}-M.jpg`);
+  if (!res.ok) {
+    return jsonResponse({ error: "Cover unavailable" }, 502);
+  }
+
+  // Oversized covers are streamed straight through rather than buffered, so a
+  // surprise from upstream cannot push the isolate toward its memory ceiling.
+  const declared = Number(res.headers.get("Content-Length"));
+  if (declared > COVER_MAX_BYTES) {
+    return new Response(res.body, {
+      headers: {
+        "Content-Type": res.headers.get("Content-Type") || "application/octet-stream",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+
+  const body = await res.arrayBuffer();
+
+  // Never cached, and never under the immutable header: unlike a real cover
+  // this is not content-addressed, and the jacket may well be uploaded later.
+  if (body.byteLength < COVER_MIN_BYTES) {
+    return jsonResponse({ error: "No cover for that id" }, 404);
+  }
+
+  const type = sniffImageType(body, res.headers.get("Content-Type"));
+
+  if (body.byteLength <= COVER_MAX_BYTES) {
+    ctx.waitUntil(
+      env.KV?.put(key, body, { metadata: { type } }) ?? Promise.resolve()
+    );
+  }
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": type,
+      "Cache-Control": COVER_CACHE_CONTROL,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
 
 async function handleSteam(env: Env): Promise<Response> {
@@ -400,7 +569,7 @@ async function handleSpotify(env: Env): Promise<Response> {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     const path = url.pathname;
 
@@ -427,7 +596,9 @@ export default {
         case "/letterboxd":
           return handleLetterboxd(env);
         case "/books":
-          return handleBooks(request);
+          return handleBooks(request, env, ctx);
+        case "/cover":
+          return handleCover(request, env, ctx);
         case "/spotify":
           return handleSpotify(env);
         case "/steam":
