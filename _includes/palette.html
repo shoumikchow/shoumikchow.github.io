@@ -1,0 +1,49 @@
+{%- comment -%}
+  The ⌘K palette: search the site, run a few actions, or ask the chatbot, all
+  from the keyboard. palette.js drives it; the index it searches is built from
+  0-palette.json. The trigger that opens it by pointer lives in the layout's
+  header, next to the nav it stands in for.
+
+  A native <dialog> opened with showModal(), which is most of the accessibility
+  for free: the page behind goes inert, Esc is wired, and focus goes back to
+  wherever it was when the dialog closes.
+{%- endcomment -%}
+<dialog class="palette" aria-label="Search and ask"
+        data-index="{{ '/palette.json' | relative_url }}?v={{ v }}"
+        data-email="{{ site.email | remove: 'mailto:' }}">
+  <div class="palette-bar">
+    <span class="palette-mode" hidden>Ask</span>
+    <input class="palette-input" type="text" role="combobox"
+           aria-label="Search pages, or ask a question"
+           aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list"
+           autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500"
+           aria-describedby="palette-help"
+           placeholder="Search, or ask a question">
+    <button class="palette-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      </svg>
+    </button>
+  </div>
+
+  <p class="sr-only" id="palette-help">Press Tab to switch between searching and asking the chatbot.</p>
+
+  <ul class="palette-list" id="palette-list" role="listbox" aria-label="Results"></ul>
+
+  <div class="palette-chat" hidden>
+    <div class="palette-log" role="log" aria-live="polite" aria-label="Conversation"></div>
+    <div class="palette-chat-foot">
+      <button class="palette-handoff" type="button">Continue in the chat window</button>
+      {%- comment -%} palette.js puts a copy of the dock's disclaimer here, so the two cannot drift. {%- endcomment %}
+    </div>
+  </div>
+
+  <div class="palette-foot" aria-hidden="true">
+    <span class="palette-keys" data-mode="search"><kbd>↑</kbd><kbd>↓</kbd> move</span>
+    <span class="palette-keys" data-mode="search"><kbd>↵</kbd> open</span>
+    <span class="palette-keys" data-mode="search"><kbd>tab</kbd> ask</span>
+    <span class="palette-keys" data-mode="ask" hidden><kbd>↵</kbd> send</span>
+    <span class="palette-keys" data-mode="ask" hidden><kbd>tab</kbd> back to search</span>
+    <span class="palette-esc"><kbd>esc</kbd> close</span>
+  </div>
+</dialog>

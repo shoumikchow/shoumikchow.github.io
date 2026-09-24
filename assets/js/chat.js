@@ -43,6 +43,15 @@
   var history = [];
   var busy = false;
   var open = false;
+  var status = 'unknown';
+
+  // The ⌘K palette (palette.js) is a second view of this same conversation,
+  // not a second conversation. It asks through window.siteChat below and
+  // listens for this event to redraw; the transcript, the budget guard and the
+  // storage all stay here, in one place.
+  function changed() {
+    document.dispatchEvent(new CustomEvent('sitechat:change'));
+  }
 
   // sessionStorage rather than localStorage, deliberately. This is continuity
   // within one visit, not a record of it: the store dies with the tab, so a
@@ -115,6 +124,7 @@
   var statusText = root.querySelector('.chat-trigger-status');
 
   function setStatus(state) {
+    status = state;
     if (dot) {
       dot.classList.toggle('is-live', state === 'live');
       dot.classList.toggle('is-paused', state === 'paused');
@@ -131,6 +141,7 @@
     if (statusText) statusText.textContent = label ? '(' + label.toLowerCase() + ')' : '';
     if (label) trigger.setAttribute('title', label);
     else trigger.removeAttribute('title');
+    changed();
   }
 
   // Fired on load, for every visitor, whether or not they ever open the dock —
@@ -188,12 +199,16 @@
     busy = state;
     input.disabled = state;
     form.querySelector('button').disabled = state;
+    changed();
   }
 
+  // Resolves once the exchange settles, with the answer or with the sentence
+  // the dock showed in its place, so a caller that is not the dock can show the
+  // same thing. Resolves to null when nothing was sent at all.
   function ask(question) {
-    if (busy) return;
+    if (busy) return Promise.resolve(null);
     question = question.trim().slice(0, MAX_CHARS);
-    if (!question) return;
+    if (!question) return Promise.resolve(null);
 
     // The starters are an empty-state affordance, not a persistent toolbar.
     // Once there is a transcript they are noise competing with it.
@@ -209,7 +224,9 @@
     var pending = addMessage('bot', 'Thinking');
     pending.classList.add('chat-bubble--pending');
 
-    fetch(ENDPOINT, {
+    var outcome = { question: question, answer: null, error: null };
+
+    return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: history })
@@ -236,11 +253,13 @@
         pending.textContent = '';
         render(pending, answer);
         history.push({ role: 'assistant', content: answer });
+        outcome.answer = answer;
       })
       .catch(function (err) {
         pending.classList.remove('chat-bubble--pending');
         pending.classList.add('chat-bubble--error');
         pending.textContent = err.message || 'Something went wrong.';
+        outcome.error = pending.textContent;
         // The trigger is hidden while the panel is open, so this is not seen
         // until the visitor closes it — which is exactly when a light saying
         // "spent for today" is worth having.
@@ -261,6 +280,7 @@
         // restoring the question on its own would show them a transcript that
         // looks like it is still thinking about it.
         save();
+        return outcome;
       });
   }
 
@@ -323,6 +343,26 @@
   }
 
   restore();
+
+  window.siteChat = {
+    ask: ask,
+    // Copies, so a caller cannot edit the transcript that gets sent.
+    messages: function () {
+      return history.map(function (m) { return { role: m.role, content: m.content }; });
+    },
+    isBusy: function () { return busy; },
+    // 'unknown' until /chat/status answers, then 'live', 'paused' or 'down'.
+    status: function () { return status; },
+    // The same guarded renderer the dock uses, so an answer shown elsewhere
+    // cannot grow links the dock would not have made.
+    render: render,
+    // Already open is still a request for the input: the palette hands off
+    // here expecting the visitor to be able to keep typing.
+    open: function () {
+      if (open) input.focus();
+      else setOpen(true);
+    }
+  };
 
   trigger.addEventListener('click', function () { setOpen(!open); });
   if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });

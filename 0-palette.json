@@ -1,0 +1,84 @@
+---
+permalink: /palette.json
+sitemap: false
+---
+{%- comment -%}
+The ⌘K palette's search index: every page in the nav, plus each of its ## and
+### sections with that section's text, so a search for "neurips" lands on the
+section that mentions it rather than only on the page.
+
+Read from page source, the same way md/ does, rather than from rendered HTML.
+That is why this file is named 0-palette.json. Jekyll renders pages in order of
+file name, and once a page has rendered, site.pages hands back its HTML in place
+of its Markdown; no heading survives that as a "## " line. The leading 0 sorts
+this ahead of every page it reads. Named palette.json, it silently lost the
+sections of every page that sorts before "p" (Experience, the homepage).
+The homepage goes through home-prose.html for the same reason md/index.html
+does: its raw source carries the Now widget's include tag, which is not text.
+
+Anchors are not computed here. Liquid has no regex, and kramdown's id rule
+(strip leading non-letters, drop anything outside [A-Za-z0-9 -], spaces to
+hyphens) needs one; palette.js derives them from the heading text instead.
+
+Deliberately absent: /resume. It is a private link handed out by hand, and
+anything listed here is one keystroke from every visitor.
+{%- endcomment -%}
+{%- capture home_src -%}{% include home-prose.html %}{%- endcapture -%}
+{%- assign paths = "index.md" | split: "," -%}
+{%- for nav in site.pagelist -%}
+  {%- assign nav_path = nav.url | append: ".md" -%}
+  {%- assign paths = paths | push: nav_path -%}
+{%- endfor -%}
+{%- assign sep = "" -%}
+[
+{%- for path in paths -%}
+  {%- assign p = site.pages | where: "path", path | first -%}
+  {%- if p == nil -%}{%- continue -%}{%- endif -%}
+  {%- if path == "index.md" -%}
+    {%- assign src = home_src -%}
+    {%- assign ptitle = "Home" -%}
+    {%- assign pdesc = site.description -%}
+  {%- else -%}
+    {%- assign src = p.content -%}
+    {%- assign ptitle = p.title -%}
+    {%- assign pdesc = p.description -%}
+  {%- endif -%}
+  {%- assign purl = p.url | relative_url -%}
+  {{ sep }}
+  {"type":"page","title":{{ ptitle | jsonify }},"url":{{ purl | jsonify }},"text":{{ pdesc | jsonify }}}
+  {%- assign sep = "," -%}
+
+  {%- comment -%} The Now section lives in an include, so the source never shows its heading. {%- endcomment -%}
+  {%- if path == "index.md" -%}
+  ,{"type":"section","page":"Home","title":"Right Now","url":{{ purl | jsonify }},"anchor":"right-now-","text":"What I'm listening to, reading, watching and playing right now. Music, books, films, games, chess."}
+  {%- endif -%}
+
+  {%- comment -%} A trailing h1 closes the last section, so the loop never has to. {%- endcomment -%}
+  {%- assign lines = src | remove: "[← Back to Home](/)" | append: "
+# end" | newline_to_br | split: "<br />" -%}
+  {%- assign heading = "" -%}
+  {%- assign buf = "" -%}
+  {%- for raw in lines -%}
+    {%- assign line = raw | strip -%}
+    {%- assign h3 = line | slice: 0, 4 -%}
+    {%- assign h2 = line | slice: 0, 3 -%}
+    {%- assign h1 = line | slice: 0, 2 -%}
+    {%- assign next = nil -%}
+    {%- if h3 == "### " -%}{%- assign next = line | remove_first: "### " -%}
+    {%- elsif h2 == "## " -%}{%- assign next = line | remove_first: "## " -%}
+    {%- elsif h1 == "# " -%}{%- assign next = "" -%}
+    {%- endif -%}
+    {%- if next != nil -%}
+      {%- if heading != "" -%}
+        {%- assign htext = heading | markdownify | strip_html | strip -%}
+        {%- assign btext = buf | markdownify | strip_html | normalize_whitespace | strip | truncate: 900 -%}
+        ,{"type":"section","page":{{ ptitle | jsonify }},"title":{{ htext | jsonify }},"url":{{ purl | jsonify }},"text":{{ btext | jsonify }}}
+      {%- endif -%}
+      {%- assign heading = next | default: "" -%}
+      {%- assign buf = "" -%}
+    {%- else -%}
+      {%- capture buf -%}{{ buf }}{{ raw }}{%- endcapture -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+]

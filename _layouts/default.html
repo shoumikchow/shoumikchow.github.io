@@ -95,7 +95,24 @@
         </ul>
       </nav>
 
+
       {% include social-links.html %}
+
+      {%- comment -%}
+        Opens the ⌘K palette (_includes/palette.html). Hidden until palette.js
+        runs, so without JS there is no button that does nothing. Last in the
+        header, and styled as a footnote, on purpose: see the stylesheet. The label
+        says only "Search" because the chat dock nearby already says "Ask"; the
+        title and the tip inside the dock carry the rest.
+      {%- endcomment %}
+      <button class="palette-trigger" type="button" aria-haspopup="dialog" title="Search or ask" hidden>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <span class="palette-trigger-label">Search</span>
+        <kbd class="palette-kbd" aria-hidden="true"></kbd>
+      </button>
       {% endif %}
     </header>
     <main id="content">
@@ -119,6 +136,7 @@
     Deliberately not on 404.html, which uses layout: none and is its own file.
   {%- endcomment -%}
   {% include chat-widget.html %}
+  {% include palette.html %}
 
   {%- comment -%}
     The toggle's ring. The noise period at this frequency is about a third of
@@ -156,6 +174,7 @@
   <script src="{{ "/assets/js/accessibility.js" | relative_url }}?v={{ v }}"></script>
   <script src="{{ "/assets/js/now.js" | relative_url }}?v={{ v }}"></script>
   <script src="{{ "/assets/js/chat.js" | relative_url }}?v={{ v }}"></script>
+  <script src="{{ "/assets/js/palette.js" | relative_url }}?v={{ v }}"></script>
   <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "087a0204fbc34932b82404ff9bc90eb7"}'></script>
   <!-- End Cloudflare Web Analytics -->
