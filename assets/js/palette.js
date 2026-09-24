@@ -267,6 +267,7 @@
         if (!d.top) return [];
         return [item('now', d.top.rating + ' ' + d.top.format + ' on Lichess', {
           parent: 'Chessing', nowIcon: 'chess', href: d.challenge, external: true,
+          hint: ago(d.lastPlayed),
           keys: 'now chess lichess rating elo challenge play'
         })];
       })

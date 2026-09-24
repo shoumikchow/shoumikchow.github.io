@@ -294,6 +294,7 @@ async function loadChess() {
         <div class="now-info">
           <strong class="now-title">${escapeHtml(String(data.top.rating))} ${escapeHtml(data.top.format)} on Lichess</strong>
           <span class="now-meta">${trendIcon}${escapeHtml(trend)}challenge me</span>
+          ${data.lastPlayed ? `<span class="now-time">${timeAgo(data.lastPlayed)}</span>` : ""}
         </div>
       </a>
     `;

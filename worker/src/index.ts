@@ -418,7 +418,7 @@ const LICHESS_USER = "shoumikchow";
 // The board thumbnail. This endpoint serves the game in progress if there is
 // one and the last finished game otherwise, so a single call covers both of the
 // states the card can be in. Everything but the final position is stripped.
-async function fetchLichessBoard(): Promise<{ fen: string; flipped: boolean } | null> {
+async function fetchLichessBoard(): Promise<{ fen: string; flipped: boolean; lastMoveAt: number | null } | null> {
   const res = await fetch(
     `https://lichess.org/api/user/${LICHESS_USER}/current-game?lastFen=true&moves=false&tags=false&clocks=false&evals=false&opening=false`,
     { headers: { accept: "application/json" } }
@@ -429,6 +429,7 @@ async function fetchLichessBoard(): Promise<{ fen: string; flipped: boolean } | 
 
   const game: {
     lastFen?: string;
+    lastMoveAt?: number;
     players?: { black?: { user?: { id?: string } } };
   } = await res.json();
 
@@ -438,6 +439,9 @@ async function fetchLichessBoard(): Promise<{ fen: string; flipped: boolean } | 
     fen: game.lastFen,
     // Show the board from the side actually played.
     flipped: game.players?.black?.user?.id === LICHESS_USER,
+    // When the most recent game last saw a move, so the palette and the
+    // chatbot can say "played 3d ago". Already in this response; no extra call.
+    lastMoveAt: typeof game.lastMoveAt === "number" ? game.lastMoveAt : null,
   };
 }
 
@@ -473,7 +477,8 @@ async function handleLichess(): Promise<Response> {
     profile: data.url ?? `https://lichess.org/@/${LICHESS_USER}`,
     challenge: `https://lichess.org/?user=${LICHESS_USER}#friend`,
     top: top ? { format: top.format, rating: top.rating, prog: top.prog ?? 0 } : null,
-    board,
+    board: board ? { fen: board.fen, flipped: board.flipped } : null,
+    lastPlayed: board?.lastMoveAt ? new Date(board.lastMoveAt).toISOString() : null,
   });
 }
 
@@ -626,7 +631,7 @@ async function nowNotes(env: Env, ctx: ExecutionContext, origin: string): Promis
   type Song = { title: string; artist: string; album?: string; playedAt?: string };
   type Film = { title: string; year?: string; director?: string; rating?: string; watchedDate?: string; rewatch?: boolean };
   type Game = { name: string; playtimeForever?: string };
-  type Chess = { playing?: string | null; top?: { rating: number; format: string; prog?: number } | null };
+  type Chess = { playing?: string | null; top?: { rating: number; format: string; prog?: number } | null; lastPlayed?: string | null };
   type BookOut = { title: string; author?: string | null };
 
   const [song, books, film, games, chess] = await Promise.all([
@@ -680,7 +685,8 @@ async function nowNotes(env: Env, ctx: ExecutionContext, origin: string): Promis
     } else if (chess.top) {
       const prog = chess.top.prog;
       const trend = prog ? `, ${prog > 0 ? "up" : "down"} ${Math.abs(prog)} over his recent games` : "";
-      lines.push(`Chess: his Lichess ${chess.top.format} rating is ${chess.top.rating}${trend}. Visitors can challenge him on Lichess.`);
+      const when = chess.lastPlayed ? longDate(chess.lastPlayed) : null;
+      lines.push(`Chess: his Lichess ${chess.top.format} rating is ${chess.top.rating}${trend}${when ? `; his most recent game was ${when}` : ""}. Visitors can challenge him on Lichess.`);
     }
   }
 
