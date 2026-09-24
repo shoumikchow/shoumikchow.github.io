@@ -1,7 +1,6 @@
 import { handleChat, handleChatStatus, type ChatEnv } from "./chat";
-import { handlePaletteEvent, type PaletteEnv } from "./palette";
 
-interface Env extends ChatEnv, PaletteEnv {
+interface Env extends ChatEnv {
   SPOTIFY_CLIENT_ID?: string;
   SPOTIFY_CLIENT_SECRET?: string;
   SPOTIFY_REFRESH_TOKEN?: string;
@@ -585,16 +584,6 @@ export default {
           : await handleChatStatus(request, env);
       } catch {
         return jsonResponse({ error: "Internal error" }, 500);
-      }
-    }
-
-    // Also ahead of OPTIONS, though it never sees one: sendBeacon posts as
-    // text/plain, which needs no preflight.
-    if (path === "/palette/event") {
-      try {
-        return await handlePaletteEvent(request, env);
-      } catch {
-        return new Response(null, { status: 500 });
       }
     }
 

@@ -26,12 +26,6 @@ namespace_id = "1001"
   limit = 5
   period = 60
 
-# ⌘K palette usage counts, for /palette/event (src/palette.ts). The dataset is
-# created on first write; there is nothing to set up in the dashboard.
-[[analytics_engine_datasets]]
-binding = "PALETTE_EVENTS"
-dataset = "palette_events"
-
 [observability]
 [observability.logs]
 enabled = true

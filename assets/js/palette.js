@@ -36,7 +36,7 @@
     if (kbd) kbd.textContent = SHORTCUT;
     trigger.setAttribute('aria-keyshortcuts', MAC ? 'Meta+K' : 'Control+K');
     trigger.hidden = false;
-    trigger.addEventListener('click', function () { openPalette('button'); });
+    trigger.addEventListener('click', function () { openPalette(); });
   }
 
   // Where people learn that ⌘K also asks: inside the chat dock, the one place
@@ -51,35 +51,6 @@
     tip.appendChild(key);
     tip.appendChild(document.createTextNode(' on any page to ask from the keyboard.'));
     tip.hidden = false;
-  }
-
-  // ─── Usage counts ───────────────────────────────────────────
-  // How the palette gets used, so what to build next can be chosen from
-  // numbers: how it was opened, what kind of row was picked, whether a question
-  // was asked and by which route, and how often it closes having done nothing.
-  // Never what was typed; worker/src/palette.ts rejects anything outside a
-  // fixed shape. Like chat.js, a page served from localhost reports to a local
-  // `wrangler dev` so testing never lands in the real numbers.
-  var LOCAL = ['localhost', '127.0.0.1'].indexOf(location.hostname) !== -1;
-  var EVENTS = LOCAL
-    ? 'http://localhost:8787/palette/event'
-    : 'https://shoumikchow-now.shoumikchow.workers.dev/palette/event';
-
-  // Whether this opening has led anywhere yet. An open that closes with this
-  // still false is a dismissal, the number that says the palette missed.
-  var acted = false;
-
-  // sendBeacon because it outlives the page: a pick that navigates away is
-  // the commonest event there is, and a fetch would be cancelled with the
-  // page. text/plain keeps it a simple request, so there is no preflight.
-  function track(data) {
-    if (!navigator.sendBeacon) return;
-    data.path = location.pathname;
-    try {
-      navigator.sendBeacon(EVENTS, new Blob([JSON.stringify(data)], { type: 'text/plain' }));
-    } catch (e) {
-      // A statistic is never worth an error in the visitor's console.
-    }
   }
 
   // ─── Icons ──────────────────────────────────────────────────
@@ -284,9 +255,7 @@
     return out;
   }
 
-  // `source` is only for the usage counts: a starter chip, or the row that
-  // offers to ask whatever was typed.
-  function askItem(text, source) {
+  function askItem(text) {
     var state = window.siteChat.status();
     var hint =
       state === 'paused' ? 'Answering again tomorrow'
@@ -295,7 +264,7 @@
     return item('ask', text, {
       parent: 'Ask',
       hint: hint,
-      run: function () { setMode('ask'); send(text, source); }
+      run: function () { setMode('ask'); send(text); }
     });
   }
 
@@ -304,7 +273,7 @@
   function starterItems() {
     var chips = document.querySelectorAll('.chat-starters button');
     var out = [];
-    for (var i = 0; i < chips.length; i++) out.push(askItem(chips[i].textContent.trim(), 'starter'));
+    for (var i = 0; i < chips.length; i++) out.push(askItem(chips[i].textContent.trim()));
     return out;
   }
 
@@ -422,7 +391,7 @@
       var found = ranked.slice(0, 12).map(function (r) { return r.it; });
 
       if (window.siteChat) {
-        var ask = askItem(raw, 'row');
+        var ask = askItem(raw);
         if (QUESTION.test(raw) || !found.length) found.unshift(ask);
         else found.push(ask);
       }
@@ -468,17 +437,6 @@
     var it = rows[i];
     if (!it) return;
     var row = document.getElementById('palette-opt-' + i);
-    // Ask rows are counted when the question is sent, in send().
-    if (it.kind !== 'ask') {
-      acted = true;
-      track({
-        event: 'pick',
-        kind: it.kind,
-        item: it.parent ? it.parent + ' › ' + it.title : it.title,
-        rank: i,
-        queried: field.value.trim() !== ''
-      });
-    }
     if (it.run) {
       it.run(row);
       return;
@@ -559,11 +517,9 @@
     chatView.scrollTop = chatView.scrollHeight;
   }
 
-  function send(text, source) {
+  function send(text) {
     text = text.trim();
     if (!text || !window.siteChat || window.siteChat.isBusy()) return;
-    acted = true;
-    track({ event: 'ask', source: source });
     failed = null;
     field.value = '';
     window.siteChat.ask(text).then(function (outcome) {
@@ -604,13 +560,11 @@
   }
 
   // ─── Open, close, keys ──────────────────────────────────────
-  function openPalette(via) {
+  function openPalette() {
     if (dialog.open) {
       field.focus();
       return;
     }
-    acted = false;
-    track({ event: 'open', via: via });
     clearTimeout(busyFlash);
     field.value = '';
     failed = null;
@@ -621,9 +575,7 @@
 
   function closePalette() {
     clearTimeout(busyFlash);
-    if (!dialog.open) return;
-    if (!acted) track({ event: 'dismiss' });
-    dialog.close();
+    if (dialog.open) dialog.close();
   }
 
   function typing(el) {
@@ -639,12 +591,12 @@
     if (mod && !e.altKey && !e.shiftKey && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
       if (dialog.open) closePalette();
-      else openPalette('shortcut');
+      else openPalette();
       return;
     }
     if (e.key === '/' && !dialog.open && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e.target)) {
       e.preventDefault();
-      openPalette('slash');
+      openPalette();
     }
   });
 
@@ -672,7 +624,7 @@
     if (mode === 'ask') {
       if (e.key === 'Enter') {
         e.preventDefault();
-        send(field.value, 'input');
+        send(field.value);
       } else if (e.key === 'Backspace' && !field.value) {
         e.preventDefault();
         setMode('search');
@@ -720,8 +672,6 @@
 
   if (handoff) {
     handoff.addEventListener('click', function () {
-      acted = true;
-      track({ event: 'handoff' });
       closePalette();
       if (window.siteChat) window.siteChat.open();
     });
