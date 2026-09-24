@@ -248,6 +248,50 @@ async function getBook(isbn: string, env: Env, ctx: ExecutionContext): Promise<B
 // So the edition supplies everything it can and search fills in the author.
 // In parallel this costs no more wall time than either alone, and BOOK_TTL
 // means Open Library sees it roughly once a week per book.
+// Neither source's title is reliably right. The edition's keeps its casing but
+// can drop a leading article ("End of Policing" for The End of Policing);
+// search's keeps the article but can lowercase the rest ("A history of
+// Bangladesh"). So the edition's wins unless search's is that same title with
+// the article put back.
+function pickTitle(edition: string | undefined, search: string | undefined): string | undefined {
+  if (!edition) return search;
+  if (!search) return edition;
+  const article = search.match(/^(the|a|an)\s+(.*)$/i);
+  if (article && article[2].toLowerCase() === edition.toLowerCase()) {
+    return `${article[1]} ${edition}`;
+  }
+  return edition;
+}
+
+// Open Library often holds the same person as two author records ("Alex S.
+// Vitale" and "Alex Vitale"), and search lists every record on the work. When
+// the edition says which records are its authors, only those are named.
+// Otherwise names sharing a first and last word are treated as one person,
+// the first spelling kept; co-authors with the same first and last name are
+// rare enough to accept.
+function pickAuthors(
+  editionAuthors: Array<{ key?: string }> | undefined,
+  doc: { author_name?: string[]; author_key?: string[] } | undefined
+): string {
+  const names = doc?.author_name ?? [];
+  const keys = doc?.author_key ?? [];
+  const wanted = new Set((editionAuthors ?? []).map((a) => a.key?.split("/").pop()).filter(Boolean));
+
+  const matched = names.filter((_, i) => wanted.has(keys[i]));
+  const candidates = matched.length ? matched : names;
+
+  const seen = new Set<string>();
+  return candidates
+    .filter((name) => {
+      const words = name.toLowerCase().split(/\s+/).filter(Boolean);
+      const id = `${words[0]} ${words[words.length - 1]}`;
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    })
+    .join(", ");
+}
+
 async function fetchBookByISBN(isbn: string): Promise<Book | null> {
   const headers = { "User-Agent": "ShoumikChowNow/1.0 (hello@shoumikchow.com)" };
   const id = encodeURIComponent(isbn);
@@ -258,16 +302,17 @@ async function fetchBookByISBN(isbn: string): Promise<Book | null> {
     number_of_pages?: number;
     publish_date?: string;
     covers?: number[];
+    authors?: Array<{ key?: string }>;
     works?: Array<{ key?: string }>;
   };
-  type SearchDoc = { key?: string; title?: string; author_name?: string[]; cover_i?: number };
+  type SearchDoc = { key?: string; title?: string; author_name?: string[]; author_key?: string[]; cover_i?: number };
 
   const [edition, docs] = await Promise.all([
     // Redirects to /books/<edition id>.json; fetch follows it.
     fetch(`https://openlibrary.org/isbn/${id}.json`, { headers })
       .then((res) => (res.ok ? (res.json() as Promise<Edition>) : null))
       .catch(() => null),
-    fetch(`https://openlibrary.org/search.json?isbn=${id}&fields=key,title,author_name,cover_i&limit=5`, { headers })
+    fetch(`https://openlibrary.org/search.json?isbn=${id}&fields=key,title,author_name,author_key,cover_i&limit=5`, { headers })
       .then((res) => (res.ok ? (res.json() as Promise<{ docs?: SearchDoc[] }>) : null))
       .then((data) => data?.docs ?? [])
       .catch(() => [] as SearchDoc[]),
@@ -278,7 +323,7 @@ async function fetchBookByISBN(isbn: string): Promise<Book | null> {
   const workKey = edition?.works?.[0]?.key;
   const doc = docs.find((d) => d.key && d.key === workKey) ?? docs[0];
 
-  const title = edition?.title ?? doc?.title;
+  const title = pickTitle(edition?.title, doc?.title);
   if (!title) return null;
 
   // Open Library uses -1 in `covers` for a removed image.
@@ -286,7 +331,7 @@ async function fetchBookByISBN(isbn: string): Promise<Book | null> {
 
   return {
     title,
-    author: doc?.author_name?.join(", ") || null,
+    author: pickAuthors(edition?.authors, doc) || null,
     pages: edition?.number_of_pages || null,
     publishDate: edition?.publish_date || null,
     coverId: cover ? String(cover) : null,
