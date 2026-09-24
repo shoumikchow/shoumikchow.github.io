@@ -524,6 +524,55 @@
     return j === word.length;
   }
 
+  // Typos: one letter wrong, extra, missing or swapped with its neighbour
+  // (optimal string alignment distance, capped at 1). Only for words of five
+  // letters or more, and only against titles and aliases: one edit away from
+  // a four-letter word is half the dictionary, and a page of body text has a
+  // near miss for almost anything. Subsequence matching already forgives a
+  // dropped letter in a title; this catches the rest ("reseaarch",
+  // "pubilcations"). A partly typed word is compared with the same-length
+  // start of each word, give or take a letter.
+  function oneEdit(a, b) {
+    if (Math.abs(a.length - b.length) > 1) return false;
+    var prev2 = null;
+    var prev = [];
+    for (var j = 0; j <= b.length; j++) prev.push(j);
+    for (var i = 1; i <= a.length; i++) {
+      var row = [i];
+      var best = i;
+      for (j = 1; j <= b.length; j++) {
+        var d = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (prev2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+          d = Math.min(d, prev2[j - 2] + 1);
+        }
+        row.push(d);
+        if (d < best) best = d;
+      }
+      if (best > 1) return false;
+      prev2 = prev;
+      prev = row;
+    }
+    return prev[b.length] <= 1;
+  }
+
+  // Where in `hay` a typo of `w` sits, as { at, len }, or null.
+  function nearMiss(hay, w) {
+    if (w.length < 5 || !hay) return null;
+    var re = /[a-z0-9]+/g;
+    var m;
+    while ((m = re.exec(hay))) {
+      var t = m[0];
+      if (t.length < w.length - 1) continue;
+      for (var len = w.length - 1; len <= w.length + 1; len++) {
+        if (len > t.length) break;
+        if (oneEdit(w, t.slice(0, len))) return { at: m.index, len: len };
+      }
+    }
+    return null;
+  }
+
+  // Also notes, on the item, which words landed only in its body text, so
+  // the row can show where (see snippet()).
   function score(it, words) {
     if (!it._title) {
       it._title = fold(it.title);
@@ -532,13 +581,18 @@
       it._aliases = fold(it.aliases);
     }
     var total = 0;
+    it._body = [];
     for (var i = 0; i < words.length; i++) {
       var w = words[i];
       var s = wordScore(it._title, w) * 30;
       if (!s) s = wordScore(it._aliases, w) * 20;
       if (!s) s = wordScore(it._parent, w) * 10;
-      if (!s && w.length > 2) s = wordScore(it._keys, w) * 5;
+      if (!s && w.length > 2) {
+        s = wordScore(it._keys, w) * 5;
+        if (s) it._body.push(w);
+      }
       if (!s && w.length > 1 && it._title[0] === w[0] && subsequence(it._title, w)) s = 8;
+      if (!s && (nearMiss(it._title, w) || nearMiss(it._aliases, w))) s = 12;
       if (!s) return 0;
       total += s;
     }
@@ -578,11 +632,15 @@
         for (var k = 0; k < w.length; k++) hits.push(at + k);
       } else if (loose && w.length > 1) {
         var first = hay.search(/\S/);
-        if (first === -1 || hay[first] !== w[0]) return;
-        for (var i = first, j = 0; i < hay.length && j < w.length; i++) {
-          if (hay[i] === w[j]) { hits.push(i); j++; }
+        if (first !== -1 && hay[first] === w[0]) {
+          for (var i = first, j = 0; i < hay.length && j < w.length; i++) {
+            if (hay[i] === w[j]) { hits.push(i); j++; }
+          }
+          if (hits.length < w.length) hits = [];
         }
-        if (hits.length < w.length) return;
+        // A typo marks the stretch of the word it stood for.
+        var near = !hits.length && nearMiss(hay, w);
+        if (near) for (var n = 0; n < near.len; n++) hits.push(near.at + n);
       }
       hits.forEach(function (h) { on[f.from[h]] = true; });
     });
@@ -613,6 +671,33 @@
       run += text[i];
     }
     flush();
+  }
+
+  // For a row found through its body text: a line of that text, starting
+  // just before the first hit, so it is clear why the row is there ("neur"
+  // finding Research › Computational Social Science says nothing on its own).
+  // Only sections and pages, whose text is prose; everything else keeps a
+  // list of search words there, which would read as nonsense.
+  function snippet(it) {
+    if (!it._body || !it._body.length || (it.kind !== 'section' && it.kind !== 'page')) return null;
+    var text = it.keys;
+    var f = foldMap(text);
+    var first = -1;
+    it._body.forEach(function (w) {
+      var at = f.hay.indexOf(w) === 0 ? 0 : (' ' + f.hay).indexOf(' ' + w);
+      if (at === -1) at = f.hay.indexOf(w);
+      if (at !== -1 && (first === -1 || at < first)) first = at;
+    });
+    if (first === -1) return null;
+    // A little lead-in, backed up to a word start; the line's own ellipsis
+    // (CSS) takes care of the far end.
+    var start = f.from[first];
+    if (start > 24) {
+      var cut = text.lastIndexOf(' ', start - 24);
+      start = cut === -1 ? 0 : cut + 1;
+      return { text: '…' + text.slice(start, start + 200), words: it._body };
+    }
+    return { text: text.slice(0, 200), words: it._body };
   }
 
   // Worth putting the Ask row first rather than last.
@@ -658,14 +743,24 @@
     label.className = 'palette-label';
     // An Ask row's title is the query itself, so marking it would say nothing.
     var words = it.kind === 'ask' ? [] : lit;
+    var line = document.createElement('span');
+    line.className = 'palette-line';
     if (it.parent) {
       var parent = document.createElement('span');
       parent.className = 'palette-parent';
       appendMarked(parent, it.parent, words, false);
       parent.appendChild(document.createTextNode(it.kind === 'ask' ? ': ' : ' › '));
-      label.appendChild(parent);
+      line.appendChild(parent);
     }
-    appendMarked(label, it.title, words, true);
+    appendMarked(line, it.title, words, true);
+    label.appendChild(line);
+    var snip = words.length && snippet(it);
+    if (snip) {
+      var body = document.createElement('span');
+      body.className = 'palette-snippet';
+      appendMarked(body, snip.text, snip.words, false);
+      label.appendChild(body);
+    }
     li.appendChild(label);
 
     var hint = document.createElement('span');
