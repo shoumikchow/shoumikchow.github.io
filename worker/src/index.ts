@@ -148,10 +148,12 @@ async function handleLetterboxd(env: Env): Promise<Response> {
   });
 }
 
-// openlibrary.org/api/books is by far the slowest upstream the Now section
-// touches — measured at a 3.2s median and a 20s tail, with no Cache-Control on
-// the response, so neither the browser nor Cloudflare's subrequest cache will
-// hold it. Everything below exists to make exactly one visitor per TTL pay that.
+// Open Library is by far the slowest upstream the Now section touches. The
+// endpoint this used to call measured a 3.2s median and a 20s tail, with no
+// Cache-Control on the response, so neither the browser nor Cloudflare's
+// subrequest cache will hold it; its replacements (see fetchBookByISBN) are
+// the same service with the same habits. Everything below exists to make
+// exactly one visitor per TTL pay that.
 const BOOK_TTL = 60 * 60 * 24 * 7;
 // Misses get a much shorter TTL: a typo'd ISBN should not pin an empty card for
 // a week, but it should not re-pay 3s on every page load either.
@@ -230,46 +232,71 @@ async function getBook(isbn: string, env: Env, ctx: ExecutionContext): Promise<B
   return book;
 }
 
+// Two current Open Library endpoints, asked in parallel, because each is
+// missing something the other has. This replaced /api/books?jscmd=data, which
+// Open Library's docs had marked "a legacy endpoint [that] may be phased out"
+// and which began answering 404 for every ISBN in September 2026.
+//
+//   /isbn/<isbn>.json  The edition itself: the exact title, page count, date
+//                      and cover for the printing on the shelf. But editions
+//                      often carry no author (this one did not); the author
+//                      hangs off the work, one or two more requests away.
+//   /search.json       One request with author names attached, but the title
+//                      is normalised ("A history of Bangladesh") and the page
+//                      count is a median across every edition of the work.
+//
+// So the edition supplies everything it can and search fills in the author.
+// In parallel this costs no more wall time than either alone, and BOOK_TTL
+// means Open Library sees it roughly once a week per book.
 async function fetchBookByISBN(isbn: string): Promise<Book | null> {
-  const res = await fetch(
-    `https://openlibrary.org/api/books?bibkeys=ISBN:${encodeURIComponent(isbn)}&format=json&jscmd=data`,
-    { headers: { "User-Agent": "ShoumikChowNow/1.0 (hello@shoumikchow.com)" } }
-  );
+  const headers = { "User-Agent": "ShoumikChowNow/1.0 (hello@shoumikchow.com)" };
+  const id = encodeURIComponent(isbn);
 
-  if (!res.ok) return null;
-
-  const data: Record<string, {
-    title: string;
-    authors?: Array<{ name: string }>;
+  type Edition = {
+    key?: string;
+    title?: string;
     number_of_pages?: number;
     publish_date?: string;
-    cover?: { small?: string; medium?: string; large?: string };
-    url?: string;
-  }> = await res.json();
+    covers?: number[];
+    works?: Array<{ key?: string }>;
+  };
+  type SearchDoc = { key?: string; title?: string; author_name?: string[]; cover_i?: number };
 
-  const key = `ISBN:${isbn}`;
-  const book = data[key];
-  if (!book) return null;
+  const [edition, docs] = await Promise.all([
+    // Redirects to /books/<edition id>.json; fetch follows it.
+    fetch(`https://openlibrary.org/isbn/${id}.json`, { headers })
+      .then((res) => (res.ok ? (res.json() as Promise<Edition>) : null))
+      .catch(() => null),
+    fetch(`https://openlibrary.org/search.json?isbn=${id}&fields=key,title,author_name,cover_i&limit=5`, { headers })
+      .then((res) => (res.ok ? (res.json() as Promise<{ docs?: SearchDoc[] }>) : null))
+      .then((data) => data?.docs ?? [])
+      .catch(() => [] as SearchDoc[]),
+  ]);
+
+  // An ISBN can match several works (reprints filed separately); the one the
+  // edition belongs to is the right one to take the author from.
+  const workKey = edition?.works?.[0]?.key;
+  const doc = docs.find((d) => d.key && d.key === workKey) ?? docs[0];
+
+  const title = edition?.title ?? doc?.title;
+  if (!title) return null;
+
+  // Open Library uses -1 in `covers` for a removed image.
+  const cover = edition?.covers?.find((c) => c > 0) ?? (doc?.cover_i && doc.cover_i > 0 ? doc.cover_i : null);
 
   return {
-    title: book.title,
-    author: book.authors?.map((a) => a.name).join(", ") || null,
-    pages: book.number_of_pages || null,
-    publishDate: book.publish_date || null,
-    coverId: extractCoverId(book.cover?.medium || book.cover?.large),
-    // Open Library's own `url` field is http://, which costs the visitor a
-    // redirect and trips mixed-content warnings on an https page.
-    link: (book.url || `https://openlibrary.org/isbn/${isbn}`).replace(/^http:/, "https:"),
+    title,
+    author: doc?.author_name?.join(", ") || null,
+    pages: edition?.number_of_pages || null,
+    publishDate: edition?.publish_date || null,
+    coverId: cover ? String(cover) : null,
+    link: edition?.key
+      ? `https://openlibrary.org${edition.key}`
+      : doc?.key
+        ? `https://openlibrary.org${doc.key}`
+        : `https://openlibrary.org/isbn/${id}`,
     isbn,
   };
-}
-
-// Open Library hands back cover URLs of the form
-// https://covers.openlibrary.org/b/id/12183649-M.jpg. Only the numeric id is
-// kept; the size suffix is reapplied when the image is actually fetched.
-function extractCoverId(coverUrl: string | undefined): string | null {
-  const match = coverUrl?.match(/\/b\/id\/(\d+)-[SML]\.jpg/i);
-  return match ? match[1] : null;
 }
 
 // Covers are the second half of the Reading card's latency problem. The public
