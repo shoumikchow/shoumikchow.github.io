@@ -192,7 +192,11 @@ async function handleBooks(request: Request, env: Env, ctx: ExecutionContext): P
     .filter((s) => s && isValidIsbn(s))
     .slice(0, MAX_ISBNS);
 
-  const books = await Promise.all(isbnList.map((isbn) => getBook(isbn, env, ctx)));
+  const [books, starts] = await Promise.all([
+    Promise.all(isbnList.map((isbn) => getBook(isbn, env, ctx))),
+    Promise.all(isbnList.map((isbn) => readingSince(isbn, env, ctx))),
+  ]);
+  const started = new Map(isbnList.map((isbn, i) => [isbn, starts[i]]));
 
   // The cover id is stored rather than a full URL so the cached copy stays
   // independent of which hostname the worker is answering on.
@@ -204,9 +208,84 @@ async function handleBooks(request: Request, env: Env, ctx: ExecutionContext): P
     cover: book.coverId ? `${url.origin}/cover?id=${book.coverId}` : null,
     link: book.link,
     isbn: book.isbn,
+    started: started.get(book.isbn) ?? null,
   }));
 
   return jsonResponse(payload);
+}
+
+// When a book was started, read from the site's own git history: the date of
+// the commit that added its ISBN to _config.yml. There is nothing to keep up
+// by hand, and nowhere else it could come from. GitHub Pages builds in safe
+// mode, so Jekyll cannot run git or a plugin that does.
+//
+// Newest to oldest through the commits that touched _config.yml, reading the
+// file as it was at each: the start is the oldest commit in the unbroken run
+// that still lists the ISBN. Usually one or two raw-file reads. A book that
+// was dropped and later re-added dates from the re-adding, which is right.
+//
+// The commit list comes from GitHub's per-file Atom feed, not the REST API.
+// The API allows 60 unauthenticated calls an hour per IP, and Workers share
+// egress IPs with everyone else on Cloudflare: the first deploy of this used
+// the API and was refused from the edge on its very first call. The feed is a
+// page, not an API call, and carries the same commit ids and dates, newest
+// first. File reads go to raw.githubusercontent.com, likewise unmetered.
+//
+// A found date is kept 30 days (it only changes if the book is removed and
+// re-added); a failure only an hour, after which it is tried again.
+const SITE_REPO = "shoumikchow/shoumikchow.github.io";
+const SITE_BRANCH = "master";
+const STARTED_TTL = 60 * 60 * 24 * 30;
+const STARTED_MISS_TTL = 60 * 60;
+const STARTED_MAX_STEPS = 10;
+
+async function readingSince(isbn: string, env: Env, ctx: ExecutionContext): Promise<string | null> {
+  const key = `started:${isbn}`;
+  // Wrapped, for the same reason as book:<isbn> below: a stored null must be
+  // distinguishable from an absent key.
+  const cached = await env.KV?.get<{ started: string | null }>(key, "json");
+  if (cached) return cached.started;
+
+  const started = await findStart(isbn).catch(() => null);
+
+  ctx.waitUntil(
+    env.KV?.put(key, JSON.stringify({ started }), {
+      expirationTtl: started ? STARTED_TTL : STARTED_MISS_TTL,
+    }) ?? Promise.resolve()
+  );
+  return started;
+}
+
+async function findStart(isbn: string): Promise<string | null> {
+  const headers = { "User-Agent": "ShoumikChowNow/1.0 (hello@shoumikchow.com)" };
+  const res = await fetch(`https://github.com/${SITE_REPO}/commits/${SITE_BRANCH}/_config.yml.atom`, { headers });
+  if (!res.ok) return null;
+  const feed = await res.text();
+
+  // Each <entry> carries the commit id in its <id> (…Commit/<sha>) and the
+  // commit time in <updated>. A regex is enough for a feed this regular, and
+  // Workers have no DOMParser.
+  const commits: Array<{ sha: string; date: string }> = [];
+  for (const entry of feed.match(/<entry>[\s\S]*?<\/entry>/g) ?? []) {
+    const sha = entry.match(/Commit\/([0-9a-f]{40})/)?.[1];
+    const date = entry.match(/<updated>([^<]+)<\/updated>/)?.[1];
+    if (sha && date) commits.push({ sha, date });
+    if (commits.length >= STARTED_MAX_STEPS) break;
+  }
+
+  // Matched on the quoted form, as _config.yml writes it, so a longer ISBN
+  // that happens to contain this one as a substring cannot count.
+  const needle = `"${isbn}"`;
+  let start: string | null = null;
+  for (const c of commits) {
+    const file = await fetch(`https://raw.githubusercontent.com/${SITE_REPO}/${c.sha}/_config.yml`, { headers });
+    if (!file.ok) break;
+    if (!(await file.text()).includes(needle)) break;
+    start = c.date;
+  }
+  // Present in every commit looked at means it started earlier still; the
+  // oldest seen is a lower bound, and on a site edited this rarely, close.
+  return start;
 }
 
 async function getBook(isbn: string, env: Env, ctx: ExecutionContext): Promise<Book | null> {
@@ -704,7 +783,7 @@ async function nowNotes(env: Env, ctx: ExecutionContext, origin: string): Promis
   type Film = { title: string; year?: string; director?: string; rating?: string; watchedDate?: string; rewatch?: boolean };
   type Game = { name: string; playtimeForever?: string };
   type Chess = { playing?: string | null; top?: { rating: number; format: string; prog?: number } | null; lastPlayed?: string | null };
-  type BookOut = { title: string; author?: string | null };
+  type BookOut = { title: string; author?: string | null; started?: string | null };
 
   const [song, books, film, games, chess] = await Promise.all([
     feed<Song>(handleSpotify(env)),
@@ -731,7 +810,10 @@ async function nowNotes(env: Env, ctx: ExecutionContext, origin: string): Promis
   } else if (!isbns.length) {
     lines.push("Reading: not reading a book at the moment.");
   } else if (books && books.length) {
-    lines.push(`Currently reading: ${books.map((b) => `"${b.title}"${b.author ? ` by ${b.author}` : ""}`).join("; ")}.`);
+    lines.push(`Currently reading: ${books.map((b) => {
+      const since = b.started ? longDate(b.started) : null;
+      return `"${b.title}"${b.author ? ` by ${b.author}` : ""}${since ? `, started ${since}` : ""}`;
+    }).join("; ")}.`);
   }
 
   if (film) {

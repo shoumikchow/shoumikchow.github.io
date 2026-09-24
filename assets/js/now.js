@@ -106,6 +106,7 @@ async function loadBooks() {
             <div class="now-info">
               <strong class="now-title">${escapeHtml(book.title)}</strong>
               ${meta ? `<span class="now-meta">${meta}</span>` : ""}
+              ${book.started ? `<span class="now-time">started ${timeAgo(book.started)}</span>` : ""}
             </div>
           </a>
         `;

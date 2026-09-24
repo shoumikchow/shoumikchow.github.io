@@ -236,6 +236,7 @@
         return books.map(function (b) {
           return item('now', joinParts([b.title, b.author]), {
             parent: 'Reading', nowIcon: 'book', image: b.cover, href: b.link, external: true,
+            hint: b.started ? 'started ' + ago(b.started) : null,
             keys: 'now reading book'
           });
         });
