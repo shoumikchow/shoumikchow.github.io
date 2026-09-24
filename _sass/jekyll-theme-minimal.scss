@@ -1543,10 +1543,36 @@ ul.downloads {
   }
 }
 
+// A fixed box, so a row with 22px artwork and a row with a 15px glyph line
+// their labels up at the same x.
 .palette-icon {
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+
+  img {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    object-fit: cover;
+  }
+
+  // The Now section's own icons are fill-only 24px glyphs; drawn here at the
+  // size of the other row icons.
+  > svg:not([stroke]) { width: 15px; height: 15px; fill: currentColor; }
 }
+
+// Channel colour on the fallback glyphs, as on the Now section's labels. A
+// mark that categorises, so 3:1 applies rather than 7:1; see the Now channel
+// notes at the top of this file.
+.palette-icon--music { color: var(--now-music); }
+.palette-icon--book { color: var(--now-book); }
+.palette-icon--movie { color: var(--now-movie); }
+.palette-icon--gaming { color: var(--now-gaming); }
+.palette-icon--chess { color: var(--now-chess); }
 
 .palette-label {
   flex: 1;
@@ -1562,6 +1588,31 @@ ul.downloads {
   flex-shrink: 0;
   font-size: 12px;
   color: var(--fg-faint);
+}
+
+// Hotkeys in place of the hint, Raycast-style: key caps, one per key. On the
+// surface tint, so --fg-muted rather than --fg-faint, for the same reason as
+// the footer's keys.
+.palette-hint--keys {
+  display: flex;
+  gap: 4px;
+
+  kbd {
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1;
+    min-width: 20px;
+    text-align: center;
+    color: var(--fg-muted);
+    background: var(--surface);
+    border-radius: 5px;
+    padding: 4px 6px;
+  }
+}
+
+.palette-item.is-active .palette-hint--keys kbd {
+  color: var(--fg);
+  background: var(--surface-hover);
 }
 
 // Ask mode. The bubbles are the dock's own classes, so a conversation looks

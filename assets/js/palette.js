@@ -23,7 +23,7 @@
   // navigator.platform is deprecated but still everywhere, and it is the only
   // signal that says "Mac" without also matching an iPad pretending to be one.
   var MAC = /Mac|iPhone|iPad|iPod/.test(navigator.platform || '');
-  var SHORTCUT = MAC ? '⌘K' : 'Ctrl K';
+  var SHORTCUT = MAC ? '⌘K' : 'Ctrl+K';
 
   // The dock's own disclaimer, copied rather than restated: it says the
   // conversation is logged, and a second copy of that sentence would be the
@@ -67,7 +67,11 @@
     link: svg('<path d="M6 3.5H3.5v9h9V10M9 2.5h4.5V7M13.5 2.5L7.5 8.5"/>'),
     ask: svg('<path d="M2.5 3.5h11v7.5H8l-3 2.5V11H2.5z"/>')
   };
-  var KIND_LABEL = { page: 'Page', section: 'Section', action: 'Action', link: 'Link', ask: 'Ask' };
+  var KIND_LABEL = { page: 'Page', section: 'Section', action: 'Action', link: 'Link', ask: 'Ask', now: 'Now' };
+
+  // Hotkeys are keyboard furniture; on a touch screen the row keeps its plain
+  // label instead.
+  var TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   // ─── Text ───────────────────────────────────────────────────
   // Folded for matching: case, accents, and apostrophes, so "lets" finds
@@ -115,7 +119,15 @@
       href: opts.href || null,
       run: opts.run || null,
       boost: opts.boost || 0,
-      hint: opts.hint || null
+      hint: opts.hint || null,
+      // Hotkeys shown on the row in place of the hint, Raycast-style.
+      kbd: opts.kbd || null,
+      // Artwork (a Right now row's cover or album art), or failing that one of
+      // the Now section's channel icons, in place of the kind's icon.
+      image: opts.image || null,
+      nowIcon: opts.nowIcon || null,
+      // Opens in a new tab, as the Now cards' own links do.
+      external: !!opts.external
     };
   }
 
@@ -168,6 +180,172 @@
     return loading;
   }
 
+  // ─── Right now ──────────────────────────────────────────────
+  // The homepage's Now cards as palette rows, on every page: what is playing,
+  // being read, watched, played, and the chess rating. Same worker, same
+  // endpoints as now.js, and the same five-minute cache headers, so on the
+  // homepage these are answered from the browser's cache rather than fetched
+  // twice. Fetched on the first open only, never on page load.
+  var WORKER = 'https://shoumikchow-now.shoumikchow.workers.dev';
+  var nowItems = [];
+  var nowLoading = null;
+
+  function getJSON(path) {
+    return fetch(WORKER + path).then(function (res) {
+      if (!res.ok) throw new Error(path);
+      return res.json();
+    });
+  }
+
+  // now.js's wording, kept to its short forms because it sits in a hint.
+  function ago(value) {
+    if (!value) return null;
+    var parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    var date = parts ? new Date(+parts[1], +parts[2] - 1, +parts[3]) : new Date(value);
+    if (isNaN(date)) return null;
+    var now = new Date();
+    var days = Math.round(
+      (new Date(now.getFullYear(), now.getMonth(), now.getDate()) -
+       new Date(date.getFullYear(), date.getMonth(), date.getDate())) / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return days + 'd ago';
+    if (days < 30) return Math.floor(days / 7) + 'w ago';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function joinParts(parts) {
+    return parts.filter(Boolean).join(' · ');
+  }
+
+  // Each channel resolves to a list of rows, empty when there is nothing to
+  // show or the feed failed. A dead feed just leaves its row out: the Now
+  // card on the homepage is where a failure is worth explaining.
+  function loadNow() {
+    if (nowLoading) return nowLoading;
+
+    var isbns = dialog.getAttribute('data-isbns');
+    var channels = [
+      getJSON('/spotify').then(function (d) {
+        return [item('now', joinParts([d.title, d.artist]), {
+          parent: 'Listening', nowIcon: 'music', image: d.albumArt, href: d.link, external: true,
+          hint: ago(d.playedAt), keys: joinParts(['now listening music song track spotify', d.album])
+        })];
+      }),
+      isbns ? getJSON('/books?isbns=' + encodeURIComponent(isbns)).then(function (books) {
+        return books.map(function (b) {
+          return item('now', joinParts([b.title, b.author]), {
+            parent: 'Reading', nowIcon: 'book', image: b.cover, href: b.link, external: true,
+            keys: 'now reading book'
+          });
+        });
+      }) : Promise.resolve([]),
+      getJSON('/letterboxd').then(function (d) {
+        return [item('now', d.title + (d.year ? ' (' + d.year + ')' : ''), {
+          parent: 'Watching', nowIcon: 'movie', image: d.poster, href: d.link, external: true,
+          hint: ago(d.watchedDate),
+          keys: joinParts(['now watching movie film letterboxd', d.director].concat(d.genres || []))
+        })];
+      }),
+      getJSON('/steam').then(function (games) {
+        var g = games[0];
+        if (!g) return [];
+        return [item('now', joinParts([g.name, g.playtimeForever && g.playtimeForever + ' played']), {
+          parent: 'Playing', nowIcon: 'gaming', image: g.cover, external: true,
+          href: 'https://store.steampowered.com/app/' + encodeURIComponent(g.appid),
+          keys: 'now playing game gaming steam video'
+        })];
+      }),
+      getJSON('/lichess').then(function (d) {
+        // A live game wins, as it does on the Now card.
+        if (d.playing) {
+          return [item('now', 'In a game right now', {
+            parent: 'Chessing', nowIcon: 'chess', href: d.playing, external: true,
+            keys: 'now chess lichess live game watch'
+          })];
+        }
+        if (!d.top) return [];
+        return [item('now', d.top.rating + ' ' + d.top.format + ' on Lichess', {
+          parent: 'Chessing', nowIcon: 'chess', href: d.challenge, external: true,
+          keys: 'now chess lichess rating elo challenge play'
+        })];
+      })
+    ].map(function (p) { return p.catch(function () { return []; }); });
+
+    nowLoading = Promise.all(channels).then(function (lists) {
+      nowItems = [].concat.apply([], lists);
+      if (dialog.open && mode === 'search') renderResults(true);
+    });
+    return nowLoading;
+  }
+
+  // ─── Shortcuts ──────────────────────────────────────────────
+  // ⌥1–⌥5 and ⌥T live in accessibility.js, which owns the list; this only
+  // shows them. A page row is matched to its shortcut by path, since the nav
+  // writes "/experience" where the index may write something else.
+  function pathOf(href) {
+    try {
+      return new URL(href, location.href).pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+    } catch (e) {
+      return href;
+    }
+  }
+
+  function pageShortcut(href) {
+    var s = window.siteShortcuts;
+    if (!s) return null;
+    var path = pathOf(href);
+    for (var i = 0; i < s.pages.length; i++) {
+      if (pathOf(s.pages[i].href) === path) return s.label(s.pages[i].key);
+    }
+    return null;
+  }
+
+  function themeShortcut() {
+    return window.siteShortcuts ? window.siteShortcuts.label('t') : null;
+  }
+
+  function runTheme() {
+    // Closed first, so the theme's view transition snapshots the page and not
+    // a palette that is about to vanish from the middle of it.
+    closePalette();
+    requestAnimationFrame(function () {
+      var toggle = document.querySelector('.theme-toggle');
+      if (toggle) toggle.click();
+    });
+  }
+
+  function go(href) {
+    closePalette();
+    location.href = href;
+  }
+
+  // What "?" shows: every shortcut on the site, each one also a row that does
+  // the thing, so the sheet is a menu as well as a reference.
+  function shortcutItems() {
+    var out = [item('action', 'Search or ask', {
+      kbd: [SHORTCUT, '/'],
+      run: function () { field.value = ''; renderResults(); }
+    })];
+    if (window.siteChat) {
+      out.push(item('action', 'Switch to asking the chatbot', {
+        kbd: ['tab'],
+        run: function () { field.value = ''; setMode('ask'); }
+      }));
+    }
+    var s = window.siteShortcuts;
+    if (s) {
+      s.pages.forEach(function (p) {
+        out.push(item('page', 'Go to ' + p.label, {
+          kbd: [s.label(p.key)],
+          run: function () { go(p.href); }
+        }));
+      });
+      out.push(item('action', 'Switch theme', { kbd: [themeShortcut()], run: runTheme }));
+    }
+    return out;
+  }
+
   function currentTheme() {
     return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   }
@@ -183,16 +361,18 @@
     out.push(item('action', 'Switch to ' + next + ' theme', {
       keys: 'theme dark light mode appearance night day toggle colour color',
       boost: 4,
-      run: function () {
-        // Closed first, so the theme's view transition snapshots the page and
-        // not a palette that is about to vanish from the middle of it.
-        closePalette();
-        requestAnimationFrame(function () {
-          var toggle = document.querySelector('.theme-toggle');
-          if (toggle) toggle.click();
-        });
-      }
+      kbd: themeShortcut() ? [themeShortcut()] : null,
+      run: runTheme
     }));
+
+    if (!TOUCH) {
+      out.push(item('action', 'Keyboard shortcuts', {
+        keys: 'keyboard shortcuts hotkeys keys help',
+        boost: 3,
+        kbd: ['?'],
+        run: function () { field.value = '?'; renderResults(); }
+      }));
+    }
 
     out.push(item('action', 'Ask a question', {
       keys: 'chat ask bot ai question talk assistant',
@@ -338,8 +518,24 @@
     li.setAttribute('data-index', String(index));
 
     var icon = document.createElement('span');
-    icon.className = 'palette-icon';
-    icon.innerHTML = ICONS[it.kind];
+    icon.className = 'palette-icon' + (it.nowIcon ? ' palette-icon--' + it.nowIcon : '');
+    var template = it.nowIcon && dialog.querySelector('template[data-now-icon="' + it.nowIcon + '"]');
+    if (it.image) {
+      var img = document.createElement('img');
+      img.src = it.image;
+      img.alt = '';
+      img.loading = 'lazy';
+      // A dead image link falls back to the channel icon, not a broken glyph.
+      img.addEventListener('error', function () {
+        icon.textContent = '';
+        if (template) icon.appendChild(template.content.cloneNode(true));
+      });
+      icon.appendChild(img);
+    } else if (template) {
+      icon.appendChild(template.content.cloneNode(true));
+    } else {
+      icon.innerHTML = ICONS[it.kind];
+    }
     li.appendChild(icon);
 
     var label = document.createElement('span');
@@ -355,7 +551,18 @@
 
     var hint = document.createElement('span');
     hint.className = 'palette-hint';
-    hint.textContent = it.hint || KIND_LABEL[it.kind];
+    var kbd = it.kbd || (it.kind === 'page' && it.href ? [pageShortcut(it.href)] : null);
+    kbd = kbd && kbd.filter(Boolean);
+    if (kbd && kbd.length && !TOUCH) {
+      hint.classList.add('palette-hint--keys');
+      kbd.forEach(function (k) {
+        var key = document.createElement('kbd');
+        key.textContent = k;
+        hint.appendChild(key);
+      });
+    } else {
+      hint.textContent = it.hint || KIND_LABEL[it.kind];
+    }
     li.appendChild(hint);
 
     return li;
@@ -369,19 +576,26 @@
     return li;
   }
 
-  function renderResults() {
+  // `keep` is for redraws the visitor did not cause (the Right now rows
+  // arriving): the selection stays on the row it was on rather than jumping
+  // back to the top under their cursor.
+  function renderResults(keep) {
     var raw = field.value.trim();
     var words = fold(raw).split(' ').filter(Boolean);
     var groups = [];
+    var was = keep && rows[active] ? rows[active].kind + '|' + rows[active].title : null;
 
-    if (!words.length) {
+    if (raw === '?') {
+      groups.push(['Keyboard shortcuts', shortcutItems()]);
+    } else if (!words.length) {
       // No query: a short, grouped menu rather than every section on the site.
       groups.push(['Pages', pages]);
+      groups.push(['Right now', nowItems]);
       if (window.siteChat) groups.push(['Ask about me', starterItems()]);
       groups.push(['Actions', actions()]);
       groups.push(['Links', socials()]);
     } else {
-      var pool = pages.concat(sections, actions(), socials());
+      var pool = pages.concat(sections, nowItems, actions(), socials());
       var ranked = [];
       pool.forEach(function (it, order) {
         var s = score(it, words);
@@ -408,7 +622,14 @@
         rows.push(it);
       });
     });
-    setActive(0);
+
+    var start = 0;
+    if (was) {
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].kind + '|' + rows[i].title === was) { start = i; break; }
+      }
+    }
+    setActive(start);
   }
 
   function setActive(i) {
@@ -442,7 +663,8 @@
       return;
     }
     if (!it.href) return;
-    if (newTab) {
+    if (newTab || it.external) {
+      if (it.external) closePalette();
       window.open(it.href, '_blank', 'noopener');
       return;
     }
@@ -571,6 +793,7 @@
     dialog.showModal();
     setMode('search');
     load();
+    loadNow();
   }
 
   function closePalette() {
@@ -594,9 +817,15 @@
       else openPalette();
       return;
     }
-    if (e.key === '/' && !dialog.open && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e.target)) {
+    if (dialog.open || e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
+    if (e.key === '/') {
       e.preventDefault();
       openPalette();
+    } else if (e.key === '?') {
+      e.preventDefault();
+      openPalette();
+      field.value = '?';
+      renderResults();
     }
   });
 
@@ -609,6 +838,23 @@
       e.preventDefault();
       e.stopPropagation();
       closePalette();
+      return;
+    }
+
+    // ⌥1–⌥5 and ⌥T work with the palette open too, as the rows advertise.
+    // Handled here rather than left to accessibility.js, which ignores keys
+    // typed into a field, and so the palette can close before a page loads or
+    // the theme's transition snapshots the screen.
+    if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey &&
+        window.siteShortcuts && window.siteShortcuts.has(e.code)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.code === 'KeyT') {
+        runTheme();
+      } else {
+        closePalette();
+        window.siteShortcuts.run(e.code);
+      }
       return;
     }
 

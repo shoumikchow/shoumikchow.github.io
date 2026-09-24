@@ -10,7 +10,8 @@
 {%- endcomment -%}
 <dialog class="palette" aria-label="Search and ask"
         data-index="{{ '/palette.json' | relative_url }}?v={{ v }}"
-        data-email="{{ site.email | remove: 'mailto:' }}">
+        data-email="{{ site.email | remove: 'mailto:' }}"
+        data-isbns="{{ site.currently_reading | join: ',' }}">
   <div class="palette-bar">
     <span class="palette-mode" hidden>Ask</span>
     <input class="palette-input" type="text" role="combobox"
@@ -38,10 +39,20 @@
     </div>
   </div>
 
+  {%- comment -%}
+    The Now section's own channel icons, for Right now rows that have no
+    artwork of their own. Templates, so they cost nothing until cloned.
+  {%- endcomment %}
+  {%- assign now_icons = "music,book,movie,gaming,chess" | split: "," -%}
+  {%- for name in now_icons %}
+  <template data-now-icon="{{ name }}">{% include icons/{{ name }}.svg %}</template>
+  {%- endfor %}
+
   <div class="palette-foot" aria-hidden="true">
     <span class="palette-keys" data-mode="search"><kbd>↑</kbd><kbd>↓</kbd> move</span>
     <span class="palette-keys" data-mode="search"><kbd>↵</kbd> open</span>
     <span class="palette-keys" data-mode="search"><kbd>tab</kbd> ask</span>
+    <span class="palette-keys" data-mode="search"><kbd>?</kbd> shortcuts</span>
     <span class="palette-keys" data-mode="ask" hidden><kbd>↵</kbd> send</span>
     <span class="palette-keys" data-mode="ask" hidden><kbd>tab</kbd> back to search</span>
     <span class="palette-esc"><kbd>esc</kbd> close</span>
