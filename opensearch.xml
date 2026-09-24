@@ -1,0 +1,17 @@
+---
+layout: null
+sitemap: false
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Site search from the browser's address bar. The URL only opens the ⌘K
+  palette with the query typed in (palette.js reads ?q=); the searching
+  itself happens there. ShortName is capped at 16 characters by the spec.
+-->
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Shoumik</ShortName>
+  <Description>Search shoumikchow.com</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">{{ "/favicon.ico" | absolute_url }}</Image>
+  <Url type="text/html" method="get" template="{{ "/" | absolute_url }}?q={searchTerms}"/>
+</OpenSearchDescription>

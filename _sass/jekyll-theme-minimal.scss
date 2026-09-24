@@ -257,6 +257,33 @@ h2 {
 
 p + h2, ul + h2, ol + h2 { margin-top: 44px; }
 
+// A little air above a heading reached by its anchor. On a phone the sticky
+// nav drops in as the page scrolls, and without the extra room it lands on
+// top of the very heading the jump was for.
+h2[id], h3[id] { scroll-margin-top: 24px; }
+
+@media (max-width: 480px) {
+  h2[id], h3[id] { scroll-margin-top: calc(var(--sticky-nav-h) + 16px); }
+}
+
+// Where a palette jump landed (palette.js): a tint that fades out. Shadow
+// rather than padding, so the heading does not move while it is lit.
+@keyframes landed {
+  from {
+    background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+  to {
+    background-color: transparent;
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+.is-landed {
+  border-radius: 4px;
+  animation: landed 1.8s ease-in 0.2s backwards;
+}
+
 // Subsections (experience, research, projects).
 h3 {
   font-size: 15px;
@@ -1583,6 +1610,14 @@ ul.downloads {
 }
 
 .palette-parent { color: var(--fg-faint); }
+
+// The letters the query matched. Weight and the row's strongest tone, never a
+// fill: a highlight behind text is one more contrast pair to keep at 7:1.
+.palette-label mark {
+  background: none;
+  color: var(--fg);
+  font-weight: 600;
+}
 
 .palette-hint {
   flex-shrink: 0;

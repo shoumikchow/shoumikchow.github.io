@@ -30,6 +30,7 @@
     {%- else -%}{%- assign md_url = page.url | append: '.md' -%}{%- endif %}
   <link rel="alternate" type="text/markdown" href="{{ md_url | absolute_url }}">
   {%- endif %}
+  <link rel="search" type="application/opensearchdescription+xml" title="Shoumik Chowdhury" href="{{ '/opensearch.xml' | relative_url }}">
   {%- comment -%}
     Cache buster. This used to be site.github.build_revision, which was always
     empty: jekyll-github-metadata ships with the github-pages gem but was never

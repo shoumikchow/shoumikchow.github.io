@@ -116,6 +116,9 @@
       title: title,
       parent: opts.parent || '',
       keys: opts.keys || '',
+      // Words people use for a page that its own text never says. Scored
+      // just under the title, and at any length, so "cv" counts.
+      aliases: opts.aliases || '',
       href: opts.href || null,
       run: opts.run || null,
       boost: opts.boost || 0,
@@ -131,13 +134,26 @@
     };
   }
 
+  // What visitors call a page, keyed by path. "resume" lands on Experience,
+  // the public half of it; /resume itself stays out (see 0-palette.json).
+  var ALIASES = {
+    '/experience': 'cv resume work jobs career employment',
+    '/research': 'papers publications academic arxiv',
+    '/projects': 'code github repos open source portfolio',
+    '/about': 'bio background'
+  };
+
+  function pageItem(title, href, keys) {
+    return item('page', title, { href: href, keys: keys, aliases: ALIASES[pathOf(href)], boost: 6 });
+  }
+
   // Until the index arrives, the nav is a perfectly good list of pages. It is
   // already in the document, so the first open is never empty.
   function pagesFromNav() {
-    var out = [item('page', 'Home', { href: '/', boost: 6 })];
+    var out = [pageItem('Home', '/')];
     var links = document.querySelectorAll('.nav-list a');
     for (var i = 0; i < links.length; i++) {
-      out.push(item('page', links[i].textContent.trim(), { href: links[i].getAttribute('href'), boost: 6 }));
+      out.push(pageItem(links[i].textContent.trim(), links[i].getAttribute('href')));
     }
     return out;
   }
@@ -160,7 +176,7 @@
           var title = decode(e.title);
           var text = decode(e.text);
           if (e.type === 'page') {
-            nextPages.push(item('page', title, { href: e.url, keys: text, boost: 6 }));
+            nextPages.push(pageItem(title, e.url, text));
           } else if (e.type === 'section') {
             var anchor = e.anchor || kramdownId(title);
             nextSections.push(item('section', title, {
@@ -401,6 +417,15 @@
       run: function (row) { copy(location.origin + location.pathname, row); }
     }));
 
+    var here = currentSection();
+    if (here) {
+      out.push(item('action', 'Copy link to ' + here.name, {
+        keys: 'copy link url share section anchor heading',
+        boost: 3,
+        run: function (row) { copy(location.origin + location.pathname + '#' + here.id, row); }
+      }));
+    }
+
     var md = document.querySelector('link[rel="alternate"][type="text/markdown"]');
     if (md) {
       out.push(item('action', 'View this page as Markdown', {
@@ -417,6 +442,22 @@
     }));
 
     return out;
+  }
+
+  // The heading the reader is under: the last one above the top quarter of the
+  // screen. Nothing at the very top of a page, where "this section" would be
+  // a guess and the page link is the right one anyway.
+  function currentSection() {
+    if (window.scrollY < 1) return null;
+    var line = Math.min(window.innerHeight * 0.25, 200);
+    var heads = document.querySelectorAll('#content h2[id], #content h3[id]');
+    var found = null;
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].getBoundingClientRect().top > line) break;
+      found = heads[i];
+    }
+    if (!found) return null;
+    return { id: found.id, name: found.textContent.trim() };
   }
 
   // The header's social icons, read from the page so there is one list of
@@ -488,11 +529,13 @@
       it._title = fold(it.title);
       it._parent = fold(it.parent);
       it._keys = fold(it.keys);
+      it._aliases = fold(it.aliases);
     }
     var total = 0;
     for (var i = 0; i < words.length; i++) {
       var w = words[i];
       var s = wordScore(it._title, w) * 30;
+      if (!s) s = wordScore(it._aliases, w) * 20;
       if (!s) s = wordScore(it._parent, w) * 10;
       if (!s && w.length > 2) s = wordScore(it._keys, w) * 5;
       if (!s && w.length > 1 && it._title[0] === w[0] && subsequence(it._title, w)) s = 8;
@@ -500,6 +543,76 @@
       total += s;
     }
     return total + it.boost;
+  }
+
+  // ─── Highlighting ───────────────────────────────────────────
+  // The letters a query landed on, drawn in bold, found by the same rules
+  // score() uses. It has to match against a fold of the text, and folding
+  // moves characters (an accent is its own code point once decomposed, and
+  // apostrophes vanish), so the fold is built a character at a time with a
+  // map back to where each one came from.
+  function foldMap(text) {
+    var hay = '';
+    var from = [];
+    for (var i = 0; i < text.length; i++) {
+      var f = fold(text[i]) || (/[’'`]/.test(text[i]) ? '' : ' ');
+      for (var j = 0; j < f.length; j++) {
+        hay += f[j];
+        from.push(i);
+      }
+    }
+    return { hay: hay, from: from };
+  }
+
+  // Which characters of `text` to mark. `loose` allows the subsequence match,
+  // which score() only tries against titles.
+  function marked(text, words, loose) {
+    var f = foldMap(text);
+    var hay = f.hay;
+    var on = [];
+    words.forEach(function (w) {
+      var at = hay.indexOf(w) === 0 ? 0 : (' ' + hay).indexOf(' ' + w);
+      if (at === -1 && w.length > 2) at = hay.indexOf(w);
+      var hits = [];
+      if (at !== -1) {
+        for (var k = 0; k < w.length; k++) hits.push(at + k);
+      } else if (loose && w.length > 1) {
+        var first = hay.search(/\S/);
+        if (first === -1 || hay[first] !== w[0]) return;
+        for (var i = first, j = 0; i < hay.length && j < w.length; i++) {
+          if (hay[i] === w[j]) { hits.push(i); j++; }
+        }
+        if (hits.length < w.length) return;
+      }
+      hits.forEach(function (h) { on[f.from[h]] = true; });
+    });
+    return on;
+  }
+
+  // Set as text either way: titles come from the index and the Now feeds.
+  function appendMarked(el, text, words, loose) {
+    var on = words.length ? marked(text, words, loose) : [];
+    var run = '';
+    var hot = false;
+    function flush() {
+      if (!run) return;
+      if (hot) {
+        var m = document.createElement('mark');
+        m.textContent = run;
+        el.appendChild(m);
+      } else {
+        el.appendChild(document.createTextNode(run));
+      }
+      run = '';
+    }
+    for (var i = 0; i < text.length; i++) {
+      if (!!on[i] !== hot) {
+        flush();
+        hot = !hot;
+      }
+      run += text[i];
+    }
+    flush();
   }
 
   // Worth putting the Ask row first rather than last.
@@ -510,6 +623,7 @@
   var rows = [];     // items in display order
   var active = 0;
   var busyFlash = null;
+  var lit = [];      // the query's words, for appendMarked; empty off search
 
   function buildRow(it, index) {
     var li = document.createElement('li');
@@ -542,13 +656,16 @@
 
     var label = document.createElement('span');
     label.className = 'palette-label';
+    // An Ask row's title is the query itself, so marking it would say nothing.
+    var words = it.kind === 'ask' ? [] : lit;
     if (it.parent) {
       var parent = document.createElement('span');
       parent.className = 'palette-parent';
-      parent.textContent = it.parent + (it.kind === 'ask' ? ': ' : ' › ');
+      appendMarked(parent, it.parent, words, false);
+      parent.appendChild(document.createTextNode(it.kind === 'ask' ? ': ' : ' › '));
       label.appendChild(parent);
     }
-    label.appendChild(document.createTextNode(it.title));
+    appendMarked(label, it.title, words, true);
     li.appendChild(label);
 
     var hint = document.createElement('span');
@@ -586,6 +703,7 @@
     var words = fold(raw).split(' ').filter(Boolean);
     var groups = [];
     var was = keep && rows[active] ? rows[active].kind + '|' + rows[active].title : null;
+    lit = raw === '?' ? [] : words;
 
     if (raw === '?') {
       groups.push(['Keyboard shortcuts', shortcutItems()]);
@@ -671,15 +789,52 @@
       return;
     }
     // A section on this page is a scroll, not a load. Closing first returns
-    // focus to where it was, and then the jump moves it on.
+    // focus to where it was, and then the jump moves it on. Setting the hash
+    // the page already has does not scroll, hence the explicit call.
     var url = new URL(it.href, location.href);
+    var id = url.hash ? decodeURIComponent(url.hash.slice(1)) : '';
     closePalette();
-    if (url.origin === location.origin && url.pathname === location.pathname && url.hash) {
-      location.hash = url.hash;
+    if (url.origin === location.origin && url.pathname === location.pathname && id) {
+      var target = document.getElementById(id);
+      if (location.hash === url.hash && target) target.scrollIntoView();
+      else location.hash = url.hash;
+      landed(id);
     } else {
+      if (id) {
+        try { sessionStorage.setItem(LANDING, pathOf(url.href) + '#' + id); } catch (e) {}
+      }
       location.href = url.href;
     }
   }
+
+  // The heading a jump stopped at, lit for a moment. An anchor jump says
+  // nothing about where it landed, and near the foot of a page the heading
+  // cannot scroll to the top, so it is not where the eye goes. A jump to
+  // another page leaves a note in sessionStorage for that page to pick up.
+  var LANDING = 'palette-landing';
+
+  function landed(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('is-landed');
+    void el.offsetWidth; // restart the animation on a second jump to it
+    el.classList.add('is-landed');
+    el.addEventListener('animationend', function () {
+      el.classList.remove('is-landed');
+    }, { once: true });
+  }
+
+  try {
+    var note = sessionStorage.getItem(LANDING);
+    if (note) {
+      sessionStorage.removeItem(LANDING);
+      var hash = note.indexOf('#');
+      if (note.slice(0, hash) === pathOf(location.href) &&
+          decodeURIComponent(location.hash.slice(1)) === note.slice(hash + 1)) {
+        landed(note.slice(hash + 1));
+      }
+    }
+  } catch (e) {}
 
   // Feedback goes in the row itself, where the eye already is, and to the
   // page's live region for anyone who cannot see it.
@@ -923,5 +1078,24 @@
       closePalette();
       if (window.siteChat) window.siteChat.open();
     });
+  }
+
+  // ?q= opens the palette with the query already typed. The address bar's
+  // site search (opensearch.xml) lands here, and so does any link written
+  // that way. Typed, never sent: a question still waits for Enter, as the
+  // chatbot's budget requires. Taken out of the URL at once, so a reload or a
+  // copied link does not reopen it.
+  var params = new URLSearchParams(location.search);
+  var query = params.get('q');
+  if (query !== null) {
+    params.delete('q');
+    var rest = params.toString();
+    history.replaceState(history.state, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    query = query.trim().slice(0, 200);
+    if (query) {
+      openPalette();
+      field.value = query;
+      renderResults();
+    }
   }
 })();
