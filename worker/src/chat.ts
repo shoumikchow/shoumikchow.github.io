@@ -67,7 +67,11 @@ const DAILY_NEURON_BUDGET = 9_500;
 // Charged when a response arrives with no usage figure. Deliberately the worst
 // case rather than the typical one — an unreported cost should over-charge the
 // budget, never silently spend from it for free.
-const ASSUMED_NEURONS = 165;
+//
+// Raised from 165 when the Right now snapshot joined the prompt: up to ~200
+// more input tokens on every turn, at 26,668 neurons per million input tokens
+// for MODEL, is ~5 neurons.
+const ASSUMED_NEURONS = 170;
 
 // History limits. Both are about cost, not politeness: an unbounded history is
 // an unbounded input bill, and these are what bound one request's worst case
@@ -162,6 +166,7 @@ Everything you know about him is in the notes below. Rules:
 - Write about Shoumik in the third person. You are not Shoumik and must not speak as him.
 - Be brief. Two or three sentences is usually right. No preamble, no sign-off.
 - If asked about anything unrelated to Shoumik or his work, say that you only answer questions about Shoumik, and stop. Do not help with general tasks, code, or writing.
+- The "right now" notes are a live snapshot of his recent music, reading, films, games and chess. Use them for questions about what he is into lately, and say when something happened (for example "a few days ago") rather than implying it is happening this minute. If a channel is not listed there, his site doesn't say.
 - Plain prose. No markdown headings, no bullet lists.
 
 NOTES:
@@ -292,7 +297,15 @@ export async function handleChatStatus(request: Request, env: ChatEnv): Promise<
   );
 }
 
-export async function handleChat(request: Request, env: ChatEnv): Promise<Response> {
+// `extraNotes` is the Right now snapshot from index.ts, passed in rather than
+// imported because index.ts is where the feed handlers live and it already
+// imports this file. Optional, and never allowed to fail a question: without
+// it the bot answers exactly as it did before it existed.
+export async function handleChat(
+  request: Request,
+  env: ChatEnv,
+  extraNotes?: (origin: string) => Promise<string>
+): Promise<Response> {
   const origin = request.headers.get("origin");
 
   if (request.method === "OPTIONS") {
@@ -349,9 +362,15 @@ export async function handleChat(request: Request, env: ChatEnv): Promise<Respon
     );
   }
 
+  const corpusOrigin = env.CORPUS_ORIGIN ?? SITE;
   let corpus: string;
   try {
-    corpus = await loadCorpus(env.CORPUS_ORIGIN ?? SITE);
+    // Side by side, so the snapshot adds no wait beyond whichever is slower.
+    const [pages, now] = await Promise.all([
+      loadCorpus(corpusOrigin),
+      extraNotes ? extraNotes(corpusOrigin).catch(() => "") : Promise.resolve(""),
+    ]);
+    corpus = now ? `${pages}\n\n---\n\n${now}` : pages;
   } catch {
     return reply({ error: "Unavailable" }, 503, origin);
   }

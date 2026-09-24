@@ -1,0 +1,12 @@
+---
+permalink: /now.json
+sitemap: false
+---
+{%- comment -%}
+What the chatbot's worker cannot otherwise know about the Now section: which
+books are being read. The other channels come from APIs keyed on accounts the
+worker already holds; the reading list exists only in _config.yml, and the
+browser is what normally hands it to /books. Published here so _config.yml
+stays the one place it is edited. Read by worker/src/index.ts (nowNotes).
+{%- endcomment -%}
+{"reading": {{ site.currently_reading | jsonify }}}

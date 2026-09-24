@@ -568,6 +568,130 @@ async function handleSpotify(env: Env): Promise<Response> {
   });
 }
 
+// ─── Right now, for the chatbot ─────────────────────────────
+// The chatbot answers from the site's Markdown, and the Now section is not in
+// it: now.js fills it in the browser, so the twins (and the prompt) only ever
+// saw an empty heading. This writes the same five feeds as a few plain
+// sentences for the prompt, so "what has he been reading?" has an answer.
+//
+// The handlers are called in-process rather than over HTTP: a worker fetching
+// its own workers.dev URL is not a reliable subrequest, and this way each feed
+// keeps its own caching (the books' KV layer, Spotify's token handling).
+//
+// Cached for five minutes per isolate, the same freshness the Now cards'
+// Cache-Control gives browsers. Each channel gets a deadline, so one slow
+// upstream costs its line in the answer, never the answer itself.
+//
+// A channel that fails is left out, not reported as empty. "He isn't reading
+// anything" and "the book lookup is down" are different facts, and only the
+// first is one the bot may state; with the line missing it says his site does
+// not cover it, which is true.
+const NOW_TTL_MS = 5 * 60 * 1000;
+const NOW_DEADLINE_MS = 2500;
+
+let nowCache: { text: string; at: number; origin: string } | null = null;
+
+function longDate(value: string | Date): string | null {
+  const date = typeof value === "string"
+    ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00Z` : value)
+    : value;
+  if (isNaN(date.getTime())) return null;
+  return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
+
+// The body of a handler's response if it succeeded in time, otherwise null.
+async function feed<T>(pending: Promise<Response>): Promise<T | null> {
+  const deadline = new Promise<null>((resolve) => setTimeout(() => resolve(null), NOW_DEADLINE_MS));
+  try {
+    const res = await Promise.race([pending, deadline]);
+    if (!res || !res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function nowNotes(env: Env, ctx: ExecutionContext, origin: string): Promise<string> {
+  if (nowCache && nowCache.origin === origin && Date.now() - nowCache.at < NOW_TTL_MS) {
+    return nowCache.text;
+  }
+
+  // The reading list is the one input the worker cannot get from an account;
+  // the site publishes it (now.json). An unreachable file is unknown, not an
+  // empty list: treating it as empty would have the bot say he is "not reading
+  // a book" whenever the site is down or not yet deployed.
+  const reading = await feed<{ reading?: string[] }>(fetch(`${origin}/now.json`));
+  const isbns = reading ? (reading.reading ?? []).filter(isValidIsbn) : null;
+
+  type Song = { title: string; artist: string; album?: string; playedAt?: string };
+  type Film = { title: string; year?: string; director?: string; rating?: string; watchedDate?: string; rewatch?: boolean };
+  type Game = { name: string; playtimeForever?: string };
+  type Chess = { playing?: string | null; top?: { rating: number; format: string; prog?: number } | null };
+  type BookOut = { title: string; author?: string | null };
+
+  const [song, books, film, games, chess] = await Promise.all([
+    feed<Song>(handleSpotify(env)),
+    isbns && isbns.length
+      ? feed<BookOut[]>(handleBooks(new Request(`https://now.internal/books?isbns=${isbns.join(",")}`), env, ctx))
+      : Promise.resolve([] as BookOut[]),
+    feed<Film>(handleLetterboxd(env)),
+    feed<Game[]>(handleSteam(env)),
+    feed<Chess>(handleLichess()),
+  ]);
+
+  const lines: string[] = [];
+
+  if (song) {
+    const when = song.playedAt ? longDate(song.playedAt) : null;
+    lines.push(`Most recent song on Spotify: "${song.title}" by ${song.artist}${song.album ? `, from the album ${song.album}` : ""}${when ? `, played ${when}` : ""}.`);
+  }
+
+  // No list configured means "between books", which the homepage says too. A
+  // configured list that came back empty means the lookup failed, and an
+  // unreadable list means nothing is known: in both cases, say nothing.
+  if (isbns === null) {
+    // Unknown; leave reading out.
+  } else if (!isbns.length) {
+    lines.push("Reading: not reading a book at the moment.");
+  } else if (books && books.length) {
+    lines.push(`Currently reading: ${books.map((b) => `"${b.title}"${b.author ? ` by ${b.author}` : ""}`).join("; ")}.`);
+  }
+
+  if (film) {
+    const when = film.watchedDate ? longDate(film.watchedDate) : null;
+    const parts = [
+      film.director ? `directed by ${film.director}` : null,
+      film.rating ? `he rated it ${film.rating} out of five stars` : null,
+      when ? `watched ${when}` : null,
+      film.rewatch ? "a rewatch" : null,
+    ].filter(Boolean);
+    lines.push(`Most recent film logged on Letterboxd: "${film.title}"${film.year ? ` (${film.year})` : ""}${parts.length ? `, ${parts.join(", ")}` : ""}.`);
+  }
+
+  if (games) {
+    lines.push(games.length
+      ? `Recently played on Steam: ${games.map((g) => `${g.name}${g.playtimeForever ? ` (${g.playtimeForever} played in total)` : ""}`).join("; ")}.`
+      : "Games: has not played anything on Steam recently.");
+  }
+
+  if (chess) {
+    if (chess.playing) {
+      lines.push("Chess: in a live game on Lichess right now.");
+    } else if (chess.top) {
+      const prog = chess.top.prog;
+      const trend = prog ? `, ${prog > 0 ? "up" : "down"} ${Math.abs(prog)} over his recent games` : "";
+      lines.push(`Chess: his Lichess ${chess.top.format} rating is ${chess.top.rating}${trend}. Visitors can challenge him on Lichess.`);
+    }
+  }
+
+  const text = lines.length
+    ? `## right now\n\nA live snapshot of what he has been listening to, reading, watching and playing, as shown in the Now section of his homepage. Today is ${longDate(new Date())}.\n\n${lines.join("\n")}`
+    : "";
+
+  nowCache = { text, at: Date.now(), origin };
+  return text;
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -580,7 +704,7 @@ export default {
     if (path === "/chat" || path === "/chat/status") {
       try {
         return path === "/chat"
-          ? await handleChat(request, env)
+          ? await handleChat(request, env, (origin) => nowNotes(env, ctx, origin))
           : await handleChatStatus(request, env);
       } catch {
         return jsonResponse({ error: "Internal error" }, 500);
