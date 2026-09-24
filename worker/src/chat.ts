@@ -75,7 +75,7 @@ const ASSUMED_NEURONS = 165;
 const MAX_TURNS = 8;
 const MAX_CHARS = 500;
 
-const ALLOWED_ORIGINS = new Set([
+export const ALLOWED_ORIGINS = new Set([
   "https://shoumikchow.com",
   "https://www.shoumikchow.com",
   "http://localhost:4000",
