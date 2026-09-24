@@ -1807,6 +1807,200 @@ ul.downloads {
   a { color: #000; text-decoration: underline; }
 }
 
+// The palette's terminal (palette.js): a command's output, stacked like a
+// shell's. Same tones as the rows, so no new contrast pair.
+.palette-term pre {
+  margin: 2px 10px 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@keyframes paletteShake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+.palette.is-shaking { animation: paletteShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+
+// A message that goes away on its own (toast.js): "Copied" from the palette,
+// the Konami code's line. Inverted, --bg on --fg, which is the site's own
+// strongest pair in both themes.
+.site-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 9991;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  animation: bbvIn 0.2s ease-out;
+}
+
+// ─── Just for fun ─────────────────────────────────────────────
+// fun.js. Pretend object detection, drawn as bbox-visualizer draws: a thin
+// box, and the label in a solid tab sitting on its top-left corner, black
+// on the box colour. Lime is the library's own README example,
+// bbox_color=(0, 255, 0); its default is white, which vanishes on the light
+// theme. The same in both themes, as a real render would be. The faint dark
+// edge keeps lime visible on the cream page; black on lime is 15:1.
+$bbv-lime: #00ff00;
+
+.bbv-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9990; // Under the view transition's 9999.
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bbv-box {
+  position: fixed;
+  border: 2px solid $bbv-lime;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  animation: bbvIn 0.15s ease-out;
+}
+
+.bbv-label {
+  position: absolute;
+  left: -2px;
+  bottom: 100%;
+  padding: 2px 5px 1px;
+  background: $bbv-lime;
+  color: #000;
+  font: 700 11px/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+// The library's fallback when a label would leave the image: inside the box.
+.bbv-box--inside .bbv-label {
+  bottom: auto;
+  top: 0;
+  left: 0;
+}
+
+// Everything at once, faded in: no sweep, no stagger, nothing that moves.
+@keyframes bbvIn {
+  from { opacity: 0; }
+}
+
+.bbv-caption {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 9991;
+  width: min(560px, calc(100vw - 24px));
+  padding: 14px 16px 12px;
+  background: var(--bg);
+  color: var(--fg-muted);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md), 0 18px 48px rgba(0, 0, 0, 0.22);
+  font-size: 13px;
+  line-height: 1.5;
+  animation: bbvIn 0.15s ease-out;
+
+  p { margin: 0; }
+  strong { color: var(--fg); }
+}
+
+// On a phone the code is clipped to a few characters a line and the card
+// covers a third of the screen, so the code goes and the sentence and links
+// stay. Short screens too: a phone on its side is wide enough for the code
+// and too short for everything else.
+@media (max-width: 480px), (max-height: 520px) {
+  .bbv-code { display: none; }
+  .bbv-caption .bbv-caption-head { margin-bottom: 8px; }
+}
+
+// In the corner where there is room for one, so it covers less of what was
+// just detected.
+@media (min-width: 900px) {
+  .bbv-caption {
+    left: auto;
+    right: 20px;
+    transform: none;
+    width: 440px;
+  }
+}
+
+.bbv-code {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 11.5px;
+  line-height: 1.55;
+  // Wrapped rather than scrolled sideways, at spaces where it can. Each line
+  // is its own block (fun.js); the continuation of a wrapped one hangs four
+  // characters in, as a Python line continued inside brackets would.
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  > span {
+    display: block;
+    padding-left: 4ch;
+    text-indent: -4ch;
+  }
+
+  .bbv-arg { white-space: nowrap; }
+}
+
+// The link and the install command each get a line: side by side, with
+// room to spare on most phones, they read as one run-on phrase. Clear sits
+// to the right of both.
+.bbv-caption-foot {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 6px 14px;
+
+  a, code { grid-column: 1; justify-self: start; }
+
+  code {
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--fg);
+    font-size: 11.5px;
+  }
+}
+
+.bbv-close {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--surface-hover);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.fun-confetti {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9992;
+  pointer-events: none;
+}
+
 // ─── Selection ────────────────────────────────────────────────
 // Without this the browser's stock blue is the one place the palette hands over
 // to the OS. Gold, so the wash stays in the warm half of the palette.

@@ -65,9 +65,13 @@
     section: svg('<path d="M6.2 2.5L5 13.5M11 2.5L9.8 13.5M2.8 5.8h11M2.2 10.2h11"/>'),
     action: svg('<path d="M8.8 1.8L3.5 9h4.2l-.8 5.2L12.5 7H8.3z"/>'),
     link: svg('<path d="M6 3.5H3.5v9h9V10M9 2.5h4.5V7M13.5 2.5L7.5 8.5"/>'),
-    ask: svg('<path d="M2.5 3.5h11v7.5H8l-3 2.5V11H2.5z"/>')
+    ask: svg('<path d="M2.5 3.5h11v7.5H8l-3 2.5V11H2.5z"/>'),
+    // Just for fun: a box with a label tab, a prompt, a gamepad.
+    bbox: svg('<path d="M2.5 5.5h11v8h-11z"/><path d="M2.5 5.5V2.5h6.5v3"/>'),
+    terminal: svg('<path d="M2 2.8h12v10.4H2z"/><path d="M4.6 6.4l2 1.6-2 1.6M8.2 10h3.2"/>'),
+    gamepad: svg('<path d="M4.6 4.8h6.8a3 3 0 0 1 2.9 3.7l-.6 2.6a1.5 1.5 0 0 1-2.7.6L9.6 10H6.4L5 11.7a1.5 1.5 0 0 1-2.7-.6l-.6-2.6a3 3 0 0 1 2.9-3.7z"/><path d="M5.2 6.9v2.2M4.1 8h2.2M10.4 7.2h.1M11.6 8.4h.1"/>')
   };
-  var KIND_LABEL = { page: 'Page', section: 'Section', action: 'Action', link: 'Link', ask: 'Ask', now: 'Now' };
+  var KIND_LABEL = { page: 'Page', section: 'Section', action: 'Action', link: 'Link', ask: 'Ask', now: 'Now', command: 'Run' };
 
   // Hotkeys are keyboard furniture; on a touch screen the row keeps its plain
   // label instead.
@@ -129,6 +133,8 @@
       // the Now section's channel icons, in place of the kind's icon.
       image: opts.image || null,
       nowIcon: opts.nowIcon || null,
+      // One of ICONS, in place of the kind's own.
+      icon: opts.icon || null,
       // Opens in a new tab, as the Now cards' own links do.
       external: !!opts.external
     };
@@ -402,7 +408,7 @@
       out.push(item('action', 'Copy email address', {
         keys: 'email mail contact copy address ' + email,
         boost: 4,
-        run: function (row) { copy(email, row); }
+        run: function () { copy(email, 'Email address'); }
       }));
       out.push(item('action', 'Send an email', {
         keys: 'email mail contact write message ' + email,
@@ -414,7 +420,7 @@
     out.push(item('action', 'Copy link to this page', {
       keys: 'copy link url share address page',
       boost: 3,
-      run: function (row) { copy(location.origin + location.pathname, row); }
+      run: function () { copy(location.origin + location.pathname, 'Link'); }
     }));
 
     var here = currentSection();
@@ -422,7 +428,7 @@
       out.push(item('action', 'Copy link to ' + here.name, {
         keys: 'copy link url share section anchor heading',
         boost: 3,
-        run: function (row) { copy(location.origin + location.pathname + '#' + here.id, row); }
+        run: function () { copy(location.origin + location.pathname + '#' + here.id, 'Link to ' + here.name); }
       }));
     }
 
@@ -498,6 +504,182 @@
     var out = [];
     for (var i = 0; i < chips.length; i++) out.push(askItem(chips[i].textContent.trim()));
     return out;
+  }
+
+  // ─── Just for fun ───────────────────────────────────────────
+  // Listed last on the empty palette, under their own heading, so they never
+  // take the room the useful rows need. They still turn up in search, but
+  // with no boost, so only for their own words.
+  function funItems() {
+    var fun = window.siteFun;
+    var out = [];
+    if (fun) {
+      out.push(item('action', 'Detect objects on this page', {
+        icon: 'bbox',
+        hint: 'bbox-visualizer',
+        keys: 'bbox visualizer object detection detect boxes vision model fun',
+        run: function () {
+          // Closed first, so the palette is not one of the things detected
+          // and the boxes are measured against the page as it sits.
+          closePalette();
+          requestAnimationFrame(function () { fun.detect(); });
+        }
+      }));
+    }
+    out.push(item('action', 'Terminal commands', {
+      icon: 'terminal',
+      hint: 'whoami, ls, cd',
+      keys: 'terminal shell command line bash prompt whoami ls cd sudo fun',
+      run: function () {
+        field.value = '';
+        if (!termLog.length) termLog.push({ cmd: 'help', out: HELP });
+        renderResults();
+        field.focus();
+      }
+    }));
+    if (fun) {
+      out.push(item('action', 'Konami code', {
+        icon: 'gamepad',
+        hint: 'Cheat code',
+        kbd: ['↑↑↓↓←→←→BA'],
+        keys: 'konami code cheat easter egg contra games gaming fun',
+        run: function () {
+          closePalette();
+          fun.konami();
+        }
+      }));
+    }
+    return out;
+  }
+
+  // ─── Terminal ───────────────────────────────────────────────
+  // Typed exactly, a command gets a row at the top of the results (Enter runs
+  // it); anything else searches as normal. It has to go first, not last, or
+  // Enter on "whoami" would ask the chatbot and spend its budget on a joke.
+  // Output stacks up like a shell's until the palette closes.
+  var termLog = [];
+  var HELP = 'help  whoami  ls  cd <page>  pwd  clear  exit\n' +
+    'There are a few more. A terminal would know them.';
+
+  function pageFiles() {
+    return pages.filter(function (p) { return pathOf(p.href) !== '/'; }).map(function (p) {
+      return { name: pathOf(p.href).slice(1), href: p.href };
+    });
+  }
+
+  function shake() {
+    dialog.classList.remove('is-shaking');
+    void dialog.offsetWidth;
+    dialog.classList.add('is-shaking');
+    dialog.addEventListener('animationend', function () {
+      dialog.classList.remove('is-shaking');
+    }, { once: true });
+  }
+
+  // Each takes its arguments and returns its output (or nothing). `bare`
+  // commands only count with no arguments, so "help me with..." or "ls
+  // something" typed as a search stays a search.
+  var COMMANDS = {
+    help: { bare: true, run: function () { return HELP; } },
+    whoami: { bare: true, run: function () { return 'visitor\n(probably a recruiter. Hi!)'; } },
+    pwd: { bare: true, run: function () { return location.pathname; } },
+    ls: {
+      flags: true,
+      run: function (args) {
+        var files = pageFiles();
+        if (args.join('').indexOf('l') === -1) {
+          return files.map(function (f) { return f.name + '.md'; }).join('  ');
+        }
+        return files.map(function (f) {
+          return '-rw-r--r--  1 shoumik  staff  ' + f.name + '.md';
+        }).join('\n');
+      }
+    },
+    cd: {
+      run: function (args) {
+        var to = (args[0] || '~').replace(/^\.?\//, '').replace(/\/$/, '').replace(/\.md$/, '').toLowerCase();
+        if (['', '~', '..', 'home', 'index'].indexOf(to) !== -1) {
+          go('/');
+          return;
+        }
+        // /resume answers like any page that does not exist: a different
+        // error would say it is there. See 0-palette.json.
+        var hit = pageFiles().filter(function (f) { return f.name === to; })[0];
+        if (!hit) return 'cd: ' + args[0] + ': No such file or directory';
+        go(hit.href);
+      }
+    },
+    clear: { bare: true, run: function () { termLog = []; return null; } },
+    exit: { bare: true, run: function () { closePalette(); return null; } },
+    sudo: { run: function () { return 'visitor is not in the sudoers file. This incident will be reported.'; } },
+    rm: {
+      run: function (args) {
+        var rest = args.join(' ');
+        if (/^-(rf|fr)\s+(\/|~|\/\*|\*)$/.test(rest)) {
+          shake();
+          return 'Nice try.';
+        }
+        return 'rm: ' + (rest || 'missing operand') + ': Read-only file system';
+      }
+    },
+    curl: { run: function () { return 'Try that in a real terminal. curl shoumikchow.com gets you this whole site as Markdown.'; } }
+  };
+  COMMANDS.quit = COMMANDS.logout = COMMANDS[':q'] = COMMANDS[':wq'] = COMMANDS[':q!'] = COMMANDS.exit;
+  COMMANDS.wget = COMMANDS.curl;
+
+  function commandFor(raw) {
+    var parts = raw.trim().split(/\s+/);
+    var name = parts[0].toLowerCase();
+    var c = Object.prototype.hasOwnProperty.call(COMMANDS, name) && COMMANDS[name];
+    if (!c) return null;
+    var args = parts.slice(1);
+    if (c.bare && args.length) return null;
+    if (c.flags && args.some(function (a) { return a[0] !== '-'; })) return null;
+    var line = parts.join(' ');
+    return item('command', '$ ' + line, {
+      icon: 'terminal',
+      run: function () {
+        var out = c.run(args);
+        if (!dialog.open) return;
+        if (out !== null) termLog.push({ cmd: line, out: out || '' });
+        field.value = '';
+        renderResults();
+        field.focus();
+      }
+    });
+  }
+
+  // Tab after a command completes, as a shell's does, instead of switching
+  // to Ask: "ls" then Tab is a terminal habit, and it used to land people in
+  // the chatbot. Only once the first word is a whole command, so Tab on
+  // anything else still asks. Returns whether it took the key; with nothing
+  // to complete it still does, and nothing happens, as in a shell.
+  function completeCommand() {
+    var v = field.value;
+    var parts = v.replace(/^\s+/, '').split(/\s+/);
+    var name = parts[0].toLowerCase();
+    if (!name || !Object.prototype.hasOwnProperty.call(COMMANDS, name)) return false;
+    if (parts.length === 1) {
+      field.value = parts[0] + ' ';
+    } else if (name === 'cd' && parts.length === 2) {
+      var typed = parts[1].toLowerCase();
+      var hits = pageFiles().filter(function (f) { return f.name.indexOf(typed) === 0; });
+      if (hits.length === 1) field.value = parts[0] + ' ' + hits[0].name;
+    }
+    if (field.value !== v) renderResults();
+    return true;
+  }
+
+  function terminalBlock() {
+    var li = document.createElement('li');
+    li.className = 'palette-term';
+    li.setAttribute('role', 'presentation');
+    var pre = document.createElement('pre');
+    pre.textContent = termLog.slice(-8).map(function (t) {
+      return '$ ' + t.cmd + (t.out ? '\n' + t.out : '');
+    }).join('\n');
+    li.appendChild(pre);
+    return li;
   }
 
   // ─── Matching ───────────────────────────────────────────────
@@ -707,7 +889,6 @@
   var mode = 'search';
   var rows = [];     // items in display order
   var active = 0;
-  var busyFlash = null;
   var lit = [];      // the query's words, for appendMarked; empty off search
 
   function buildRow(it, index) {
@@ -735,14 +916,15 @@
     } else if (template) {
       icon.appendChild(template.content.cloneNode(true));
     } else {
-      icon.innerHTML = ICONS[it.kind];
+      icon.innerHTML = ICONS[it.icon || it.kind];
     }
     li.appendChild(icon);
 
     var label = document.createElement('span');
     label.className = 'palette-label';
-    // An Ask row's title is the query itself, so marking it would say nothing.
-    var words = it.kind === 'ask' ? [] : lit;
+    // An Ask or command row's title is the query itself, so marking it would
+    // say nothing.
+    var words = it.kind === 'ask' || it.kind === 'command' ? [] : lit;
     var line = document.createElement('span');
     line.className = 'palette-line';
     if (it.parent) {
@@ -800,17 +982,23 @@
     var was = keep && rows[active] ? rows[active].kind + '|' + rows[active].title : null;
     lit = raw === '?' ? [] : words;
 
+    var cmd = raw && raw !== '?' ? commandFor(raw) : null;
+    var showLog = termLog.length > 0 && (!raw || !!cmd);
+
     if (raw === '?') {
       groups.push(['Keyboard shortcuts', shortcutItems()]);
-    } else if (!words.length) {
+    } else if (showLog && !cmd) {
+      // Just the terminal: the output of the last command, waiting for the next.
+    } else if (!words.length && !cmd) {
       // No query: a short, grouped menu rather than every section on the site.
       groups.push(['Pages', pages]);
       groups.push(['Right now', nowItems]);
       if (window.siteChat) groups.push(['Ask about me', starterItems()]);
       groups.push(['Actions', actions()]);
       groups.push(['Links', socials()]);
+      groups.push(['Just for fun', funItems()]);
     } else {
-      var pool = pages.concat(sections, nowItems, actions(), socials());
+      var pool = pages.concat(sections, nowItems, actions(), socials(), funItems());
       var ranked = [];
       pool.forEach(function (it, order) {
         var s = score(it, words);
@@ -824,11 +1012,16 @@
         if (QUESTION.test(raw) || !found.length) found.unshift(ask);
         else found.push(ask);
       }
+      if (cmd) found.unshift(cmd);
       groups.push([null, found]);
     }
 
     list.textContent = '';
     rows = [];
+    if (showLog) {
+      list.appendChild(heading('Terminal'));
+      list.appendChild(terminalBlock());
+    }
     groups.forEach(function (g) {
       if (!g[1].length) return;
       if (g[0]) list.appendChild(heading(g[0]));
@@ -931,19 +1124,21 @@
     }
   } catch (e) {}
 
-  // Feedback goes in the row itself, where the eye already is, and to the
-  // page's live region for anyone who cannot see it.
-  function copy(text, row) {
-    var hint = row && row.querySelector('.palette-hint');
+  // The palette closes at once and a toast (toast.js) says how it went, so
+  // there is nothing to wait out. The write is started before the close, while
+  // the click that asked for it still counts as the visitor's doing.
+  function copy(text, what) {
     function done(message) {
-      if (hint) hint.textContent = message;
-      if (window.announceToScreenReader) window.announceToScreenReader(message);
-      clearTimeout(busyFlash);
-      busyFlash = setTimeout(closePalette, 700);
+      if (window.siteToast) window.siteToast(message);
     }
-    if (!navigator.clipboard) return done('Could not copy');
-    navigator.clipboard.writeText(text).then(
-      function () { done('Copied'); },
+    if (!navigator.clipboard) {
+      closePalette();
+      return done('Could not copy');
+    }
+    var writing = navigator.clipboard.writeText(text);
+    closePalette();
+    writing.then(
+      function () { done(what + ' copied'); },
       function () { done('Could not copy'); }
     );
   }
@@ -1039,9 +1234,9 @@
       field.focus();
       return;
     }
-    clearTimeout(busyFlash);
     field.value = '';
     failed = null;
+    termLog = [];
     dialog.showModal();
     setMode('search');
     load();
@@ -1049,7 +1244,6 @@
   }
 
   function closePalette() {
-    clearTimeout(busyFlash);
     if (dialog.open) dialog.close();
   }
 
@@ -1113,6 +1307,10 @@
     if (e.target !== field) return;
 
     if (e.key === 'Tab' && !e.shiftKey && !e.altKey && !e.metaKey && !e.ctrlKey) {
+      if (mode === 'search' && completeCommand()) {
+        e.preventDefault();
+        return;
+      }
       if (!window.siteChat) return;
       e.preventDefault();
       setMode(mode === 'ask' ? 'search' : 'ask');
@@ -1174,6 +1372,20 @@
       if (window.siteChat) window.siteChat.open();
     });
   }
+
+  // The index is fetched once the page is idle, not on first open: it is
+  // small (about 2.5 KB gzipped), and waiting for the open meant a fast
+  // typist, or anyone arriving by ?q=, searched pages alone for a moment
+  // before the sections turned up. The URL is versioned, so the browser's
+  // cache answers for it on later pages. Skipped under Save-Data, where the
+  // first open fetches it as before.
+  function prefetch() {
+    if (navigator.connection && navigator.connection.saveData) return;
+    if ('requestIdleCallback' in window) requestIdleCallback(function () { load(); }, { timeout: 3000 });
+    else setTimeout(load, 1500);
+  }
+  if (document.readyState === 'complete') prefetch();
+  else window.addEventListener('load', prefetch, { once: true });
 
   // ?q= opens the palette with the query already typed. The address bar's
   // site search (opensearch.xml) lands here, and so does any link written
