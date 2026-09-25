@@ -367,6 +367,9 @@
       });
       out.push(item('action', 'Switch theme', { kbd: [themeShortcut()], run: runTheme }));
     }
+    // Not a key, but the one place a keyboard user would look for it. Typed,
+    // not pressed, and the kbd says so by being a word.
+    out.push(item('action', 'Terminal commands', { icon: 'terminal', kbd: ['help'], run: openTerminal }));
     return out;
   }
 
@@ -528,14 +531,9 @@
     }
     out.push(item('action', 'Terminal commands', {
       icon: 'terminal',
-      hint: 'whoami, ls, cd',
+      hint: 'help, whoami, ls, cd',
       keys: 'terminal shell command line bash prompt whoami ls cd sudo fun',
-      run: function () {
-        field.value = '';
-        if (!termLog.length) termLog.push({ cmd: 'help', out: HELP });
-        renderResults();
-        field.focus();
-      }
+      run: openTerminal
     }));
     if (fun) {
       out.push(item('action', 'Konami code', {
@@ -558,6 +556,14 @@
   // Enter on "whoami" would ask the chatbot and spend its budget on a joke.
   // Output stacks up like a shell's until the palette closes.
   var termLog = [];
+
+  // Opens on the help text, so the first thing shown is what to type.
+  function openTerminal() {
+    field.value = '';
+    if (!termLog.length) termLog.push({ cmd: 'help', out: HELP });
+    renderResults();
+    field.focus();
+  }
   var HELP = 'help  whoami  ls  cd <page>  pwd  clear  exit\n' +
     'There are a few more. A terminal would know them.';
 
