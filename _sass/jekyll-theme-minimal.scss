@@ -467,9 +467,11 @@ main {
 // centred image with left-set text stuck to it. Reverts to left at 960 along
 // with the avatar — see the note in the responsive section for why.
 .site-description {
-  font-size: 0.8125rem;
+  // 15px in the body tone, not 13px in the faint one: it is the first sentence
+  // under the portrait, and at 13px faint it read as a caption on a phone.
+  font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--fg-faint);
+  color: var(--fg-muted);
   margin-bottom: 28px;
   text-align: center;
 }
@@ -484,7 +486,7 @@ main {
   gap: 4px;
 
   a {
-    font-size: 0.8125rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     color: var(--fg-muted);
     letter-spacing: 0.02em;
@@ -986,14 +988,16 @@ ul.downloads {
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 20px;
+    // 14px, not 20: with 14px labels this is what keeps all four inside a
+    // 375px phone's bar (an iPhone mini or SE). Narrower, it scrolls.
+    gap: 14px;
     // Left padding tracks the page's own gutter so the first label sits on the
     // same line as the content below it — which is why the narrow breakpoints
     // now move --pad rather than setting body's padding directly. The right
     // gutter is the toggle's footprint: 24px offset + 44px button + a gap.
     padding: 0 76px 0 var(--pad);
-    // A safety valve, not a feature — four labels fit at every width this bar
-    // is shown at, but a longer page title should scroll rather than collide.
+    // Four labels fit from 375px up; below that, and for any longer page
+    // title, the row scrolls rather than colliding with the toggle.
     overflow-x: auto;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
@@ -1016,7 +1020,7 @@ ul.downloads {
 
   .sticky-nav a {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     white-space: nowrap;
