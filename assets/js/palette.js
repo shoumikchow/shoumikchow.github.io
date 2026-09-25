@@ -564,7 +564,7 @@
     renderResults();
     field.focus();
   }
-  var HELP = 'help  whoami  ls  cd <page>  pwd  clear  exit\n' +
+  var HELP = 'whoami  ls  cd <page>  pwd  clear  exit\n' +
     'There are a few more. A terminal would know them.';
 
   function pageFiles() {
