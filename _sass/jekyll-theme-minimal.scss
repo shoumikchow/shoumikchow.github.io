@@ -220,10 +220,13 @@
 // ─── Typography ───────────────────────────────────────────────
 *, *::before, *::after { box-sizing: border-box; }
 
+// Type sizes are in rem so they follow the reader's browser font-size setting;
+// px ignores it. 1rem is 16px at the default, so divide by 16 to read them.
+// Nothing sets html's font-size, and nothing should: that would undo it.
 body {
   background: var(--bg);
   color: var(--fg-muted);
-  font: 400 15px/1.8 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
+  font: 400 1rem/1.8 "Noto Sans", "Helvetica Neue", Helvetica, sans-serif;
   padding: var(--pad);
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -240,7 +243,7 @@ h1, h2, h3, h4, h5, h6 {
 
 // The page's own heading. Each page now opens with `#` rather than `##`.
 h1 {
-  font-size: 30px;
+  font-size: 1.875rem;
   letter-spacing: -0.028em;
   margin-bottom: 26px;
 }
@@ -248,7 +251,7 @@ h1 {
 // Section headings — the small-uppercase treatment these have always had. What
 // changed is the level, not the look: they used to be h3s under an h2 title.
 h2 {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -286,7 +289,7 @@ h2[id], h3[id] { scroll-margin-top: 24px; }
 
 // Subsections (experience, research, projects).
 h3 {
-  font-size: 15px;
+  font-size: 1.0625rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--fg);
@@ -332,7 +335,7 @@ a {
 
 strong { color: var(--fg); font-weight: 600; }
 em { color: var(--fg-muted); }
-small { font-size: 11px; color: var(--fg-faint); }
+small { font-size: 0.6875rem; color: var(--fg-faint); }
 
 hr {
   border: 0;
@@ -351,7 +354,7 @@ blockquote {
 
 code, pre {
   font-family: "SF Mono", "Fira Code", Monaco, Consolas, monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--fg);
 }
 
@@ -364,12 +367,12 @@ pre {
   border-radius: 12px;
   overflow-x: auto;
 
-  code { font-size: 13px; }
+  code { font-size: 0.8125rem; }
 }
 
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--rule); }
-th { color: var(--fg); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+th { color: var(--fg); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
 dt { color: var(--fg); font-weight: 600; }
 
 img { max-width: 100%; height: auto; }
@@ -424,7 +427,7 @@ main {
 .site-name {
   // 23px, not 24: in Noto Sans "Shoumik Chowdhury" needs 241px and the column
   // is 240, so at 24px it wraps by a single pixel.
-  font-size: 23px;
+  font-size: 1.4375rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -464,7 +467,7 @@ main {
 // centred image with left-set text stuck to it. Reverts to left at 960 along
 // with the avatar — see the note in the responsive section for why.
 .site-description {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--fg-faint);
   margin-bottom: 28px;
@@ -481,7 +484,7 @@ main {
   gap: 4px;
 
   a {
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 500;
     color: var(--fg-muted);
     letter-spacing: 0.02em;
@@ -559,9 +562,9 @@ ul.downloads {
 // ─── Now section ──────────────────────────────────────────────
 // minmax(0, …) rather than a bare 1fr, and it is load-bearing on phones.
 //
-// A 1fr track's automatic minimum is min-content, and `.now-meta` is
-// `white-space: nowrap`, so its min-content is the *whole* string however long
-// the feed makes it. That measurement climbs the whole chain — the ellipsis on
+// A 1fr track's automatic minimum is min-content, and `.now-meta` was then
+// `white-space: nowrap` (it wraps now; `.now-title` still does not), so its
+// min-content is the *whole* string however long the feed makes it. That measurement climbs the whole chain — the ellipsis on
 // .now-meta and the `min-width: 0` on .now-info both govern flex sizing and
 // neither stops it — and sets a floor under the track. With a long enough
 // scrobble the column simply refuses to be narrower than the text.
@@ -594,14 +597,14 @@ ul.downloads {
 
 @keyframes nowReveal { to { opacity: 1; transform: translateY(0); } }
 
-// The word is text at 9px, so it takes the 7:1 tone. The channel colour is on
+// The word is text at 11px, so it takes the 7:1 tone. The channel colour is on
 // the icon beside it and the bar down the panel's edge — see the note in the
 // palette for why those are allowed to stay vivid.
 .now-label {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -765,7 +768,7 @@ ul.downloads {
 }
 
 .now-title {
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--fg);
   white-space: nowrap;
@@ -775,15 +778,16 @@ ul.downloads {
 }
 
 // 0.85, not 0.7: at 0.7 this computes to roughly 3:1 against the cream, which
-// is under AA for 10px text.
+// is under AA for 12px text.
 .now-meta {
-  font-size: 10px;
+  font-size: 0.75rem;
   color: var(--fg-muted);
   opacity: 0.85;
   line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // Wraps rather than truncating: at 12px a director or a long artist credit
+  // no longer fits a half-width desktop card. break-word only for a lone
+  // unbreakable token, such as a URL-ish album name.
+  overflow-wrap: break-word;
 }
 
 // Rating trend arrow, drawn inline by now.js. Sized in em so it tracks the
@@ -803,9 +807,9 @@ ul.downloads {
 .now-trend--up   { color: var(--trend-up); }
 .now-trend--down { color: var(--trend-down); }
 
-.now-rating { font-size: 11px; color: var(--rating); letter-spacing: 0.5px; }
-.now-rewatch { color: var(--fg-faint); font-weight: 400; font-size: 11px; }
-.now-time { font-size: 9px; color: var(--fg-faint); line-height: 1.4; }
+.now-rating { font-size: 0.75rem; color: var(--rating); letter-spacing: 0.5px; }
+.now-rewatch { color: var(--fg-faint); font-weight: 400; font-size: 0.75rem; }
+.now-time { font-size: 0.6875rem; color: var(--fg-faint); line-height: 1.4; }
 
 .now-loading {
   display: block;
@@ -822,7 +826,7 @@ ul.downloads {
 }
 
 .now-error {
-  font-size: 10px;
+  font-size: 0.75rem;
   color: var(--fg-faint);
   font-style: italic;
   padding: 4px 0;
@@ -831,7 +835,7 @@ ul.downloads {
 // Carries the same chrome as .now-card-link so an empty slot reads as a card
 // rather than a hole in the grid.
 .now-empty {
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   color: var(--fg-muted);
   font-style: italic;
   margin: 0;
@@ -862,7 +866,7 @@ ul.downloads {
   border: 1px solid var(--rule);
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.875rem;
   // `top` is here for the theme toggle, which slides up to dock into the
   // sticky nav; the back-to-top button is positioned from the bottom and is
   // unaffected by it.
@@ -1012,7 +1016,7 @@ ul.downloads {
 
   .sticky-nav a {
     display: block;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -1130,7 +1134,7 @@ ul.downloads {
   // light tint — under AAA, and the exact trap the palette notes warn about.
   color: var(--fg);
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-md);
@@ -1215,7 +1219,7 @@ ul.downloads {
   padding: 14px 16px 10px;
 }
 
-.chat-head-title { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
+.chat-head-title { margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--fg); }
 
 .chat-close {
   flex-shrink: 0;
@@ -1258,7 +1262,7 @@ ul.downloads {
   // --fg, not --fg-muted: bubble text sits on the page *plus* the surface tint,
   // which is worth about a point of contrast. Same trap the Now panels note.
   color: var(--fg);
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
@@ -1297,7 +1301,7 @@ ul.downloads {
     background: var(--surface);
     color: var(--fg-muted);
     font-family: inherit;
-    font-size: 12px;
+    font-size: 0.75rem;
     padding: 6px 11px;
     border-radius: 999px;
     cursor: pointer;
@@ -1323,7 +1327,7 @@ ul.downloads {
   background: var(--surface);
   color: var(--fg);
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 1rem; // Under 16px, iOS Safari zooms the page on focus.
   transition: background-color 0.18s ease;
 
   &::placeholder { color: var(--fg-faint); }
@@ -1357,7 +1361,7 @@ ul.downloads {
 .chat-tip {
   margin: 0;
   padding: 10px 16px 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.55;
   color: var(--fg-faint);
 
@@ -1372,7 +1376,7 @@ ul.downloads {
 .chat-note {
   margin: 0;
   padding: 10px 16px 16px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.55;
   color: var(--fg-faint);
 }
@@ -1405,7 +1409,7 @@ ul.downloads {
   background: none;
   color: var(--fg-faint);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -1427,7 +1431,7 @@ ul.downloads {
 
 .palette-kbd {
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: inherit;
 }
 
@@ -1435,7 +1439,7 @@ ul.downloads {
 // faint tone its 7:1.
 .palette-foot kbd {
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1;
   color: var(--fg-muted);
   background: var(--surface);
@@ -1483,7 +1487,7 @@ ul.downloads {
 
 .palette-mode {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--fg);
   background: var(--surface-hover);
@@ -1500,7 +1504,7 @@ ul.downloads {
   font-family: inherit;
   // 16px, not the 15 the body uses: below 16 iOS Safari zooms the page on
   // focus, and this field takes focus the moment the palette opens.
-  font-size: 16px;
+  font-size: 1rem;
   padding: 6px 0;
 
   &::placeholder { color: var(--fg-faint); }
@@ -1540,7 +1544,7 @@ ul.downloads {
 
 .palette-group {
   padding: 12px 10px 5px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1556,7 +1560,7 @@ ul.downloads {
   padding: 9px 10px;
   border-radius: 10px;
   color: var(--fg-muted);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.4;
   cursor: pointer;
 
@@ -1617,7 +1621,7 @@ ul.downloads {
 // Why a row found through its body text is there (palette.js, snippet()).
 .palette-snippet {
   margin-top: 1px;
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   color: var(--fg-faint);
 }
 
@@ -1637,7 +1641,7 @@ ul.downloads {
 
 .palette-hint {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--fg-faint);
 }
 
@@ -1650,7 +1654,7 @@ ul.downloads {
 
   kbd {
     font-family: inherit;
-    font-size: 11px;
+    font-size: 0.6875rem;
     line-height: 1;
     min-width: 20px;
     text-align: center;
@@ -1684,7 +1688,7 @@ ul.downloads {
 
 .palette-empty {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   color: var(--fg-faint);
 }
 
@@ -1700,7 +1704,7 @@ ul.downloads {
   background: none;
   color: var(--fg);
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   cursor: pointer;
   // Styled as the site's links are: the permanent tinted underline.
   text-decoration: underline;
@@ -1716,7 +1720,7 @@ ul.downloads {
   gap: 16px;
   padding: 9px 18px;
   border-top: 1px solid var(--rule);
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   color: var(--fg-faint);
 
   kbd { padding: 2px 5px; margin-right: 2px; }
@@ -1758,7 +1762,7 @@ ul.downloads {
 
 @media (max-width: 480px) {
   :root { --pad: 20px; }
-  h1 { font-size: 25px; }
+  h1 { font-size: 1.5625rem; }
 
   // The left-align above is right for a wide single-column band, but at phone
   // widths a 148px avatar hugging the left edge reads as adrift rather than
@@ -1815,7 +1819,7 @@ ul.downloads {
   border-radius: 10px;
   background: var(--surface);
   color: var(--fg);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -1843,7 +1847,7 @@ ul.downloads {
   border-radius: 999px;
   background: var(--fg);
   color: var(--bg);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   white-space: nowrap;
   box-shadow: var(--shadow-md);
@@ -1881,7 +1885,7 @@ $bbv-lime: #00ff00;
   padding: 2px 5px 1px;
   background: $bbv-lime;
   color: #000;
-  font: 700 11px/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 700 0.6875rem/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
   white-space: nowrap;
 }
 
@@ -1909,7 +1913,7 @@ $bbv-lime: #00ff00;
   color: var(--fg-muted);
   border-radius: 14px;
   box-shadow: var(--shadow-md), 0 18px 48px rgba(0, 0, 0, 0.22);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
   animation: bbvIn 0.15s ease-out;
 
@@ -1943,7 +1947,7 @@ $bbv-lime: #00ff00;
   border-radius: 8px;
   background: var(--surface);
   color: var(--fg);
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   line-height: 1.55;
   // Wrapped rather than scrolled sideways, at spaces where it can. Each line
   // is its own block (fun.js); the continuation of a wrapped one hangs four
@@ -1976,7 +1980,7 @@ $bbv-lime: #00ff00;
     border-radius: 6px;
     background: var(--surface);
     color: var(--fg);
-    font-size: 11.5px;
+    font-size: 0.71875rem;
   }
 }
 
